@@ -1,10 +1,5 @@
 function App() {
-
-  return (
-    <div>
-      [[under construction]]
-    </div>
-  );
+  return <div>[[under construction]]</div>;
 }
 
-export default App
+export default App;
