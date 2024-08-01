@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "prettier . --write && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+    "lint": "pnpm run lint:app && pnpm run lint:styles",
+    "lint:app": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:app:fix": "prettier . --write && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+    "lint:styles": "stylelint **/*.{css,scss}",
+    "lint:styles:fix": "stylelint --fix **/*.{css,scss}",
     "preview": "vite preview",
     "test": "vitest"
   },
