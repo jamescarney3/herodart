@@ -33,8 +33,8 @@ module.exports = {
       'error',
       {
         groups: [
-          'external',
           'builtin',
+          'external',
           'internal',
           'sibling',
           'parent',
@@ -44,7 +44,7 @@ module.exports = {
     ],
     'import/newline-after-import': [
       'error',
-      { count: 2, exactCount: true, considerComments: true },
+      { count: 1, exactCount: true, considerComments: true },
     ],
   },
 };
