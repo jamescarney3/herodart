@@ -1,10 +1,9 @@
 /// <reference types="vitest" />
+import path from 'path';
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import path from 'path';
-// https://github.com/jquense/sass-tailwind-functions
 import sassTailwindFunctions from 'sass-tailwind-functions/modern';
-
 
 // https://vitejs.dev/config/
 export default defineConfig({
