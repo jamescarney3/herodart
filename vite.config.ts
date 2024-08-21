@@ -7,7 +7,7 @@ import sassTailwindFunctions from 'sass-tailwind-functions/modern';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({ tsDecorators: true })],
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
