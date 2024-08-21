@@ -13,7 +13,7 @@
     "lint:styles:fix": "stylelint --fix **/*.{css,scss}",
     "preview": "vite preview",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage --coverage.include=\"src\""
   },
   "dependencies": {
     "prettier": "^3.3.2",
