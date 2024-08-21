@@ -23,28 +23,16 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
+    'max-len': ['warn', 120],
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     semi: ['warn'],
     quotes: ['warn', 'single'],
     'import/order': [
       'error',
       {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'sibling',
-          'parent',
-          'index',
-        ],
+        groups: ['builtin', 'external', 'internal', 'sibling', 'parent', 'index'],
       },
     ],
-    'import/newline-after-import': [
-      'error',
-      { count: 1, exactCount: true, considerComments: true },
-    ],
+    'import/newline-after-import': ['error', { count: 1, exactCount: true, considerComments: true }],
   },
 };
