@@ -13,7 +13,9 @@
     "lint:styles:fix": "stylelint --fix **/*.{css,scss}",
     "preview": "vite preview",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage --coverage.include=\"src\""
+    "test:nyan": "vitest --reporter=vitest-nyancat-reporter",
+    "test:verbose": "vitest --reporter=verbose",
+    "test:coverage": "vitest run --coverage --coverage.include=\"src\" --coverage.exclude=\"src/main.tsx\" --coverage.exclude=\"**/*.d.ts\""
   },
   "dependencies": {
     "prettier": "^3.3.2",
@@ -45,6 +47,7 @@
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
-    "vitest": "^2.0.3"
+    "vitest": "^2.0.3",
+    "vitest-nyancat-reporter": "^1.0.0"
   }
 }
