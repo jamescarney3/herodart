@@ -1,3 +1,4 @@
+import Store from '~/lib/store';
 import { hasOwnOrInhertits } from '~/lib/utils';
 
 export function prop(target, propName): void {
@@ -32,11 +33,11 @@ export function belongsTo(relation: string, options) {
 
     Object.defineProperty(target, propName, {
       get: function() {
-        const relationCollection = Object.getPrototypeOf(this)._storeData[relation];
+        const relationCollection = Store._data[relation];
         return relationCollection.find(this[backingField]);
       },
       set: function(value) {
-        this[backingField] = value[Object.getPrototypeOf(value)._key];
+        this[backingField] = value[value.constructor._key];
       }
     });
   };
@@ -50,15 +51,14 @@ export function hasMany(relation: string, options) {
 
     Object.defineProperty(target, propName, {
       get: function() {
-        const relationCollection = Object.getPrototypeOf(this)._storeData[relation];
+        const relationCollection = Store._data[relation];
         return relationCollection.filter((member) => {
-          const key = Object.getPrototypeOf(this)._key;
+          const key = this.constructor._key;
           return member[backingField] === this[key];
         });
       },
       set: function(values) {
-        const relationCollection = Object.getPrototypeOf(this)._storeData[relation];
-
+        const relationCollection = Store._data[relation];
         for (const relationMember of relationCollection) {
           if (values.includes(relationMember)) {
             relationMember[backingField] = this[instanceKey];
@@ -83,8 +83,9 @@ export function hasMany(relation: string, options) {
 export function observed (target, methodName, descriptor) {
   const method = descriptor.value;
   descriptor.value = function (...args) {
-    method.apply(this, args);
+    const result = method.apply(this, args);
     if (this.observe) this.observe(this);
+    return result;
   };
 }
 
@@ -101,7 +102,7 @@ export default class Model {
 
   static create(attributes) {
     const instance = new this(attributes);
-    instance._collection.add(instance);
+    Store._data[instance._storeKey].add(instance);
     return instance;
   }
 }

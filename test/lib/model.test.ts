@@ -1,9 +1,21 @@
-// import { describe, expect, it, vi } from 'vitest';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 
 import Model, { prop, key, belongsTo, hasMany, observed } from '~/lib/model';
+import Store from '~/lib/store';
+
+vi.mock('~/lib/store', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    default: {},
+  };
+});
 
 describe('Model class module', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('@prop decorator', () => {
     it('allows Model constructor to set attributes', () => {
       class Foo extends Model {
@@ -35,9 +47,9 @@ describe('Model class module', () => {
       const bar2 = { id: 2 };
       Object.getPrototypeOf(bar2)._key = 'id';
 
-      const storeData = {
-        bars: {
-          find: vi.fn().mockImplementation((id) => {
+      Store._data = {
+        'bars': {
+          find: vi.fn((id) =>  {
             if (id === 1) return bar1;
             if (id === 2) return bar2;
             return undefined;
@@ -48,10 +60,10 @@ describe('Model class module', () => {
       class Foo extends Model {
         @belongsTo('bars', { foreignKey: 'barId' }) declare bar: unknown;
       }
-      Foo.prototype._storeData = storeData;
 
       const foo = new Foo({ bar: bar1 });
       expect(foo.bar).toBe(bar1);
+
       foo.bar = bar2;
       expect(foo.bar).toBe(bar2);
     });
@@ -63,14 +75,14 @@ describe('Model class module', () => {
       const bar2 = { _fooId: 1 };
       const bar3 = { _fooId: 2 };
       const bar4 = {};
-      const storeData = { bars: [bar1, bar2, bar3] };
-      storeData.bars.add = storeData.bars.push;
+
+      Store._data = { 'bars': [bar1, bar2, bar3] };
+      Store._data['bars'].add = Store._data['bars'].push;
 
       class Foo extends Model {
         @key declare id: number;
         @hasMany('bars', { foreignKey: 'fooId' }) declare bars: unknown;
       }
-      Foo.prototype._storeData = storeData;
 
       const foo1 = new Foo({ id: 1 });
       const foo2 = new Foo({ id: 2 });
@@ -117,13 +129,14 @@ describe('Model class module', () => {
   describe('Model class', () => {
     describe('instance#create', () => {
       it('instantiates a model and adds it to a collection', () => {
-        const collection = { add: vi.fn() };
+        Store._data = { 'foos': { add: vi.fn() } };
+
         class Foo extends Model {
-          _collection = collection;
+          _storeKey = 'foos';
         }
 
         const foo = Foo.create();
-        expect(collection.add).toHaveBeenCalledWith(foo);
+        expect(Store._data['foos'].add).toHaveBeenCalledWith(foo);
       });
     });
   });
