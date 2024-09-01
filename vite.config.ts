@@ -4,11 +4,23 @@ import './vite-env.d.ts';
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import babel from 'vite-plugin-babel';
 import sassTailwindFunctions from 'sass-tailwind-functions/modern';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react({ tsDecorators: true })],
+  plugins: [
+    react({ tsDecorators: true }),
+    babel({
+      babelConfig: {
+        babelrc: false,
+        configFile: false,
+        plugins: [
+          ['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }],
+        ],
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
