@@ -1,0 +1,14 @@
+name: Example action
+description: Trying to see if I can run one of these in CI
+inputs:
+  # foo:
+  #   required: true
+  #   description: A required 'foo' input
+
+  bar:
+    # required: false
+    description: An optional 'bar' input
+
+runs:
+  using: node20
+  main: example-action.js
