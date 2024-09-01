@@ -2,20 +2,21 @@ import Model, { prop, key, hasMany, observed } from '~/lib/model';
 import { collection } from '~/lib/store';
 import Player from '~/lib/legs/legs-player';
 import Round from '~/lib/legs/legs-round';
+import type Collection from '~/lib/collection';
 
 @collection
 export default class LegsGame extends Model {
   static _storeKey = 'legs-games';
 
   @key declare id: string;
-  @prop declare started: boolean = false;
+  @prop started: boolean = false;
 
-  @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Player[];
-  @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Round[];
+  @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
+  @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
 
   @observed
-  createPlayer(attributes: { name: string, splash: number}): void {
-    return Player.create({ ...attributes, game: this });
+  createPlayer(attributes: { name: string, splash: number}): Player {
+    return Player.create({ ...attributes, game: this }) as Player;
   }
 
   @observed
@@ -42,32 +43,28 @@ export default class LegsGame extends Model {
     }, 0);
   }
 
-  get isStarted(): boolean {
-    return !!this._started;
-  }
-
-  get isFinished(): boolean {
+  get finished(): boolean {
     return [
-      this.isStarted,
+      this.started,
       this.players.filter((player) => player.strikes < 3).length === 1,
     ].every((condition) => !!condition);
   }
 
-  get playerOrder(): Player[] {
+  get playerOrder(): Collection<Player> {
     const { players, rounds } = this;
     const order = players
       .filter((player) => player.strikes < 3)
       .sort((playerA, playerB) => playerB.splash - playerA.splash);
 
     const lastPlayer = rounds?.last?.player;
-    if (!lastPlayer) return order;
+    if (!lastPlayer) return order as unknown as Collection<Player>;
 
     const lastPlayerIdx = order.findIndex(player => player === lastPlayer);
-    if (lastPlayerIdx === order.length - 1) return order;
+    if (lastPlayerIdx === order.length - 1) return order as unknown as Collection<Player>;
 
     const nextPlayerIdx = lastPlayerIdx + 1;
 
-    return order.slice(nextPlayerIdx).concat(order.slice(0, nextPlayerIdx));
+    return order.slice(nextPlayerIdx).concat(order.slice(0, nextPlayerIdx)) as unknown as Collection<Player>;
   }
 
   get targetScore(): number {

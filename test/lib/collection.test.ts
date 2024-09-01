@@ -31,14 +31,14 @@ describe('Collection class', () => {
     });
   });
 
-  describe('Collection#find', () => {
+  describe('Collection#get', () => {
     it('finds a keyed Collection memeber', () => {
       const collection = new Collection([{ id: 1 }, { id: 2 }, { id: 3 }], { key: 'id' });
-      expect(collection.find(2)).toEqual({ id: 2 });
+      expect(collection.get(2)).toEqual({ id: 2 });
     });
     it('throws an error for un-keyed Collection', () => {
       const collection = new Collection([{ foo: 'bar' }, { bar: 'baz' }]);
-      expect(() => collection.find('bar')).toThrowError();
+      expect(() => collection.get('bar')).toThrowError();
     });
   });
 

@@ -40,7 +40,7 @@ describe('LegsPlayer class', () => {
 
       Store._data = {
         'legs-games': {
-          find: (id) => {
+          get: (id) => {
             if (id === 'testGame') return legsGame;
           }
         },
@@ -61,7 +61,7 @@ describe('LegsPlayer class', () => {
 
       Store._data = {
         'legs-games': {
-          find: (id) => {
+          get: (id) => {
             if (id === 'testGame') return legsGame;
           }
         },

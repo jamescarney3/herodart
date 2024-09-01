@@ -1,7 +1,7 @@
 import Store from '~/lib/store';
-import { hasOwnOrInhertits } from '~/lib/utils';
+import { hasOwnOrInherits } from '~/lib/utils';
 
-export function prop(target, propName): void {
+export function prop(target: Model, propName: string): void {
   const backingField = `_${propName}`;
   Object.defineProperty(target, propName, {
     get: function() {
@@ -13,8 +13,10 @@ export function prop(target, propName): void {
   });
 }
 
-export function key(target, propName): void {
-  target._key = propName;
+export function key(target: Model, propName: string): void {
+  // casting this here since we know _key is a static property that can be set
+  // on a descendent of Model
+  (target as Model & { _key: string })._key = propName;
   const backingField = `_${propName}`;
   Object.defineProperty(target, propName, {
     get: function() {
@@ -26,7 +28,9 @@ export function key(target, propName): void {
   });
 }
 
-export function belongsTo(relation: string, options) {
+type RelationSignature = { foreignKey: string };
+
+export function belongsTo(relation: string, options: RelationSignature) {
   return function(target: Model, propName: string): void {
     const { foreignKey } = options;
     const backingField = `_${foreignKey}`;
@@ -34,7 +38,7 @@ export function belongsTo(relation: string, options) {
     Object.defineProperty(target, propName, {
       get: function() {
         const relationCollection = Store._data[relation];
-        return relationCollection.find(this[backingField]);
+        return relationCollection.get(this[backingField]);
       },
       set: function(value) {
         this[backingField] = value[value.constructor._key];
@@ -43,21 +47,25 @@ export function belongsTo(relation: string, options) {
   };
 }
 
-export function hasMany(relation: string, options) {
+export function hasMany(relation: string, options: RelationSignature) {
   return function(target: Model, propName: string): void {
-    const instanceKey = target._key;
     const { foreignKey } = options;
     const backingField = `_${foreignKey}`;
 
     Object.defineProperty(target, propName, {
       get: function() {
+        // casting this here since we know _key is a static property that can be set
+        // on a descendent of Model
+        const instanceKey = (target as  Model & { _key: string })._key;
         const relationCollection = Store._data[relation];
         return relationCollection.filter((member) => {
-          const key = this.constructor._key;
-          return member[backingField] === this[key];
+          return member[backingField] === this[instanceKey];
         });
       },
       set: function(values) {
+        // casting this here since we know _key is a static property that can be set
+        // on a descendent of Model
+        const instanceKey = (target as  Model & { _key: string })._key;
         const relationCollection = Store._data[relation];
         for (const relationMember of relationCollection) {
           if (values.includes(relationMember)) {
@@ -80,29 +88,36 @@ export function hasMany(relation: string, options) {
   };
 }
 
-export function observed (target, methodName, descriptor) {
+
+export function observed (_target: Model, _methodName: string, descriptor: PropertyDescriptor) {
   const method = descriptor.value;
-  descriptor.value = function (...args) {
+  descriptor.value = function(...args: unknown[]) {
     const result = method.apply(this, args);
-    if (this.observe) this.observe(this);
+    const observe = (<Model>this).observe;
+    if (observe) observe();
     return result;
   };
 }
 
+type ModelAttributes = Record<string, unknown>;
+
 export default class Model {
+  static _key: string | null =  null;
+  declare static _storeKey: string;
+
   @prop declare observe: () => void;
 
-  constructor(attributes) {
+  constructor(attributes: ModelAttributes) {
     for (const prop in attributes) {
-      if (hasOwnOrInhertits(this, prop)) {
-        this[prop] = attributes[prop];
+      if (hasOwnOrInherits(this, prop)) {
+        (this as unknown as {[key: string]: unknown})[prop] = attributes[prop];
       }
     }
   }
 
-  static create(attributes) {
+  static create(attributes: ModelAttributes): Model {
     const instance = new this(attributes);
-    Store._data[instance._storeKey].add(instance);
+    Store._data[(instance as unknown as typeof Model)._storeKey].add(instance);
     return instance;
   }
 }

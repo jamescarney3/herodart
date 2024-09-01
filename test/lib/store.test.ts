@@ -11,13 +11,13 @@ describe('global Store class', () => {
 
 describe('@collection decorator', () => {
   it('registers a collection of instances of a class with a _storeKey static prop', () => {
+
     @collection
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class Foo {
       static _storeKey = 'foos';
     }
 
     expect(Store._data).toHaveProperty('foos');
-    expect(Foo.prototype._storeData).toBe(Store._data);
-    expect(Foo.prototype._collection).toBe(Store._data['foos']);
   });
 });

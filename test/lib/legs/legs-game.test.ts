@@ -73,7 +73,7 @@ describe('LegsGame class', () => {
     });
   });
 
-  describe('#start & get#isStarted', () => {
+  describe('#start', () => {
     it('throws when not enough players', () => {
       const legsGame = new LegsGame({ id: 'testGame' });
       expect(() => legsGame.start()).toThrowError();
@@ -81,7 +81,7 @@ describe('LegsGame class', () => {
       Store._data['legs-players'].filter = vi.fn().mockImplementation(() => [{}, {}]);
       legsGame.start();
 
-      expect(legsGame.isStarted).toBe(true);
+      expect(legsGame.started).toBe(true);
     });
   });
 
@@ -89,7 +89,7 @@ describe('LegsGame class', () => {
     it('scores a round for a player', () => {
       LegsPlayer.create = vi.fn().mockImplementation(() => ({}));
       const mockPlayer = LegsPlayer.create();
-      Store._data['legs-players'].find = vi.fn().mockImplementation(() => mockPlayer);
+      Store._data['legs-players'].get = vi.fn().mockImplementation(() => mockPlayer);
 
       const legsGame = new LegsGame({ id: 'testGame' });
       legsGame.scoreRound(mockPlayer, 180);
@@ -100,12 +100,14 @@ describe('LegsGame class', () => {
 
   describe('#calculateStrikes', () => {
     it('calculates strikes for player', () => {
+      const legsGame = new LegsGame({ id: 'testGame' });
+
       LegsPlayer.create = vi.fn().mockImplementation(() => ({}));
       const mockPlayer1 = LegsPlayer.create();
       const mockPlayer2 = LegsPlayer.create();
       const mockPlayer3 = LegsPlayer.create();
 
-      LegsRound.create = vi.fn().mockImplementation(({ score, player }) => ({ score, player }));
+      LegsRound.create = vi.fn().mockImplementation(({ score, player }) => ({ score, player, _gameId: 'testGame' }));
       const player1Round1 = LegsRound.create({ player: mockPlayer1, score: 41 });
       const player2Round2 = LegsRound.create({ player: mockPlayer2, score: 41 });
       const player3Round3 = LegsRound.create({ player: mockPlayer3, score: 26 });
@@ -126,46 +128,45 @@ describe('LegsGame class', () => {
         player2Round8,
       ];
 
-      const legsGame = new LegsGame({ id: 'testGame' });
       expect(legsGame.calculateStrikes(mockPlayer1)).toBe(0);
       expect(legsGame.calculateStrikes(mockPlayer2)).toBe(2);
       expect(legsGame.calculateStrikes(mockPlayer3)).toBe(1);
     });
   });
 
-  describe('get isFinished', () => {
+  describe('get finished', () => {
     it('returns true for started game with 1 remaining player', () => {
       const legsGame = new LegsGame({ id: 'testGame' });
-      expect(legsGame.isFinished).toBe(false);
+      expect(legsGame.finished).toBe(false);
 
       legsGame.started = true;
       const unfinishedPlayers = [
-        { strikes: 0, gameId: 'testGame' },
-        { strikes: 1, gameId: 'testGame' },
-        { strikes: 2, gameId: 'testGame' },
-        { strikes: 3, gameId: 'testGame' },
+        { strikes: 0, _gameId: 'testGame' },
+        { strikes: 1, _gameId: 'testGame' },
+        { strikes: 2, _gameId: 'testGame' },
+        { strikes: 3, _gameId: 'testGame' },
       ];
       Store._data['legs-players'] = unfinishedPlayers;
-      expect(legsGame.isFinished).toBe(false);
+      expect(legsGame.finished).toBe(false);
 
       const finishedPlayers = [
-        { strikes: 0, gameId: 'testGame' },
-        { strikes: 3, gameId: 'testGame' },
-        { strikes: 3, gameId: 'testGame' },
-        { strikes: 3, gameId: 'testGame' },
+        { strikes: 0, _gameId: 'testGame' },
+        { strikes: 3, _gameId: 'testGame' },
+        { strikes: 3, _gameId: 'testGame' },
+        { strikes: 3, _gameId: 'testGame' },
       ];
       Store._data['legs-players'] = finishedPlayers;
-      expect(legsGame.isFinished).toBe(true);
+      expect(legsGame.finished).toBe(true);
     });
   });
 
   describe('get playerOrder', () => {
     it('returns non-eliminated players ordered by splash', () => {
-      const player10 = { splash: 10, strikes: 0, gameId: 'testGame' };
-      const player30 = { splash: 30, strikes: 0, gameId: 'testGame' };
-      const player50 = { splash: 50, strikes: 0, gameId: 'testGame' };
-      const player20 = { splash: 20, strikes: 0, gameId: 'testGame' };
-      const player40 = { splash: 40, strikes: 0, gameId: 'testGame' };
+      const player10 = { splash: 10, strikes: 0, _gameId: 'testGame' };
+      const player30 = { splash: 30, strikes: 0, _gameId: 'testGame' };
+      const player50 = { splash: 50, strikes: 0, _gameId: 'testGame' };
+      const player20 = { splash: 20, strikes: 0, _gameId: 'testGame' };
+      const player40 = { splash: 40, strikes: 0, _gameId: 'testGame' };
       const players = new Collection([player10, player30, player50, player20, player40]);
       Store._data['legs-players'] = players;
 
@@ -194,9 +195,9 @@ describe('LegsGame class', () => {
       expect(legsGame.targetScore).toBe(0);
 
       const mockRounds = new Collection([
-        { score: 45, gameId: 'testGame' },
-        { score: 180, gameId: 'testGame' },
-        { score: 26, gameId: 'testGame' },
+        { score: 45, _gameId: 'testGame' },
+        { score: 180, _gameId: 'testGame' },
+        { score: 26, _gameId: 'testGame' },
       ]);
       Store._data['legs-rounds'] = mockRounds;
 
@@ -206,11 +207,11 @@ describe('LegsGame class', () => {
 
   describe('get currentPlayer', () => {
     it('returns next active player in order of splash starting after last round and wrapping', () => {
-      const player10 = { splash: 10, strikes: 0, gameId: 'testGame' };
-      const player30 = { splash: 30, strikes: 0, gameId: 'testGame' };
-      const player50 = { splash: 50, strikes: 0, gameId: 'testGame' };
-      const player20 = { splash: 20, strikes: 0, gameId: 'testGame' };
-      const player40 = { splash: 40, strikes: 0, gameId: 'testGame' };
+      const player10 = { splash: 10, strikes: 0, _gameId: 'testGame' };
+      const player30 = { splash: 30, strikes: 0, _gameId: 'testGame' };
+      const player50 = { splash: 50, strikes: 0, _gameId: 'testGame' };
+      const player20 = { splash: 20, strikes: 0, _gameId: 'testGame' };
+      const player40 = { splash: 40, strikes: 0, _gameId: 'testGame' };
       const players = new Collection([player10, player30, player50, player20, player40]);
       Store._data['legs-players'] = players;
 

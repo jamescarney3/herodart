@@ -49,7 +49,7 @@ describe('Model class module', () => {
 
       Store._data = {
         'bars': {
-          find: vi.fn((id) =>  {
+          get: vi.fn((id) =>  {
             if (id === 1) return bar1;
             if (id === 2) return bar2;
             return undefined;
@@ -81,7 +81,7 @@ describe('Model class module', () => {
 
       class Foo extends Model {
         @key declare id: number;
-        @hasMany('bars', { foreignKey: 'fooId' }) declare bars: unknown;
+        @hasMany('bars', { foreignKey: 'fooId' }) declare bars: { _fooId: string }[];
       }
 
       const foo1 = new Foo({ id: 1 });

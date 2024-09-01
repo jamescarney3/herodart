@@ -6,7 +6,6 @@ import type Player from '~/lib/legs/legs-player';
 @collection
 export default class LegsRound extends Model {
   static _storeKey = 'legs-rounds';
-  static _key = null;
 
   @prop declare score: number;
 
