@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import path from 'path';
+import './vite-env.d.ts';
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
