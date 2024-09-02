@@ -1,9 +1,0 @@
-name: Example action
-description: Trying to see if I can run one of these in CI
-inputs:
-  threshold:
-    description: Minimum line coverage percentage
-
-runs:
-  using: node20
-  main: example-action.js

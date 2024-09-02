@@ -28,6 +28,16 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    coverage: {
+      include: ['src'],
+      exclude: ['src/main.tsx', '**/*.d.ts'],
+      thresholds: {
+        lines: 100,
+        statements: 100,
+        functions: 100,
+        paths: 100,
+      },
+    },
   },
   css: {
     preprocessorOptions: {
