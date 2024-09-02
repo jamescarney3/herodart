@@ -1,13 +1,8 @@
 name: Example action
 description: Trying to see if I can run one of these in CI
 inputs:
-  # foo:
-  #   required: true
-  #   description: A required 'foo' input
-
-  bar:
-    # required: false
-    description: An optional 'bar' input
+  threshold:
+    description: Minimum line coverage percentage
 
 runs:
   using: node20
