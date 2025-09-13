@@ -1,76 +1,40 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import LegsPlayer from '~/lib/legs/legs-player';
 
-import Store from '~/lib/store';
-
-vi.mock('~/lib/store', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    default: {},
-  };
-});
-
-class MockGame {
-  static _storeKey = 'legs-games';
-  static _key = 'id';
-
-  constructor(attributes) {
-    Object.assign(this, attributes);
+vi.mock('~/lib/legs/legs-game', () => {
+  class MockGame {
+    static create = vi.fn().mockImplementation(() => 'extant round');
   }
 
-  calculateStrikes = vi.fn(() => 3);
-  scoreRound = vi.fn();
-}
+  return { default: MockGame };
+});
 
 describe('LegsPlayer class', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('initializes', () => {
-    const player = new LegsPlayer();
-    expect(player).toBeTruthy();
-  });
-
   describe('get strikes', () => {
-    it('calls game relation method to calculate strikes and returns the result', () => {
-      const legsGame = new MockGame({ id: 'testGame' });
+    it('returns a strike count', () => {
+      const legsPlayer = new LegsPlayer({ id: 'testPlayer' });
 
-      Store._data = {
-        'legs-games': {
-          get: (id) => {
-            if (id === 'testGame') return legsGame;
-          }
-        },
-      };
+      vi.spyOn(legsPlayer, 'game', 'get').mockReturnValue({
+        calculateStrikes: vi.fn().mockReturnValue(2),
+      });
 
-      const player = new LegsPlayer({ game: legsGame });
-      const strikes = player.strikes;
-
-      expect(legsGame.calculateStrikes).toHaveBeenCalledWith(player);
-      expect(strikes).toBe(3);
+      expect(legsPlayer.strikes).toBe(2);
+      expect(legsPlayer.game.calculateStrikes).toHaveBeenCalledWith(legsPlayer);
     });
-
   });
 
   describe('#score', () => {
-    it('calls game relation method to score a round for player instance', () => {
-      const legsGame = new MockGame({ id: 'testGame' });
+    it('scores a legs round', () => {
+      const legsPlayer = new LegsPlayer({ id: 'testPlayer' });
 
-      Store._data = {
-        'legs-games': {
-          get: (id) => {
-            if (id === 'testGame') return legsGame;
-          }
-        },
-      };
+      vi.spyOn(legsPlayer, 'game', 'get').mockReturnValue({
+        scoreRound: vi.fn(),
+      });
 
-      const player = new LegsPlayer({ game: legsGame });
-      player.score(180);
+      legsPlayer.score(180);
 
-      expect(legsGame.scoreRound).toHaveBeenCalledWith(player, 180);
+      expect(legsPlayer.game.scoreRound).toHaveBeenCalledWith(legsPlayer, 180);
     });
   });
 });

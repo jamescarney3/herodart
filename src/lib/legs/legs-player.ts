@@ -1,9 +1,10 @@
-import Model, { prop, key, belongsTo, hasMany } from '~/lib/model';
-import { collection } from '~/lib/store';
-import type Game from '~/lib/legs/legs-game';
+import Model, { prop, key, hasMany, belongsTo } from '~/lib/v2/model';
+import { register } from '~/lib/v2/store';
 import type Round from '~/lib/legs/legs-round';
 
-@collection
+import type Game from '~/lib/legs/legs-game';
+
+@register('legs-players')
 export default class LegsPlayer extends Model {
   static _storeKey = 'legs-players';
 

@@ -1,25 +1,23 @@
-import Model, { prop, key, hasMany, observed } from '~/lib/model';
-import { collection } from '~/lib/store';
+import Model, { prop, key, hasMany } from '~/lib/v2/model';
+import { register } from '~/lib/v2/store';
+import type Collection from '~/lib/v2/collection';
 import Player from '~/lib/legs/legs-player';
 import Round from '~/lib/legs/legs-round';
-import type Collection from '~/lib/collection';
 
-@collection
+@register('legs-games')
 export default class LegsGame extends Model {
   static _storeKey = 'legs-games';
 
-  @key declare id: string;
+  @key id: string;
   @prop started: boolean = false;
 
   @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
   @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
 
-  @observed
   createPlayer(attributes: { name: string, splash: number}): Player {
     return Player.create({ ...attributes, game: this }) as Player;
   }
 
-  @observed
   start() {
     if (this.players.length < 2) {
       throw new Error('legs requires at least 2 players to start');
@@ -27,7 +25,6 @@ export default class LegsGame extends Model {
     this.started = true;
   }
 
-  @observed
   scoreRound(player: Player, score: number): void {
     Round.create({ player, score, game: this });
   }

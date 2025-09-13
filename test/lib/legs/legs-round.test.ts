@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest';
 import LegsRound from '~/lib/legs/legs-round';
 
 describe('LegsRound class', () => {
-  it('initializes', () => {
-    const player = { name: 'foo' };
-    const round = new LegsRound({ player, score: 180 });
-    expect(round).toBeTruthy();
+  it('instantiates with props', () => {
+    const testScore = 180;
+
+    const legsRound = new LegsRound({ score: testScore });
+
+    expect(legsRound.score).toBe(180);
   });
 });
