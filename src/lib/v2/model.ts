@@ -1,11 +1,12 @@
 import Store from '~/lib/v2/store';
+import Observer from '~/lib/v2/observer';
 import type Collection from '~/lib/v2/collection';
 
 const BASE_METADATA = { props: <string[]>[], key: 'id', customKeySet: false, storeKey: '' };
+Object.freeze(BASE_METADATA);
 
 export function prop(target: Model, propName: string): void {
   const ModelClass = target.constructor as typeof Model;
-  ModelClass.ensureMetadata();
   ModelClass.meta.props.push(propName);
   const backingField = `_${propName}`;
 
@@ -15,13 +16,13 @@ export function prop(target: Model, propName: string): void {
     },
     set: function(value) {
       this[backingField] = value;
+      Observer.notify(this);
     },
   });
 }
 
 export function key(target: Model, propName: string): void {
   const ModelClass = target.constructor as typeof Model;
-  ModelClass.ensureMetadata();
   if (ModelClass.meta.customKeySet) {
     throw new Error('Multiple custom keys not allowed');
   }
@@ -48,6 +49,7 @@ export function belongsTo(relationName: string, options: RelationOptionsSignatur
         const RelationModelClass = <typeof Model>value.constructor;
         const key = <keyof Model>RelationModelClass.primaryKey;
         this[foreignKey] = value[key];
+        Observer.notify(this);
       },
       configurable: true,
     });
@@ -66,6 +68,7 @@ export function hasOne(relationName: string, options: RelationOptionsSignature) 
       },
       set: function(value: Model): void {
         value[foreignKey] = target[primaryKey];
+        Observer.notify(this);
       },
     });
   };
@@ -87,6 +90,7 @@ export function hasMany(relationName: string, options: RelationOptionsSignature)
         for (const value of values) {
           value[foreignKey] = target[primaryKey];
         }
+        Observer.notify(this);
       },
       configurable: true,
     });
@@ -95,36 +99,28 @@ export function hasMany(relationName: string, options: RelationOptionsSignature)
 
 type ModelAttributes = Record<string, unknown>;
 // TODO: static nextId method for non-custom key subclasses
+
 export default class Model {
-  declare static _meta: typeof BASE_METADATA;
+  private static _meta = new Map();
 
   // this can't be a static prop, otherwise descendents will clobber the Model static var
   // https://thecodebarbarian.com/static-properties-in-javascript-with-inheritance.html
   static get meta(): typeof BASE_METADATA {
-    return this._meta;
-  }
-
-  static set meta(metadata: typeof BASE_METADATA) {
-    this._meta = metadata;
-  }
-
-  // call this before accessing a metadata property since _meta can't be inherited directly
-  static ensureMetadata() {
-    this.meta ||= { ...BASE_METADATA };
+    if (!this._meta.has(this)) {
+      this._meta.set(this, { ...BASE_METADATA, props: [...BASE_METADATA.props] });
+    }
+    return this._meta.get(this);
   }
 
   static get primaryKey(): string {
-    this.ensureMetadata();
     return this.meta.key;
   }
 
   static get props() {
-    this.ensureMetadata();
     return this.meta.props;
   }
 
   static get storeKey() {
-    this.ensureMetadata();
     if (!this.meta.storeKey) {
       throw new Error(`Model ${this.constructor.name} storeKey not set`);
     }
@@ -150,13 +146,20 @@ export default class Model {
         (this as Record<string, unknown>)[prop] = attributes[prop];
       }
     }
+    Observer.notify();
   }
 
   static create(attributes: ModelAttributes) {
-    this.ensureMetadata();
     const instance = new this(attributes);
+
+    for (const prop in attributes) {
+      if (this.props.includes(prop)) {
+        (instance as Record<string, unknown>)[prop] = attributes[prop];
+      }
+    }
     const storeKey = this.meta.storeKey;
     Store.all(storeKey).add(instance);
+    Observer.notify();
     return instance;
   }
 

@@ -18,9 +18,7 @@ describe('Model class', () => {
   describe('::all', () => {
     it('returns store collection for model', () => {
       class Foo extends Model {}
-      Object.defineProperty(Foo, '_meta', {
-        get: () => ({ storeKey: 'foos' }),
-      });
+      Foo.meta.storeKey = 'foos';
 
       sinon.stub(Store, 'all').withArgs('foos').returns('foo collection');
       expect(Foo.all).toBe('foo collection');
@@ -28,18 +26,16 @@ describe('Model class', () => {
     });
 
     it('throws an error if store key is unset', () => {
-      class Foo extends Model {}
+      class FooWithoutKey extends Model {}
 
-      expect(() => Foo.all).toThrowError();
+      expect(() => FooWithoutKey.all).toThrowError();
     });
   });
 
   describe('::where', () => {
     it('returns a store collection matching parameters', () => {
       class Foo extends Model {}
-      Object.defineProperty(Foo, '_meta', {
-        get: () => ({ storeKey: 'foos' }),
-      });
+      Foo.meta.storeKey = 'foos';
 
       const params = { foo: 'bar' };
 
