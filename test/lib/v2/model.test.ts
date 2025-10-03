@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import sinon from 'sinon';
 
 import Model, { prop, key, belongsTo, hasMany, hasOne } from '~/lib/v2/model';
@@ -6,21 +6,35 @@ import Store from '~/lib/v2/store';
 
 describe('Model class', () => {
   describe('::create', () => {
-    it('instatiates and returns an instance', () => {
+    beforeEach(() => {
       sinon.stub(Store, 'all').returns({ add: sinon.stub() });
+    });
+
+    afterEach(() => {
+      Store.all.restore();
+    });
+
+    it('instatiates and returns an instance', () => {
       class Foo extends Model {}
       const foo = Foo.create();
       expect(foo).toBeTruthy();
-      Store.all.restore();
+    });
+
+    it('assigns prop attributes to model instance', () => {
+      class Bar extends Model {
+        @prop declare baz: number;
+        @prop declare qux: number;
+      }
+      const bar = Bar.create({ baz: 1, qux: 2 });
+      expect(bar.baz).toBe(1);
+      expect(bar.qux).toBe(2);
     });
   });
 
   describe('::all', () => {
     it('returns store collection for model', () => {
       class Foo extends Model {}
-      Object.defineProperty(Foo, '_meta', {
-        get: () => ({ storeKey: 'foos' }),
-      });
+      Foo.meta.storeKey = 'foos';
 
       sinon.stub(Store, 'all').withArgs('foos').returns('foo collection');
       expect(Foo.all).toBe('foo collection');
@@ -28,18 +42,16 @@ describe('Model class', () => {
     });
 
     it('throws an error if store key is unset', () => {
-      class Foo extends Model {}
+      class FooWithoutKey extends Model {}
 
-      expect(() => Foo.all).toThrowError();
+      expect(() => FooWithoutKey.all).toThrowError();
     });
   });
 
   describe('::where', () => {
     it('returns a store collection matching parameters', () => {
       class Foo extends Model {}
-      Object.defineProperty(Foo, '_meta', {
-        get: () => ({ storeKey: 'foos' }),
-      });
+      Foo.meta.storeKey = 'foos';
 
       const params = { foo: 'bar' };
 
