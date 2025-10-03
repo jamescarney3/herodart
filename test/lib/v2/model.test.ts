@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import sinon from 'sinon';
 
 import Model, { prop, key, belongsTo, hasMany, hasOne } from '~/lib/v2/model';
@@ -6,12 +6,28 @@ import Store from '~/lib/v2/store';
 
 describe('Model class', () => {
   describe('::create', () => {
-    it('instatiates and returns an instance', () => {
+    beforeEach(() => {
       sinon.stub(Store, 'all').returns({ add: sinon.stub() });
+    });
+
+    afterEach(() => {
+      Store.all.restore();
+    });
+
+    it('instatiates and returns an instance', () => {
       class Foo extends Model {}
       const foo = Foo.create();
       expect(foo).toBeTruthy();
-      Store.all.restore();
+    });
+
+    it('assigns prop attributes to model instance', () => {
+      class Bar extends Model {
+        @prop declare baz: number;
+        @prop declare qux: number;
+      }
+      const bar = Bar.create({ baz: 1, qux: 2 });
+      expect(bar.baz).toBe(1);
+      expect(bar.qux).toBe(2);
     });
   });
 

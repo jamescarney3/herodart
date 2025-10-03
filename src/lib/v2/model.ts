@@ -162,8 +162,4 @@ export default class Model {
     Observer.notify();
     return instance;
   }
-
-  // get primaryKey(): string {
-  //   return this[this.constructor.primaryKey];
-  // }
 }
