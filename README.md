@@ -1,4 +1,4 @@
-![coverage](./coverage/badges.svg)
+[![cov](https://jamescarney3.github.io/herodart/badges/coverage.svg)](https://github.com/jamescarney3/herodart/actions)
 
 # React + TypeScript + Vite
 
