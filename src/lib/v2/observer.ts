@@ -8,18 +8,18 @@ class Observer {
     return Observer.#instance;
   }
 
-  _observers = [];
+  _observers = new Set();
 
   static subscribe(callback): void {
-    this.instance._observers.push(callback);
+    this.instance._observers.add(callback);
   }
 
   static unsubscribe(callback): void {
-    this.instance._observers = this.instance._observers.filter(cb => cb !== callback);
+    this.instance._observers.delete(callback);
   }
 
   static notify(data): void {
-    this.instance._observers.forEach(cb => cb(data));
+    [...this.instance._observers].forEach(cb => cb(data));
   }
 }
 

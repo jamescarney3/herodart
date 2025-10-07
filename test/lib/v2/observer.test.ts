@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import Observer from '~/lib/v2/observer';
 
 const cleanupObserver = () => {
-  Observer.instance._observers = [];
+  Observer.instance._observers = new Set();
 };
 
 describe('Observer class', () => {

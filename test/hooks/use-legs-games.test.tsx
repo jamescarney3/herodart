@@ -6,24 +6,26 @@ import useLegsGame from '~/hooks/use-legs-game';
 
 vi.mock('~/lib/legs/legs-game', async () => {
   class MockLegsGame {
-    constructor() {
-      this.identifier = 'test game';
-      this.randomSeed = Math.round(Math.random() * 100000).toString();
+    static create() {
+      const newGame = new MockLegsGame();
+      newGame.identifier = 'test game';
+      newGame.randomSeed = Math.round(Math.random() * 100000).toString();
+      return newGame;
     }
   }
   return { default: MockLegsGame };
 });
 
-describe.todo('useLegsGame hook', () => {
+describe('useLegsGame hook', () => {
   afterEach(cleanup);
 
   const DummyComponent = () => {
     const [testVal, setTestVal] = useState(true);
-    const legsGame = useLegsGame();
+    const { game } = useLegsGame();
     return (
       <>
-        <div>{legsGame.identifier}</div>
-        <div data-testid="random-seed">{legsGame.randomSeed}</div>
+        <div>{game.identifier}</div>
+        <div data-testid="random-seed">{game.randomSeed}</div>
         <button onClick={() => setTestVal(!testVal)} data-testid="test-val-toggle" />
       </>
     );
