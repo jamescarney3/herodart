@@ -18,7 +18,7 @@
     "test:nyan": "vitest --reporter=vitest-nyancat-reporter",
     "test:verbose": "vitest --reporter=verbose",
     "test:ci": "vitest run --coverage --coverage.reporter=json-summary --watch=false",
-    "test:coverage": "vitest -run -coverage"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "prettier": "^3.6.2",
