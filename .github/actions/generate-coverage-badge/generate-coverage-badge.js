@@ -21,9 +21,9 @@ const main = async () => {
   const lines = coverage.total.lines.pct;
 
   let statusColor = 'red';
-  if (lines >= 90) statusColor = 'green'
-  if (lines >= 80) statusColor = 'yellow'
   if (lines >= 70) statusColor = 'orange'
+  if (lines >= 80) statusColor = 'yellow'
+  if (lines >= 90) statusColor = 'green'
 
   const svgString = badgen({
     label: 'Coverage',
