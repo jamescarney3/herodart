@@ -6,8 +6,6 @@ import type Game from '~/lib/legs/legs-game';
 
 @register('legs-players')
 export default class LegsPlayer extends Model {
-  static _storeKey = 'legs-players';
-
   @key declare name: string;
   @prop declare splash: number;
 

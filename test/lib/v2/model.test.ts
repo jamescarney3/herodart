@@ -70,7 +70,8 @@ describe('Model class', () => {
         @prop declare bar: string;
       }
 
-      const foo = new Foo({ bar: 'baz' });
+      const foo = new Foo();
+      foo.bar = 'baz';
       expect(foo.bar).toBe('baz');
     });
   });
@@ -81,7 +82,8 @@ describe('Model class', () => {
         @key declare bar: string;
       }
 
-      const foo = new Foo({ bar: 'baz' });
+      const foo = new Foo();
+      foo.bar = 'baz';
       expect(foo.bar).toBe('baz');
       expect(Foo.primaryKey).toBe('bar');
     });

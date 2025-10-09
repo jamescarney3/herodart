@@ -5,8 +5,6 @@ import type Game from '~/lib/legs/legs-game';
 
 @register('legs-rounds')
 export default class LegsRound extends Model {
-  static _storeKey = 'legs-rounds';
-
   @prop declare score: number;
 
   @belongsTo('legs-games', { foreignKey: 'gameId' }) declare game: Game;
