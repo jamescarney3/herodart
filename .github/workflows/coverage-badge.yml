@@ -50,7 +50,7 @@ jobs:
 
       - name: Copy badge to temp gh-pages, commit, and push
         run: |
-          # set gh identity
+          # set gh identity - need to tell gh that the automation is doing this
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
@@ -58,10 +58,14 @@ jobs:
           git fetch origin gh-pages
           git worktree add /tmp/gh-pages gh-pages
 
-          # copy badge svg
+          # copy badge svg - copying this svg file into the root directory of
+          # the gh-pages branch will make it publically available at the url
+          # https://raw.githubusercontent.com/<user>/<repo>/gh-pages/coverage.svg
+          # when gh-pages is deployed
           cp coverage.svg /tmp/gh-pages
 
-          # commit badge and push
+          # commit badge and push - this will trigger a gh-pages deployment with
+          # our badge available as raw user content
           cd /tmp/gh-pages
           git add coverage.svg
           git commit -m "update coverage badge"
