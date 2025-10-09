@@ -20,7 +20,7 @@ const main = async () => {
   const headCoverage = JSON.parse(headCoverageContent);
 
   const baseLines = baseCoverage.total.lines.pct;
-  const headLines = headCoverage.total.lines.pct
+  const headLines = headCoverage.total.lines.pct;
   const baseStatements = baseCoverage.total.statements.pct;
   const headStatements = headCoverage.total.statements.pct;
   const baseFunctions = baseCoverage.total.functions.pct;

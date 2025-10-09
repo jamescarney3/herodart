@@ -15,6 +15,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: ${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,18 +45,37 @@ jobs:
         run: pnpm i
 
       - name: Test
-        run: pnpm test:coverage
+        run: pnpm test:ci
 
-      # - name: Create Coverage Badges
-      #   uses: jaywcjlove/coverage-badges-cli@main
-      #   with:
-      #     style: flat
-      #     source: coverage/coverage-final.json
-      #     output: coverage/badges.svg
-      #     jsonPath: totals.percent_covered
+      - name: Install badgen
+        run: pnpm i badgen
 
-      - name: Update Coverage Badge
-        # GitHub actions: default branch variable
-        # https://stackoverflow.com/questions/64781462/github-actions-default-branch-variable
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: we-cli/coverage-badge-action@main
+      - name: Generate Coverage Badge
+        uses: ./.github/actions/generate-coverage-badge
+        with:
+          summary: ./coverage/coverage-summary.json
+
+      - name: Copy badge to temp gh-pages, commit, and push
+        run: |
+          # set gh identity
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+          # clone gh-pages to a temp directory
+          git fetch origin gh-pages
+          git worktree add /tmp/gh-pages gh-pages
+
+          # copy badge svg
+          cp coverage.svg /tmp/gh-pages
+          echo badge svg copied!
+
+          # commit badge and push
+          cd /tmp/gh-pages
+          git add coverage.svg
+          git commit -m "update coverage badge"
+          echo badge svg committed!
+          git push origin gh-pages
+
+          # cleanup
+          cd -
+          git worktree remove /tmp/gh-pages
