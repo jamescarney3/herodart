@@ -6,9 +6,7 @@ import Round from '~/lib/legs/legs-round';
 
 @register('legs-games')
 export default class LegsGame extends Model {
-  static _storeKey = 'legs-games';
-
-  @key id: string;
+  @key declare id: string;
   @prop started: boolean = false;
 
   @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
