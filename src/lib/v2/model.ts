@@ -2,7 +2,12 @@ import Store from '~/lib/v2/store';
 import Observer from '~/lib/v2/observer';
 import type Collection from '~/lib/v2/collection';
 
-const BASE_METADATA = { props: <string[]>[], key: 'id', customKeySet: false, storeKey: '' };
+const BASE_METADATA = {
+  props: <string[]>[],
+  key: <null | string>null,
+  customKeySet: false,
+  storeKey: '',
+};
 Object.freeze(BASE_METADATA);
 
 export function prop(target: Model, propName: string): void {
@@ -112,7 +117,7 @@ export default class Model {
     return this._meta.get(this);
   }
 
-  static get primaryKey(): string {
+  static get primaryKey(): string | null {
     return this.meta.key;
   }
 
@@ -139,27 +144,17 @@ export default class Model {
     return this.all.where(attributes);
   }
 
-  constructor(attributes: ModelAttributes) {
-    const ModelClass = this.constructor as typeof Model;
-    for (const prop in attributes) {
-      if (ModelClass.props.includes(prop)) {
-        (this as Record<string, unknown>)[prop] = attributes[prop];
-      }
-    }
-    Observer.notify();
-  }
-
   static create(attributes: ModelAttributes) {
-    const instance = new this(attributes);
+    const instance = new this(/* attributes */);
 
     for (const prop in attributes) {
       if (this.props.includes(prop)) {
         (instance as Record<string, unknown>)[prop] = attributes[prop];
       }
     }
-    const storeKey = this.meta.storeKey;
-    Store.all(storeKey).add(instance);
-    Observer.notify();
+
+    Store.all(this.meta.storeKey).add(instance);
+    Observer.notify(this);
     return instance;
   }
 }

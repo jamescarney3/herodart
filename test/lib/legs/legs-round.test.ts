@@ -6,7 +6,7 @@ describe('LegsRound class', () => {
   it('instantiates with props', () => {
     const testScore = 180;
 
-    const legsRound = new LegsRound({ score: testScore });
+    const legsRound = LegsRound.create({ score: testScore });
 
     expect(legsRound.score).toBe(180);
   });

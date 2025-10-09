@@ -22,6 +22,7 @@ describe('useLegsGame hook', () => {
   const DummyComponent = () => {
     const [testVal, setTestVal] = useState(true);
     const { game } = useLegsGame();
+    if (!game) return null;
     return (
       <>
         <div>{game.identifier}</div>
