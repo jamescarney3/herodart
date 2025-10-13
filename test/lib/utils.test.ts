@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { hasOwnOrInherits } from '~/lib/utils';
+import { hasOwnOrInherits, formatEvalString } from '~/lib/utils';
 
 describe('utils module', () => {
   describe('hasOwnOrInherits', () => {
@@ -43,6 +43,44 @@ describe('utils module', () => {
 
       delete bar.inheritedMethod;
       expect(hasOwnOrInherits(bar, 'inheritedMethod')).toBe(true);
+    });
+  });
+
+  describe('formatEvalString', () => {
+    it('formats simple addition', () => {
+      expect(formatEvalString('2+3')).toBe('2 + 3');
+    });
+
+    it('formats simple multiplication', () => {
+      expect(formatEvalString('2*3')).toBe('(2×3)');
+    });
+
+    it('formats addition and multiplication', () => {
+      expect(formatEvalString('20+19*3+5')).toBe('20 + (19×3) + 5');
+    });
+
+    it('handles multiple multiplications', () => {
+      expect(formatEvalString('2*3+4*5')).toBe('(2×3) + (4×5)');
+    });
+
+    it('handles leading multiplication', () => {
+      expect(formatEvalString('2*3+4')).toBe('(2×3) + 4');
+    });
+
+    it('handles trailing multiplication', () => {
+      expect(formatEvalString('4+2*3')).toBe('4 + (2×3)');
+    });
+
+    it('handles only numbers', () => {
+      expect(formatEvalString('42')).toBe('42');
+    });
+
+    it('handles empty string', () => {
+      expect(formatEvalString('')).toBe('');
+    });
+
+    it('handles incomplete multiplication at end', () => {
+      expect(formatEvalString('2*')).toBe('2×');
     });
   });
 });
