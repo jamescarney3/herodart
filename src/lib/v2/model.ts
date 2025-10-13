@@ -44,6 +44,8 @@ type RelationOptionsSignature = {
 
 export function belongsTo(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
+    const ModelClass = target.constructor as typeof Model;
+    ModelClass.meta.props.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
@@ -64,15 +66,16 @@ export function belongsTo(relationName: string, options: RelationOptionsSignatur
 export function hasOne(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
     const ModelClass = <typeof Model>target.constructor;
+    ModelClass.meta.props.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
     const primaryKey = <keyof Model>ModelClass.primaryKey;
 
     Object.defineProperty(target, propName, {
       get: function(): Model | undefined {
-        return Store.all(relationName).findBy(model => model[foreignKey] === target[primaryKey]);
+        return Store.all(relationName).findBy(model => model[foreignKey] === this[primaryKey]);
       },
       set: function(value: Model): void {
-        value[foreignKey] = target[primaryKey];
+        value[foreignKey] = <keyof typeof value>this[primaryKey];
         Observer.notify(this);
       },
     });
@@ -88,12 +91,12 @@ export function hasMany(relationName: string, options: RelationOptionsSignature)
       get: function(): Collection<Model> {
         const ModelClass = <typeof Model>target.constructor;
         const primaryKey = <keyof Model>ModelClass.primaryKey;
-        return Store.all(relationName).where({ [foreignKey]: target[primaryKey] });
+        return Store.all(relationName).where({ [foreignKey]: this[primaryKey] });
       },
       set: function(values: Collection<Model>): void {
         const primaryKey = <keyof Model>ModelClass.primaryKey;
         for (const value of values) {
-          value[foreignKey] = target[primaryKey];
+          value[foreignKey] = this[primaryKey];
         }
         Observer.notify(this);
       },
