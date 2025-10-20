@@ -177,4 +177,31 @@ describe('LegsGame class', () => {
       expect(legsGame.currentPlayer).toBe(firstPlayer);
     });
   });
+
+  describe('get canStart', () => {
+    it('returns true when game has enough players and is not finished', () => {
+      const game = new LegsGame();
+
+      vi.spyOn(game, 'players', 'get').mockReturnValue([]);
+      expect(game.canStart).toBe(false);
+      game.players.push('James');
+      expect(game.canStart).toBe(false);
+      game.players.push('Scott');
+      expect(game.canStart).toBe(true);
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
+      expect(game.canStart).toBe(false);
+    });
+  });
+
+  describe('playerExistsWithName', () => {
+    it('returns true when player exists with given name and false when one does not', () => {
+      const game = new LegsGame();
+
+      // Mock the players collection
+      vi.spyOn(game, 'players', 'get').mockReturnValue([{ name: 'James' }, { name: 'Matt' }]);
+
+      expect(game.playerExistsWithName('James')).toBe(true);
+      expect(game.playerExistsWithName('Maloof')).toBe(false);
+    });
+  });
 });

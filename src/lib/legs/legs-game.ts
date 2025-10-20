@@ -7,12 +7,14 @@ import Round from '~/lib/legs/legs-round';
 @register('legs-games')
 export default class LegsGame extends Model {
   @key declare id: string;
-  @prop started: boolean = false;
+  // TODO: declared ok for now but find out right way to give this a default value, setting default
+  // in class definition seems to overwrite getter/setter defined by @prop decorator
+  @prop declare started: boolean;
 
   @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
   @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
 
-  createPlayer(attributes: { name: string, splash: number}): Player {
+  createPlayer(attributes: { name: string; splash: number }): Player {
     return Player.create({ ...attributes, game: this }) as Player;
   }
 
@@ -38,11 +40,18 @@ export default class LegsGame extends Model {
     }, 0);
   }
 
+  playerExistsWithName(name: string): boolean {
+    return this.players.map((p) => p.name).includes(name);
+  }
+
   get finished(): boolean {
-    return [
-      this.started,
-      this.players.filter((player) => player.strikes < 3).length === 1,
-    ].every((condition) => !!condition);
+    return [this.started, this.players.filter((player) => player.strikes < 3).length === 1].every(
+      (condition) => !!condition,
+    );
+  }
+
+  get canStart(): boolean {
+    return this.players.length >= 2 && !this.finished;
   }
 
   get playerOrder(): Collection<Player> {
@@ -54,7 +63,7 @@ export default class LegsGame extends Model {
     const lastPlayer = rounds?.last?.player;
     if (!lastPlayer) return order as unknown as Collection<Player>;
 
-    const lastPlayerIdx = order.findIndex(player => player === lastPlayer);
+    const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
     if (lastPlayerIdx === order.length - 1) return order as unknown as Collection<Player>;
 
     const nextPlayerIdx = lastPlayerIdx + 1;
