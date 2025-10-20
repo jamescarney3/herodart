@@ -16,10 +16,10 @@ export function prop(target: Model, propName: string): void {
   const backingField = `_${propName}`;
 
   Object.defineProperty(target, propName, {
-    get: function() {
+    get: function () {
       return this[backingField];
     },
-    set: function(value) {
+    set: function (value) {
       this[backingField] = value;
       Observer.notify(this);
     },
@@ -39,8 +39,8 @@ export function key(target: Model, propName: string): void {
 }
 
 type RelationOptionsSignature = {
-  foreignKey: string,
-}
+  foreignKey: string;
+};
 
 export function belongsTo(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
@@ -49,10 +49,10 @@ export function belongsTo(relationName: string, options: RelationOptionsSignatur
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
-      get: function(): Model | undefined {
+      get: function (): Model | undefined {
         return Store.all(relationName).get(this[foreignKey]);
       },
-      set: function(value: Model): void {
+      set: function (value: Model): void {
         const RelationModelClass = <typeof Model>value.constructor;
         const key = <keyof Model>RelationModelClass.primaryKey;
         this[foreignKey] = value[key];
@@ -71,10 +71,10 @@ export function hasOne(relationName: string, options: RelationOptionsSignature) 
     const primaryKey = <keyof Model>ModelClass.primaryKey;
 
     Object.defineProperty(target, propName, {
-      get: function(): Model | undefined {
-        return Store.all(relationName).findBy(model => model[foreignKey] === this[primaryKey]);
+      get: function (): Model | undefined {
+        return Store.all(relationName).findBy((model) => model[foreignKey] === this[primaryKey]);
       },
-      set: function(value: Model): void {
+      set: function (value: Model): void {
         value[foreignKey] = <keyof typeof value>this[primaryKey];
         Observer.notify(this);
       },
@@ -88,12 +88,12 @@ export function hasMany(relationName: string, options: RelationOptionsSignature)
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
-      get: function(): Collection<Model> {
+      get: function (): Collection<Model> {
         const ModelClass = <typeof Model>target.constructor;
         const primaryKey = <keyof Model>ModelClass.primaryKey;
         return Store.all(relationName).where({ [foreignKey]: this[primaryKey] });
       },
-      set: function(values: Collection<Model>): void {
+      set: function (values: Collection<Model>): void {
         const primaryKey = <keyof Model>ModelClass.primaryKey;
         for (const value of values) {
           value[foreignKey] = this[primaryKey];

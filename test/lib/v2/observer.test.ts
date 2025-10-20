@@ -39,9 +39,7 @@ describe('Observer class', () => {
     it('notifies observer callbacks', () => {
       const fooCallback = vi.fn();
       const barCallback = vi.fn();
-      vi.spyOn(Observer, 'instance', 'get').mockReturnValue(
-        { _observers: [fooCallback, barCallback] }
-      );
+      vi.spyOn(Observer, 'instance', 'get').mockReturnValue({ _observers: [fooCallback, barCallback] });
       Observer.notify('baz');
       expect(fooCallback).toHaveBeenCalledWith('baz');
       expect(barCallback).toHaveBeenCalledWith('baz');

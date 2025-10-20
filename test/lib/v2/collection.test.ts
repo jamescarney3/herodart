@@ -5,11 +5,7 @@ import Collection from '~/lib/v2/collection';
 describe('Collection class', () => {
   describe('::create', () => {
     it('returns id-keyed collection instance by default', () => {
-      const data = [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-      ];
+      const data = [{ id: 1 }, { id: 2 }, { id: 3 }];
       const collection = Collection.create(data);
       expect(collection).toBeDefined();
       expect(collection.key).toBe('id');
@@ -25,11 +21,7 @@ describe('Collection class', () => {
     });
 
     it('throws error when elements have duplicate keys', () => {
-      const data = [
-        { id: 1 },
-        { id: 2 },
-        { id: 1 },
-      ];
+      const data = [{ id: 1 }, { id: 2 }, { id: 1 }];
       expect(() => Collection.create(data)).toThrowError();
     });
   });

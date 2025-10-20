@@ -26,7 +26,8 @@ describe('Store class', () => {
 describe('@register decorator', () => {
   it('registers a model collection on store instance', () => {
     @register('test-instances')
-    class TestClass { // eslint-disable-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class TestClass {
       static meta = { key: 'id' };
     }
 
@@ -36,7 +37,8 @@ describe('@register decorator', () => {
   it('does not register a collection with a duplicate store key', () => {
     const registerDuplicateModel = () => {
       @register('test-instances')
-      class TestClass { // eslint-disable-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class TestClass {
         static meta = { key: 'id' };
       }
     };

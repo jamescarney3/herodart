@@ -112,9 +112,12 @@ describe('Model class', () => {
       const bar = new Bar();
       bar.id = 1;
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        get: sinon.stub().withArgs(1).returns(bar),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          get: sinon.stub().withArgs(1).returns(bar),
+        });
 
       foo.bar = bar;
       expect(foo.bar).toBe(bar);
@@ -134,9 +137,12 @@ describe('Model class', () => {
       const bar = new Bar();
       bar.fooId = 1;
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        findBy: sinon.stub().returns(bar),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          findBy: sinon.stub().returns(bar),
+        });
 
       foo.bar = bar;
       expect(foo.bar).toBe(bar);
@@ -160,9 +166,12 @@ describe('Model class', () => {
 
       foo.bars = [bar1, bar2, bar3];
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        where: sinon.stub().returns([bar1, bar2, bar3]),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          where: sinon.stub().returns([bar1, bar2, bar3]),
+        });
 
       expect(foo.bars).toStrictEqual([bar1, bar2, bar3]);
     });

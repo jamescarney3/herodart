@@ -24,7 +24,7 @@ export default class Collection<T extends Model> extends Array {
   }
 
   add<T extends Model>(model: T): void {
-    if (this.key && !(model)[<keyof T>this.key]) {
+    if (this.key && !model[<keyof T>this.key]) {
       throw new Error(`${this.key} keyed Collection element must have key ${this.key}`);
     }
     if (this.key && this.map((current) => current[this.key]).includes(model[this.key as keyof T])) {
@@ -37,7 +37,7 @@ export default class Collection<T extends Model> extends Array {
     if (!hasOwnOrInherits(this, 'key')) {
       throw new Error('cannot #get model from un-keyed Collection');
     }
-    return super.find((element) => element[this.key] === key) ;
+    return super.find((element) => element[this.key] === key);
   }
 
   where(attributes: Record<string, unknown>): Collection<T> {

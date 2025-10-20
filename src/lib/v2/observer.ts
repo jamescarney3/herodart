@@ -21,7 +21,7 @@ class Observer {
   }
 
   static notify(data: unknown): void {
-    [...this.instance._observers].forEach(cb => cb(data));
+    [...this.instance._observers].forEach((cb) => cb(data));
   }
 }
 
