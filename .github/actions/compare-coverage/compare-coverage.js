@@ -20,7 +20,7 @@ const main = async () => {
   const headCoverage = JSON.parse(headCoverageContent);
 
   const baseLines = baseCoverage.total.lines.pct;
-  const headLines = headCoverage.total.lines.pct
+  const headLines = headCoverage.total.lines.pct;
   const baseStatements = baseCoverage.total.statements.pct;
   const headStatements = headCoverage.total.statements.pct;
   const baseFunctions = baseCoverage.total.functions.pct;
@@ -41,7 +41,7 @@ const main = async () => {
   });
 
   // FIND THE PREVIOUS ONE OF THESE COMMENTS
-  const coverageComment = commentsResponse.data.find(comment => comment.body.includes(commentFlag));
+  const coverageComment = commentsResponse.data.find((comment) => comment.body.includes(commentFlag));
   if (coverageComment) {
     octokit.rest.issues.deleteComment({
       owner: github.context.repo.owner,
@@ -58,14 +58,14 @@ const main = async () => {
   const formatDiff = (basePct, headPct) => {
     const diff = headPct - basePct;
     if (!threshold) {
-      return diff < 0 ? `&#128993; -${diff}%` : `&#128994; +${diff}%`
+      return diff < 0 ? `&#128993; -${diff}%` : `&#128994; +${diff}%`;
     } else {
       if (diff >= 0) {
         return `&#128994; +${diff}%`;
       } else if (headPct > threshold) {
         return `&#128993; -${diff}%`;
       } else {
-        `&#128993; -${diff}%`
+        return `&#128993; -${diff}%`;
       }
     }
   };

@@ -14,9 +14,9 @@ const main = async () => {
 
   // choose a color based on coverage thresholds
   let statusColor = 'red';
-  if (lines >= 70) statusColor = 'orange'
-  if (lines >= 80) statusColor = 'yellow'
-  if (lines >= 90) statusColor = 'green'
+  if (lines >= 70) statusColor = 'orange';
+  if (lines >= 80) statusColor = 'yellow';
+  if (lines >= 90) statusColor = 'green';
 
   // generate badge svg file with badgen and write it to the current working dir
   const svgString = badgen({
