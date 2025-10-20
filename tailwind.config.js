@@ -21,7 +21,7 @@ export default {
       't-aspect': { raw: '(max-aspect-ratio: 1.25) and (min-aspect-ratio: .75)' },
       'w-aspect': { raw: '(max-aspect-ratio: 1.75) and (min-aspect-ratio: 1.25)' },
       'xw-aspect': { raw: '(min-aspect-ratio: 1.75)' },
-    }
+    },
   },
   plugins: [],
 };
