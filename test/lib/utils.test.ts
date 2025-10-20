@@ -28,9 +28,9 @@ describe('utils module', () => {
       expect(hasOwnOrInherits(bar, 'ownMethod')).toBe(true);
     });
 
-    it('returns true for instance property'), () => {
+    it('returns true for instance property', () => {
       expect(hasOwnOrInherits(bar, 'instanceProperty')).toBe(true);
-    };
+    });
 
     it('returns false for nonexistent property', () => {
       expect(hasOwnOrInherits(bar, 'nonexistentProperty')).toBe(false);

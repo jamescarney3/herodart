@@ -23,19 +23,19 @@ export const formatEvalString = (evalString: string) => {
     // look ahead for multiplication operator
     if (tokens[i + 1] === MULT_MATH) {
       // look for multiplicand and parenthesize
-      if ((tokens[i + 2] ?? null)) {
+      if (tokens[i + 2] ?? null) {
         result.push('(' + tokens[i] + MULT + tokens[i + 2] + ')');
         i += 3;
-      // otherwise push friendly operator
+        // otherwise push friendly operator
       } else {
         result.push(tokens[i] + MULT);
         i += 2;
       }
-    // addition is easy - just push the operator
+      // addition is easy - just push the operator
     } else if (tokens[i] === PLUS_MATH) {
-      result.push (` ${PLUS} `);
+      result.push(` ${PLUS} `);
       i++;
-    // otherwise just push the number
+      // otherwise just push the number
     } else {
       result.push(tokens[i]);
       i++;
