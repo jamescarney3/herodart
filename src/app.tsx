@@ -1,10 +1,11 @@
+import { Game } from '~/components/legs';
+
 function App() {
   return (
     <>
-      <div>[[under construction]]</div>
+      <Game />
     </>
   );
-
 }
 
 export default App;
