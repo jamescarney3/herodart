@@ -56,19 +56,16 @@ export default class LegsGame extends Model {
 
   get playerOrder(): Collection<Player> {
     const { players, rounds } = this;
-    const order = players
-      .filter((player) => player.strikes < 3)
-      .sort((playerA, playerB) => playerB.splash - playerA.splash);
+    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
 
     const lastPlayer = rounds?.last?.player;
-    if (!lastPlayer) return order as unknown as Collection<Player>;
+    if (!lastPlayer) return order as Collection<Player>;
 
     const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
-    if (lastPlayerIdx === order.length - 1) return order as unknown as Collection<Player>;
+    const currentPlayerIdx = lastPlayerIdx + 1;
+    const wrappedOrder = [...order.slice(currentPlayerIdx), ...order.slice(0, currentPlayerIdx)];
 
-    const nextPlayerIdx = lastPlayerIdx + 1;
-
-    return order.slice(nextPlayerIdx).concat(order.slice(0, nextPlayerIdx)) as unknown as Collection<Player>;
+    return wrappedOrder.filter((player: Player) => player.strikes < 3) as Collection<Player>;
   }
 
   get targetScore(): number {
