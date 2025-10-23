@@ -40,6 +40,11 @@ export default class LegsGame extends Model {
     }, 0);
   }
 
+  scoreWouldEliminateCurrentPlayer(score: number): boolean {
+    // if any players have strikes, at least one round has been shot so assert this.rounds.last
+    return this.currentPlayer?.strikes === 2 && score < (this.rounds.last!.score);
+  }
+
   playerExistsWithName(name: string): boolean {
     return this.players.map((p) => p.name).includes(name);
   }
@@ -52,6 +57,11 @@ export default class LegsGame extends Model {
 
   get canStart(): boolean {
     return this.players.length >= 2 && !this.finished;
+  }
+
+  get winner(): Player | null {
+    if (!this.finished) return null;
+    return this.players.find((player) => player.strikes < 3);
   }
 
   get playerOrder(): Collection<Player> {
