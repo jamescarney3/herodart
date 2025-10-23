@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { hasOwnOrInherits, formatEvalString } from '~/lib/utils';
+import { hasOwnOrInherits, formatEvalString, validateLegsScore } from '~/lib/utils';
 
 describe('utils module', () => {
   describe('hasOwnOrInherits', () => {
@@ -81,6 +81,28 @@ describe('utils module', () => {
 
     it('handles incomplete multiplication at end', () => {
       expect(formatEvalString('2*')).toBe('2×');
+    });
+  });
+
+  describe('validateLegsScore', () => {
+    it('returns true for valid scores under 180', () => {
+      expect(validateLegsScore(0)).toBe(true);
+      expect(validateLegsScore(1)).toBe(true);
+      expect(validateLegsScore(2)).toBe(true);
+      expect(validateLegsScore(3)).toBe(true);
+      expect(validateLegsScore(60)).toBe(true);
+      expect(validateLegsScore(100)).toBe(true);
+      expect(validateLegsScore(170)).toBe(true);
+    });
+
+    it('returns false for scores over 180', () => {
+      expect(validateLegsScore(181)).toBe(false);
+      expect(validateLegsScore(200)).toBe(false);
+    });
+
+    it('returns false for impossible three-dart scores', () => {
+      expect(validateLegsScore(163)).toBe(false);
+      expect(validateLegsScore(179)).toBe(false);
     });
   });
 });

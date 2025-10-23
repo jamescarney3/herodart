@@ -3,6 +3,9 @@ export const PLUS_MATH = '+';
 export const MULT = '×';
 export const PLUS = '+';
 
+const THREE_DART_MAX = 180;
+const IMPOSSIBLE_THREE_DART_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
+
 export const hasOwnOrInherits = (target: object, prop: string): boolean => {
   if (target === null) return false;
   if (Object.hasOwn(target, prop)) return true;
@@ -39,4 +42,8 @@ export const formatEvalString = (evalString: string) => {
     }
   }
   return result.join('');
+};
+
+export const validateLegsScore = (score: number) => {
+  return score < THREE_DART_MAX && !IMPOSSIBLE_THREE_DART_SCORES.includes(score);
 };
