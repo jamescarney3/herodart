@@ -73,7 +73,7 @@ export default class LegsGame extends Model {
 
     const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
     const currentPlayerIdx = lastPlayerIdx + 1;
-    const wrappedOrder = [...order.slice(currentPlayerIdx), ...order.slice(0, currentPlayerIdx)];
+    const wrappedOrder = order.slice(currentPlayerIdx).concat(order.slice(0, currentPlayerIdx));
 
     return wrappedOrder.filter((player: Player) => player.strikes < 3) as Collection<Player>;
   }
