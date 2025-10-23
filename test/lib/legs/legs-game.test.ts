@@ -178,6 +178,47 @@ describe('LegsGame class', () => {
     });
   });
 
+  describe('#scoreWouldEliminateCurrentPlayer', () => {
+    it('returns false when there is no current player', () => {
+      const legsGame = new LegsGame();
+
+      vi.spyOn(legsGame, 'currentPlayer', 'get').mockReturnValue(undefined);
+
+      expect(legsGame.scoreWouldEliminateCurrentPlayer(50)).toBe(false);
+    });
+
+    it('returns true when current player has 2 strikes and score is less than last round score', () => {
+      const legsGame = new LegsGame();
+      const current = { strikes: 2 };
+
+      vi.spyOn(legsGame, 'currentPlayer', 'get').mockReturnValue(current);
+      vi.spyOn(legsGame, 'rounds', 'get').mockReturnValue({ last: { score: 60 } });
+
+      expect(legsGame.scoreWouldEliminateCurrentPlayer(50)).toBe(true);
+    });
+
+    it('returns false when current player has less than 2 strikes', () => {
+      const legsGame = new LegsGame();
+      const current = { strikes: 1 };
+
+      vi.spyOn(legsGame, 'currentPlayer', 'get').mockReturnValue(current);
+      vi.spyOn(legsGame, 'rounds', 'get').mockReturnValue({ last: { score: 60 } });
+
+      expect(legsGame.scoreWouldEliminateCurrentPlayer(50)).toBe(false);
+    });
+
+    it('returns false when score is not less than last round score', () => {
+      const legsGame = new LegsGame();
+      const current = { strikes: 2 };
+
+      vi.spyOn(legsGame, 'currentPlayer', 'get').mockReturnValue(current);
+      vi.spyOn(legsGame, 'rounds', 'get').mockReturnValue({ last: { score: 60 } });
+
+      expect(legsGame.scoreWouldEliminateCurrentPlayer(60)).toBe(false);
+      expect(legsGame.scoreWouldEliminateCurrentPlayer(70)).toBe(false);
+    });
+  });
+
   describe('get canStart', () => {
     it('returns true when game has enough players and is not finished', () => {
       const game = new LegsGame();
@@ -190,6 +231,27 @@ describe('LegsGame class', () => {
       expect(game.canStart).toBe(true);
       vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
       expect(game.canStart).toBe(false);
+    });
+  });
+
+  describe('get winner', () => {
+    it('returns null when game is not finished', () => {
+      const game = new LegsGame();
+
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(false);
+
+      expect(game.winner).toBeNull();
+    });
+
+    it('returns the single remaining player when finished', () => {
+      const game = new LegsGame();
+      const winner = { name: 'Winner', strikes: 0 };
+      const loser = { name: 'Loser', strikes: 3 };
+
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
+      vi.spyOn(game, 'players', 'get').mockReturnValue([winner, loser]);
+
+      expect(game.winner).toBe(winner);
     });
   });
 
