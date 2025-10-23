@@ -23,7 +23,7 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
   useLayoutEffect(() => {
     const card = cardRef.current!;
     const container = card.parentNode;
-    const cards = container!.children || [];
+    const cards = container!.children;
     const gap = siblingVerticalDistance(cards[0], cards[1]) || 0;
 
     const currentPlayer = player === game.currentPlayer;
