@@ -45,6 +45,7 @@ export const formatEvalString = (evalString: string) => {
 };
 
 export const roundNumber = (value: number, places: number = 0): number => (
+  // @ts-expect-error doing some base-10 exponential/scientific notation magick here
   +(Math.round(value + 'e+' + places) + 'e-' + places)
 );
 
