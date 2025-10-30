@@ -60,8 +60,10 @@ const LegsReport = ({ game }: LegsReportProps) => {
                 <td>{idx + 1}</td>
                 <td>{round.player.name}</td>
                 <td>{round.score}</td>
-                <td>{round.wasStrike && '❌'}{round.wasEliminationRound && '💀'}</td>
-                <td></td>
+                <td>
+                  {round.wasStrike && <span>❌</span>}
+                  {round.wasEliminationRound && <span>💀</span>}
+                </td>
               </tr>
             ))}
           </tbody>
