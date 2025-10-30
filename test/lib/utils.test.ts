@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { hasOwnOrInherits, formatEvalString, validateLegsScore } from '~/lib/utils';
+import { hasOwnOrInherits, formatEvalString, validateLegsScore, roundNumber } from '~/lib/utils';
 
 describe('utils module', () => {
   describe('hasOwnOrInherits', () => {
@@ -103,6 +103,34 @@ describe('utils module', () => {
     it('returns false for impossible three-dart scores', () => {
       expect(validateLegsScore(163)).toBe(false);
       expect(validateLegsScore(179)).toBe(false);
+    });
+  });
+
+  describe('roundNumber', () => {
+    it('rounds to nearest integer when places is not specified', () => {
+      expect(roundNumber(4.6)).toBe(5);
+      expect(roundNumber(4.4)).toBe(4);
+      expect(roundNumber(-1.6)).toBe(-2);
+      expect(roundNumber(-1.4)).toBe(-1);
+    });
+
+    it('rounds to specified decimal places', () => {
+      expect(roundNumber(4.444, 2)).toBe(4.44);
+      expect(roundNumber(4.446, 2)).toBe(4.45);
+      expect(roundNumber(8.7654321, 5)).toBe(8.76543);
+      expect(roundNumber(8.765436, 5)).toBe(8.76544);
+      expect(roundNumber(-2.556, 2)).toBe(-2.56);
+      expect(roundNumber(-2.554, 2)).toBe(-2.55);
+    });
+
+    it('handles zero and negative numbers', () => {
+      expect(roundNumber(0, 2)).toBe(0);
+      expect(roundNumber(-0.006, 2)).toBe(-0.01);
+    });
+
+    it('handles large and small numbers', () => {
+      expect(roundNumber(123456.789, 0)).toBe(123457);
+      expect(roundNumber(0.0001234, 6)).toBe(0.000123);
     });
   });
 });
