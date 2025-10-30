@@ -13,7 +13,7 @@ export default class LegsRound extends Model {
   get wasStrike(): boolean {
     const { rounds } = this.game;
     const previous = rounds[rounds.indexOf(this) - 1];
-    return previous && (this.score < previous.score);
+    return !!(previous && (this.score < previous.score));
   }
 
   get wasEliminationRound(): boolean {

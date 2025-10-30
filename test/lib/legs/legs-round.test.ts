@@ -22,7 +22,7 @@ describe('LegsRound class', () => {
         vi.spyOn(round, 'game', 'get').mockReturnValue({ rounds });
       });
 
-      // expect(rounds[0].wasStrike).toBe(false); // no previous
+      expect(rounds[0].wasStrike).toBe(false); // no previous
       expect(rounds[1].wasStrike).toBe(true);  // 60 < 100
       expect(rounds[2].wasStrike).toBe(false); // 120 > 60
     });
