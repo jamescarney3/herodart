@@ -30,7 +30,7 @@ export default class LegsPlayer extends Model {
       return matched;
     }, []);
     const oppTotal = oppRounds.reduce((oppScore: number, round: Round) => oppScore + round.score, 0);
-    return oppTotal / oppRounds.length;
+    return oppTotal / Math.max(oppRounds.length, 1);
   }
 
   score(total: number): void {
