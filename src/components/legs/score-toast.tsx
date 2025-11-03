@@ -45,6 +45,7 @@ const ScoreToast = ({ game, score }: ScoreToastProps) => {
   const toastStyle = { '--container-width': `${window.innerWidth}px` } as CSSProperties;
 
   const toastContent = (() => {
+    if (!scoring) return;
     if (game.scoreWouldEliminateCurrentPlayer(score)) return ELIMINATED;
     if (game.scoreWouldBeStrike(score)) return STRIKE_INCURRED;
     if (scoring) return NO_STRIKE_INCURRED;
