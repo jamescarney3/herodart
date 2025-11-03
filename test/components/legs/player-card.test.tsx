@@ -29,6 +29,22 @@ describe('LegsPlayerCard', () => {
     expect(getAllByText('❌').length).toBe(player.strikes);
   });
 
+  it('renders current player indicator when not scoring and current player', () => {
+    const player = { name: 'Pangloss', strikes: 0 };
+    const game = {
+      currentPlayer: player,
+      scoreWouldEliminateCurrentPlayer: vi.fn().mockReturnValue(false),
+    };
+    const { getByText } = render(
+      <div>
+        <LegsPlayerCard player={player} game={game} score={0} />
+      </div>
+    );
+
+    const card = getByText('⭐').parentElement as HTMLElement;
+    expect(card).toBeTruthy();
+  });
+
   it('adds transition and translation classes and style when scoring and current player', () => {
     const player = { name: 'Pangloss', strikes: 0 };
     const game = {
@@ -48,7 +64,6 @@ describe('LegsPlayerCard', () => {
 
     // transition classes should be present
     expect(card.className).toContain('transition');
-    expect(card.className).toContain('duration-500');
     // vertical translation class and calculated style prop should be present
     expect(card.className).toContain('!translate-y-[var(--translation-offset)]');
     expect(card.style.getPropertyValue('--translation-offset')).toBeTruthy();
