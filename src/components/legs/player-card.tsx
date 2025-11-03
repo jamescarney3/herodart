@@ -2,11 +2,12 @@ import { useLayoutEffect, useRef } from 'react';
 
 import LegsGame from '~/lib/legs/legs-game';
 import LegsPlayer from '~/lib/legs/legs-player';
+import type { Nullable } from '~/lib/utils';
 
 interface LegsPlayerCardProps {
   player: LegsPlayer;
   scoring?: boolean;
-  score?: number;
+  score?: Nullable<number>;
   game: LegsGame;
 }
 
@@ -34,7 +35,7 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
       game.scoreWouldEliminateCurrentPlayer(score || 0),
     ].every(Boolean);
 
-    const baseTransition = ['transition', 'duration-500']; // constantize this
+    const baseTransition = ['transition-transform', 'duration-300', 'ease-linear']; // constantize this
 
     const getBaseOffset = () => {
       const { height } = cards[0].getBoundingClientRect();
@@ -57,31 +58,39 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
     };
 
     const vOffset = currentPlayer ? getCurrentOffset() : getBaseOffset();
-    const translation = (() => {
+    const transitionClasses = (() => {
       if (playerEliminated && currentPlayer) {
-        return 'translate-x-[200%]';
+        return ['translate-x-[200%]'];
       } else if (currentPlayer) {
-        return '!translate-y-[var(--translation-offset)]';
+        return ['!translate-y-[var(--translation-offset)]'];
       } else {
-        return '!-translate-y-[var(--translation-offset)]';
+        return ['!-translate-y-[var(--translation-offset)]'];
       }
     })();
 
     if (scoring) {
       // add transition and translation classes/styles if we're about to score a round
       card.style.setProperty('--translation-offset', vOffset);
-      card.classList.add(...baseTransition, translation);
+      card.classList.add(...baseTransition, ...transitionClasses);
     } else {
       // remove transition and translation classes/styles otherwise
       card.classList.remove(
         ...baseTransition,
         'translate-x-[200%]',
         '!translate-y-[var(--translation-offset)]',
-        '!-translate-y-[var(--translation-offset)]'
+        '!-translate-y-[var(--translation-offset)]',
       );
       card.style.removeProperty('--translation-offset');
     }
   }, [player, scoring, game, score]);
+
+  const currentPlayer = player === game.currentPlayer;
+
+  const currentPlayerBadgeClasses = [
+    'transition-opacity',
+    'opacity-0',
+    currentPlayer && !scoring && 'opacity-100',
+  ].filter(Boolean).join(' ');
 
   const strikes = new Array(player.strikes).fill(null).map((_, idx) => (
     <span key={`strike-${idx}`}>❌</span>
@@ -90,12 +99,12 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
   return (
     <div
       ref={cardRef}
-      className={`
-        w-full flex items-center p-4 shadow-lg rounded-lg bg-zinc-700 first:z-40
-      `}
+      className="flex items-center p-4 shadow-xl/50 rounded-lg bg-zinc-700 first:z-40 gap-2"
     >
+      <div className={currentPlayerBadgeClasses}>⭐</div>
       <div>{player.name}</div>
       <div className="ml-auto">{strikes}</div>
+      {!game.started && <div className="ml-auto">{player.splash}</div>}
     </div>
   );
 };
