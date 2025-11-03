@@ -75,7 +75,7 @@ export function hasOne(relationName: string, options: RelationOptionsSignature) 
         return Store.all(relationName).findBy((model) => model[foreignKey] === this[primaryKey]);
       },
       set: function (value: Model): void {
-        value[foreignKey] = <keyof typeof value>this[primaryKey];
+        value[foreignKey] = (<Model>this)[primaryKey];
         Observer.notify(this);
       },
     });
@@ -110,6 +110,14 @@ type ModelAttributes = Record<string, unknown>;
 
 export default class Model {
   private static _meta = new Map();
+
+  delete() {
+    const metadata = (this.constructor as typeof Model).meta;
+    const collection = Store.all((metadata as unknown as typeof BASE_METADATA).storeKey);
+    const idx = collection.indexOf(this);
+    collection.splice(idx, 1);
+    Observer.notify(this);
+  }
 
   // this can't be a static prop, otherwise descendents will clobber the Model static var
   // https://thecodebarbarian.com/static-properties-in-javascript-with-inheritance.html
@@ -152,7 +160,7 @@ export default class Model {
 
     for (const prop in attributes) {
       if (this.props.includes(prop)) {
-        (instance as Record<string, unknown>)[prop] = attributes[prop];
+        (instance as unknown as Record<string, unknown>)[prop] = attributes[prop];
       }
     }
 
