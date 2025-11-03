@@ -12,7 +12,7 @@ const useLegsGame = () => {
     // compiler sees create invoked as *always* returning a Model instance even though it never
     // actually can - need to find a way to type this at the model level so it can know what its
     // actually getting when that method gets called
-    gameRef.current ??= <LegsGame>LegsGame.create({ id });
+    gameRef.current ??= <LegsGame>LegsGame.create({ id: uuidv4() });
     // should this be a game serialization? important thing is that the new obj is referentially
     // separate from the previous state value
     Observer.subscribe(() => forceUpdate(() => new Object()));
