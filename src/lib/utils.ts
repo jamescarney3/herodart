@@ -52,3 +52,5 @@ export const roundNumber = (value: number, places: number = 0): number => (
 export const validateLegsScore = (score: number) => {
   return score < THREE_DART_MAX && !IMPOSSIBLE_THREE_DART_SCORES.includes(score);
 };
+
+export type Nullable<T> = T | null | undefined;
