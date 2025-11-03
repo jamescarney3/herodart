@@ -40,6 +40,11 @@ export default class LegsGame extends Model {
     }, 0);
   }
 
+  scoreWouldBeStrike(score: number): boolean {
+    if (!this.rounds.last) return false;
+    return score < this.rounds.last.score;
+  }
+
   scoreWouldEliminateCurrentPlayer(score: number): boolean {
     // if any players have strikes, at least one round has been shot so assert this.rounds.last
     return this.currentPlayer?.strikes === 2 && score < (this.rounds.last!.score);
