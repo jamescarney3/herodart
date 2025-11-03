@@ -6,6 +6,11 @@ export const PLUS = '+';
 const THREE_DART_MAX = 180;
 const IMPOSSIBLE_THREE_DART_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
 
+export const LEGS_STRIKE = '❌';
+export const LEGS_ELIMINATION = '💀';
+export const LEGS_SCORE = '✅';
+export const LEGS_ACTIVE_INDICATOR = '⭐';
+
 export const hasOwnOrInherits = (target: object, prop: string): boolean => {
   if (target === null) return false;
   if (Object.hasOwn(target, prop)) return true;

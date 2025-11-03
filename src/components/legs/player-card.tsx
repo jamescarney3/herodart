@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef } from 'react';
 
-import LegsGame from '~/lib/legs/legs-game';
-import LegsPlayer from '~/lib/legs/legs-player';
+import { LEGS_STRIKE, LEGS_ACTIVE_INDICATOR } from '~/lib/utils';
+import type LegsGame from '~/lib/legs/legs-game';
+import type LegsPlayer from '~/lib/legs/legs-player';
 import type { Nullable } from '~/lib/utils';
 
 interface LegsPlayerCardProps {
@@ -93,7 +94,7 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
   ].filter(Boolean).join(' ');
 
   const strikes = new Array(player.strikes).fill(null).map((_, idx) => (
-    <span key={`strike-${idx}`}>❌</span>
+    <span key={`strike-${idx}`}>{LEGS_STRIKE}</span>
   ));
 
   return (
@@ -101,7 +102,7 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
       ref={cardRef}
       className="flex items-center p-4 shadow-xl/50 rounded-lg bg-zinc-700 first:z-40 gap-2"
     >
-      <div className={currentPlayerBadgeClasses}>⭐</div>
+      <div className={currentPlayerBadgeClasses}>{LEGS_ACTIVE_INDICATOR}</div>
       <div>{player.name}</div>
       <div className="ml-auto">{strikes}</div>
       {!game.started && <div className="ml-auto">{player.splash}</div>}
