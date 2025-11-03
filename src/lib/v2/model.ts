@@ -111,6 +111,14 @@ type ModelAttributes = Record<string, unknown>;
 export default class Model {
   private static _meta = new Map();
 
+  delete() {
+    const metadata = (this.constructor as typeof Model).meta;
+    const collection = Store.all((metadata as unknown as typeof BASE_METADATA).storeKey);
+    const idx = collection.indexOf(this);
+    collection.splice(idx, 1);
+    Observer.notify(this);
+  }
+
   // this can't be a static prop, otherwise descendents will clobber the Model static var
   // https://thecodebarbarian.com/static-properties-in-javascript-with-inheritance.html
   static get meta(): typeof BASE_METADATA {

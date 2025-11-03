@@ -64,6 +64,21 @@ describe('Model class', () => {
     });
   });
 
+  describe('#delete', () => {
+    it('removes the instance from the store collection', () => {
+      class TestModel extends Model {}
+      const instance = new TestModel() as TestModel;
+
+      sinon.stub(Store, 'all').returns([instance]);
+
+      instance.delete();
+
+      expect(Store.all('test-models').length).toBe(0);
+      expect(Store.all('test-models').includes(instance)).toBe(false);
+      Store.all.restore();
+    });
+  });
+
   describe('@prop property decorator', () => {
     it('defines an accessor on a model instance', () => {
       class Foo extends Model {
@@ -174,6 +189,7 @@ describe('Model class', () => {
         });
 
       expect(foo.bars).toStrictEqual([bar1, bar2, bar3]);
+      Store.all.restore();
     });
   });
 });
