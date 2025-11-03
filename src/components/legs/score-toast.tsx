@@ -2,6 +2,10 @@ import type { CSSProperties } from 'react';
 
 import type LegsGame from '~/lib/legs/legs-game';
 
+export const ELIMINATED = '💀';
+export const STRIKE_INCURRED = '❌';
+export const NO_STRIKE_INCURRED = '✅';
+
 // TODO: genericize this for other purposes, low prio
 
 interface ScoreToastProps {
@@ -41,10 +45,9 @@ const ScoreToast = ({ game, score }: ScoreToastProps) => {
   const toastStyle = { '--container-width': `${window.innerWidth}px` } as CSSProperties;
 
   const toastContent = (() => {
-    if (!scoring) return '';
-    if (game.scoreWouldEliminateCurrentPlayer(score)) return '💀';
-    if (game.scoreWouldBeStrike(score)) return '❌';
-    return '✅';
+    if (game.scoreWouldEliminateCurrentPlayer(score)) return ELIMINATED;
+    if (game.scoreWouldBeStrike(score)) return STRIKE_INCURRED;
+    if (scoring) return NO_STRIKE_INCURRED;
   })();
 
   return (<div className={toastClass} style={toastStyle}>{toastContent}</div>);
