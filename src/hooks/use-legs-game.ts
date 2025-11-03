@@ -12,26 +12,31 @@ const useLegsGame = () => {
     // compiler sees create invoked as *always* returning a Model instance even though it never
     // actually can - need to find a way to type this at the model level so it can know what its
     // actually getting when that method gets called
-    gameRef.current ??= <LegsGame>LegsGame.create({ id });
+    gameRef.current ??= <LegsGame>LegsGame.create({ id: uuidv4() });
 
-    const game = gameRef.current;
-    if (!!game.players && !game.players.length) {
-      game.createPlayer({ name: 'James', splash: 26 });
-      game.createPlayer({ name: 'Matt', splash: 65 });
-      game.createPlayer({ name: 'Maloof', splash: 38 });
-      game.createPlayer({ name: 'Scott', splash: 38 });
-      game.createPlayer({ name: 'Paul', splash: 38 });
-      game.createPlayer({ name: 'Bart', splash: 38 });
-      game.createPlayer({ name: 'Hasan', splash: 38 });
-      game.start();
-      let iterations = 0;
-      while (iterations < 20) {
-        game.playerOrder[0].score(Math.floor(Math.random() * 180));
-        iterations ++;
-      }
-    }
-    // should this be a game serialization? important thing is that the new obj is referentially
-    // separate from the previous state value
+    // const game = gameRef.current;
+    // if (!!game.players && !game.players.length) {
+    //   game.createPlayer({ name: 'James', splash: 26 });
+    //   game.createPlayer({ name: 'Matt', splash: 65 });
+    //   game.createPlayer({ name: 'Maloof', splash: 35 });
+    //   game.createPlayer({ name: 'Scott', splash: 48 });
+    //   game.createPlayer({ name: 'Paul', splash: 98 });
+    //   game.createPlayer({ name: 'Bart', splash: 38 });
+    //   game.createPlayer({ name: 'Hasan', splash: 28 });
+    //   game.start();
+    //
+    //   // while (!game.finished) {
+    //   //   game.playerOrder[0].score(Math.floor(Math.random() * 180));
+    //   // }
+    //
+    //   // let iteration = 0;
+    //   // while (iteration < 30) {
+    //   //   game.playerOrder[0].score(Math.floor(Math.random() * 180));
+    //   //   iteration ++;
+    //   // }
+    // }
+
+    // operative thing is that the new obj is referentially separate from the previous state value
     Observer.subscribe(() => forceUpdate(() => new Object()));
     forceUpdate(() => new Object());
   }, [forceUpdate, gameRef]);
