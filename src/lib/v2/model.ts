@@ -75,7 +75,7 @@ export function hasOne(relationName: string, options: RelationOptionsSignature) 
         return Store.all(relationName).findBy((model) => model[foreignKey] === this[primaryKey]);
       },
       set: function (value: Model): void {
-        value[foreignKey] = <keyof typeof value>this[primaryKey];
+        value[foreignKey] = (<Model>this)[primaryKey];
         Observer.notify(this);
       },
     });
@@ -160,7 +160,7 @@ export default class Model {
 
     for (const prop in attributes) {
       if (this.props.includes(prop)) {
-        (instance as Record<string, unknown>)[prop] = attributes[prop];
+        (instance as unknown as Record<string, unknown>)[prop] = attributes[prop];
       }
     }
 
