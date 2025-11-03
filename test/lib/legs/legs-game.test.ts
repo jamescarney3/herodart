@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
 import LegsGame from '~/lib/legs/legs-game';
 import LegsPlayer from '~/lib/legs/legs-player';
@@ -175,6 +175,34 @@ describe('LegsGame class', () => {
       vi.spyOn(legsGame, 'playerOrder', 'get').mockReturnValue({ first: firstPlayer });
 
       expect(legsGame.currentPlayer).toBe(firstPlayer);
+    });
+  });
+
+  describe('#scoreWouldBeStrike', () => {
+    let game: LegsGame;
+
+    beforeEach(() => {
+      game = new LegsGame();
+    });
+
+    it('returns false when there are no rounds played', () => {
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue({ last: undefined });
+      expect(game.scoreWouldBeStrike(50)).toBe(false);
+    });
+
+    it('returns true when score is less than last round score', () => {
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue({ last: { score: 80 } });
+      expect(game.scoreWouldBeStrike(70)).toBe(true);
+    });
+
+    it('returns false when score is equal to last round score', () => {
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue({ last: { score: 80 } });
+      expect(game.scoreWouldBeStrike(80)).toBe(false);
+    });
+
+    it('returns false when score is greater than last round score', () => {
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue({ last: { score: 80 } });
+      expect(game.scoreWouldBeStrike(90)).toBe(false);
     });
   });
 

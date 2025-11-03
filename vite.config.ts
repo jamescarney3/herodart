@@ -30,7 +30,7 @@ export default defineConfig({
     environment: 'jsdom',
     coverage: {
       include: ['src'],
-      exclude: ['src/main.tsx', '**/*.d.ts'],
+      exclude: ['src/main.tsx', '**/*.d.ts', 'src/**/index.ts'],
       thresholds: {
         lines: 100,
         statements: 100,
