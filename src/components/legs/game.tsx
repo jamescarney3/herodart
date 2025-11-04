@@ -8,7 +8,7 @@ const Game = () => {
   return (
     <div className="text-xl">
       {!game.started && <Setup game={game} />}
-      {!game.finished && <Scoreboard game={game} />}
+      {game.started && !game.finished && <Scoreboard game={game} />}
       {game.finished && <Report game={game} onNewGame={newGame} />}
     </div>
   );
