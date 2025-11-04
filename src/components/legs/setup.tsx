@@ -42,7 +42,7 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
 
   const onSubmit = () => {
     try {
-      game.createPlayer({ name, splash: eval(splash) || 0 });
+      game.createPlayer({ name, splash: eval(splash)! });
       setSplash('');
       setName('');
       setAddingPlayer(false);
