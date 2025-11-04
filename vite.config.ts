@@ -4,6 +4,7 @@ import './vite-env.d.ts';
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import { VitePWA } from 'vite-plugin-pwa';
 import babel from 'vite-plugin-babel';
 import sassTailwindFunctions from 'sass-tailwind-functions/modern';
 
@@ -18,6 +19,11 @@ export default defineConfig({
         plugins: [
           ['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }],
         ],
+      },
+    }),
+    VitePWA({
+      manifest: {
+        display: 'standalone',
       },
     }),
   ],
