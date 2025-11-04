@@ -3,14 +3,15 @@ import { roundNumber, LEGS_ELIMINATION, LEGS_STRIKE } from '~/lib/utils';
 
 interface LegsReportProps {
   game: LegsGame;
+  onNewGame: () => void;
 }
 
-const LegsReport = ({ game }: LegsReportProps) => {
+const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
   return (
     <div className="h-screen flex flex-col gap-2 p-2">
       <section>
         <h1 className="text-center text-6xl">Winner:</h1>
-        <div className="text-center text-6xl">{game.winner!.name}</div>
+        <div className="text-center text-6xl">{game.winner?.name}</div>
         <div className="text-center text-4xl">
           Average: {roundNumber(game.winner!.average, 2)}
         </div>
@@ -19,8 +20,8 @@ const LegsReport = ({ game }: LegsReportProps) => {
         </div>
       </section>
 
-      <h2 className="text-2xl border-bottom mt-4">Player Performance</h2>
       <section>
+        <h2 className="text-2xl border-bottom mt-4">Player Performance</h2>
         <table className="w-full">
           <thead>
             <tr className='[&>th]:text-left'>
@@ -43,31 +44,37 @@ const LegsReport = ({ game }: LegsReportProps) => {
         </table>
       </section>
 
-      <h2 className="text-2xl border-bottom mt-4">Game Log</h2>
-      <section className="flex-grow basis-0 overflow-auto">
-        <table className="w-full">
-          <thead>
-            <tr className='[&>th]:text-left'>
-              <th />
-              <th>Player</th>
-              <th>Score</th>
-              <th>Strike</th>
-            </tr>
-          </thead>
-          <tbody>
-            {game.rounds.map((round, idx) => (
-              <tr key={`round-${idx}`}>
-                <td>{idx + 1}</td>
-                <td>{round.player.name}</td>
-                <td>{round.score}</td>
-                <td>
-                  {round.wasStrike && <span>{LEGS_STRIKE}</span>}
-                  {round.wasEliminationRound && <span>{LEGS_ELIMINATION}</span>}
-                </td>
+      <section className="flex flex-col grow">
+        <h2 className="text-2xl border-bottom mt-4">Game Log</h2>
+        <div className="grow basis-0 overflow-auto">
+          <table className="w-full">
+            <thead>
+              <tr className='[&>th]:text-left'>
+                <th />
+                <th>Player</th>
+                <th>Score</th>
+                <th>Strike</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {game.rounds.map((round, idx) => (
+                <tr key={`round-${idx}`}>
+                  <td>{idx + 1}</td>
+                  <td>{round.player.name}</td>
+                  <td>{round.score}</td>
+                  <td>
+                    {round.wasStrike && <span>{LEGS_STRIKE}</span>}
+                    {round.wasEliminationRound && <span>{LEGS_ELIMINATION}</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <button onClick={onNewGame} className="w-full">new game</button>
       </section>
     </div>
   );
