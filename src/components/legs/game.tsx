@@ -4,12 +4,16 @@ import { Setup, Scoreboard, Report } from '~/components/legs';
 const Game = () => {
   const { game, newGame } = useLegsGame();
 
-  if (!game) return null;
+  const getGamePhase = () => {
+    if (!game) return null;
+    if (game?.finished) return (<Report game={game} onNewGame={newGame} />);
+    if (game?.started) return (<Scoreboard game={game} />);
+    return (<Setup game={game} />);
+  };
+
   return (
     <div className="text-xl">
-      {!game.started && <Setup game={game} />}
-      {game.started && !game.finished && <Scoreboard game={game} />}
-      {game.finished && <Report game={game} onNewGame={newGame} />}
+      {getGamePhase()}
     </div>
   );
 };
