@@ -1,5 +1,5 @@
 import LegsGame from '~/lib/legs/legs-game';
-import { roundNumber } from '~/lib/utils';
+import { roundNumber, LEGS_ELIMINATION, LEGS_STRIKE } from '~/lib/utils';
 
 interface LegsReportProps {
   game: LegsGame;
@@ -61,8 +61,8 @@ const LegsReport = ({ game }: LegsReportProps) => {
                 <td>{round.player.name}</td>
                 <td>{round.score}</td>
                 <td>
-                  {round.wasStrike && <span>❌</span>}
-                  {round.wasEliminationRound && <span>💀</span>}
+                  {round.wasStrike && <span>{LEGS_STRIKE}</span>}
+                  {round.wasEliminationRound && <span>{LEGS_ELIMINATION}</span>}
                 </td>
               </tr>
             ))}

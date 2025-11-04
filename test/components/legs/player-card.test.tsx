@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 
 import LegsPlayerCard from '~/components/legs/player-card';
+import { LEGS_ACTIVE_INDICATOR, LEGS_STRIKE } from '~/lib/utils';
 
 describe('LegsPlayerCard', () => {
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe('LegsPlayerCard', () => {
     const { getByText, getAllByText } = render(<LegsPlayerCard player={player} game={game} />);
 
     expect(getByText('Candide')).toBeTruthy();
-    expect(getAllByText('❌').length).toBe(player.strikes);
+    expect(getAllByText(LEGS_STRIKE).length).toBe(player.strikes);
   });
 
   it('renders current player indicator when not scoring and current player', () => {
@@ -41,7 +42,7 @@ describe('LegsPlayerCard', () => {
       </div>
     );
 
-    const card = getByText('⭐').parentElement as HTMLElement;
+    const card = getByText(LEGS_ACTIVE_INDICATOR).parentElement as HTMLElement;
     expect(card).toBeTruthy();
   });
 

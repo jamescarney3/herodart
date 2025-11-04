@@ -1,10 +1,7 @@
 import type { CSSProperties } from 'react';
 
+import { LEGS_STRIKE, LEGS_ELIMINATION, LEGS_SCORE } from '~/lib/utils';
 import type LegsGame from '~/lib/legs/legs-game';
-
-export const ELIMINATED = '💀';
-export const STRIKE_INCURRED = '❌';
-export const NO_STRIKE_INCURRED = '✅';
 
 // TODO: genericize this for other purposes, low prio
 
@@ -46,9 +43,9 @@ const ScoreToast = ({ game, score }: ScoreToastProps) => {
 
   const toastContent = (() => {
     if (!scoring) return;
-    if (game.scoreWouldEliminateCurrentPlayer(score)) return ELIMINATED;
-    if (game.scoreWouldBeStrike(score)) return STRIKE_INCURRED;
-    if (scoring) return NO_STRIKE_INCURRED;
+    if (game.scoreWouldEliminateCurrentPlayer(score)) return LEGS_ELIMINATION;
+    if (game.scoreWouldBeStrike(score)) return LEGS_STRIKE;
+    if (scoring) return LEGS_SCORE;
   })();
 
   return (<div className={toastClass} style={toastStyle}>{toastContent}</div>);
