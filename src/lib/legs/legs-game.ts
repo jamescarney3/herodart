@@ -6,15 +6,15 @@ import Round from '~/lib/legs/legs-round';
 
 @register('legs-games')
 export default class LegsGame extends Model {
-  static _storeKey = 'legs-games';
-
-  @key id: string;
-  @prop started: boolean = false;
+  @key declare id: string;
+  // TODO: declared ok for now but find out right way to give this a default value, setting default
+  // in class definition seems to overwrite getter/setter defined by @prop decorator
+  @prop declare started: boolean;
 
   @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
   @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
 
-  createPlayer(attributes: { name: string, splash: number}): Player {
+  createPlayer(attributes: { name: string; splash: number }): Player {
     return Player.create({ ...attributes, game: this }) as Player;
   }
 
@@ -40,28 +40,47 @@ export default class LegsGame extends Model {
     }, 0);
   }
 
+  scoreWouldBeStrike(score: number): boolean {
+    if (!this.rounds.last) return false;
+    return score < this.rounds.last.score;
+  }
+
+  scoreWouldEliminateCurrentPlayer(score: number): boolean {
+    // if any players have strikes, at least one round has been shot so assert this.rounds.last
+    return this.currentPlayer?.strikes === 2 && score < (this.rounds.last!.score);
+  }
+
+  playerExistsWithName(name: string): boolean {
+    return this.players.map((p) => p.name).includes(name);
+  }
+
   get finished(): boolean {
-    return [
-      this.started,
-      this.players.filter((player) => player.strikes < 3).length === 1,
-    ].every((condition) => !!condition);
+    return [this.started, this.players.filter((player) => player.strikes < 3).length === 1].every(
+      (condition) => !!condition,
+    );
+  }
+
+  get canStart(): boolean {
+    return this.players.length >= 2 && !this.finished;
+  }
+
+  get winner(): Player | null {
+    if (!this.finished) return null;
+    return this.players.find((player) => player.strikes < 3);
   }
 
   get playerOrder(): Collection<Player> {
     const { players, rounds } = this;
-    const order = players
-      .filter((player) => player.strikes < 3)
-      .sort((playerA, playerB) => playerB.splash - playerA.splash);
+    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
 
     const lastPlayer = rounds?.last?.player;
-    if (!lastPlayer) return order as unknown as Collection<Player>;
+    if (!lastPlayer) return order as Collection<Player>;
 
-    const lastPlayerIdx = order.findIndex(player => player === lastPlayer);
-    if (lastPlayerIdx === order.length - 1) return order as unknown as Collection<Player>;
+    const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
+    const currentPlayerIdx = lastPlayerIdx + 1;
+    const wrappedOrder = [...order.slice(currentPlayerIdx), ...order.slice(0, currentPlayerIdx)];
 
-    const nextPlayerIdx = lastPlayerIdx + 1;
-
-    return order.slice(nextPlayerIdx).concat(order.slice(0, nextPlayerIdx)) as unknown as Collection<Player>;
+    return wrappedOrder.filter((player: Player) => player.strikes < 3) as Collection<Player>;
   }
 
   get targetScore(): number {

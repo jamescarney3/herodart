@@ -2,7 +2,12 @@ import Store from '~/lib/v2/store';
 import Observer from '~/lib/v2/observer';
 import type Collection from '~/lib/v2/collection';
 
-const BASE_METADATA = { props: <string[]>[], key: 'id', customKeySet: false, storeKey: '' };
+const BASE_METADATA = {
+  props: <string[]>[],
+  key: <null | string>null,
+  customKeySet: false,
+  storeKey: '',
+};
 Object.freeze(BASE_METADATA);
 
 export function prop(target: Model, propName: string): void {
@@ -11,10 +16,10 @@ export function prop(target: Model, propName: string): void {
   const backingField = `_${propName}`;
 
   Object.defineProperty(target, propName, {
-    get: function() {
+    get: function () {
       return this[backingField];
     },
-    set: function(value) {
+    set: function (value) {
       this[backingField] = value;
       Observer.notify(this);
     },
@@ -34,18 +39,20 @@ export function key(target: Model, propName: string): void {
 }
 
 type RelationOptionsSignature = {
-  foreignKey: string,
-}
+  foreignKey: string;
+};
 
 export function belongsTo(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
+    const ModelClass = target.constructor as typeof Model;
+    ModelClass.meta.props.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
-      get: function(): Model | undefined {
+      get: function (): Model | undefined {
         return Store.all(relationName).get(this[foreignKey]);
       },
-      set: function(value: Model): void {
+      set: function (value: Model): void {
         const RelationModelClass = <typeof Model>value.constructor;
         const key = <keyof Model>RelationModelClass.primaryKey;
         this[foreignKey] = value[key];
@@ -59,15 +66,16 @@ export function belongsTo(relationName: string, options: RelationOptionsSignatur
 export function hasOne(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
     const ModelClass = <typeof Model>target.constructor;
+    ModelClass.meta.props.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
     const primaryKey = <keyof Model>ModelClass.primaryKey;
 
     Object.defineProperty(target, propName, {
-      get: function(): Model | undefined {
-        return Store.all(relationName).findBy(model => model[foreignKey] === target[primaryKey]);
+      get: function (): Model | undefined {
+        return Store.all(relationName).findBy((model) => model[foreignKey] === this[primaryKey]);
       },
-      set: function(value: Model): void {
-        value[foreignKey] = target[primaryKey];
+      set: function (value: Model): void {
+        value[foreignKey] = (<Model>this)[primaryKey];
         Observer.notify(this);
       },
     });
@@ -80,15 +88,15 @@ export function hasMany(relationName: string, options: RelationOptionsSignature)
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
-      get: function(): Collection<Model> {
+      get: function (): Collection<Model> {
         const ModelClass = <typeof Model>target.constructor;
         const primaryKey = <keyof Model>ModelClass.primaryKey;
-        return Store.all(relationName).where({ [foreignKey]: target[primaryKey] });
+        return Store.all(relationName).where({ [foreignKey]: this[primaryKey] });
       },
-      set: function(values: Collection<Model>): void {
+      set: function (values: Collection<Model>): void {
         const primaryKey = <keyof Model>ModelClass.primaryKey;
         for (const value of values) {
-          value[foreignKey] = target[primaryKey];
+          value[foreignKey] = this[primaryKey];
         }
         Observer.notify(this);
       },
@@ -103,6 +111,14 @@ type ModelAttributes = Record<string, unknown>;
 export default class Model {
   private static _meta = new Map();
 
+  delete() {
+    const metadata = (this.constructor as typeof Model).meta;
+    const collection = Store.all((metadata as unknown as typeof BASE_METADATA).storeKey);
+    const idx = collection.indexOf(this);
+    collection.splice(idx, 1);
+    Observer.notify(this);
+  }
+
   // this can't be a static prop, otherwise descendents will clobber the Model static var
   // https://thecodebarbarian.com/static-properties-in-javascript-with-inheritance.html
   static get meta(): typeof BASE_METADATA {
@@ -112,7 +128,7 @@ export default class Model {
     return this._meta.get(this);
   }
 
-  static get primaryKey(): string {
+  static get primaryKey(): string | null {
     return this.meta.key;
   }
 
@@ -139,27 +155,17 @@ export default class Model {
     return this.all.where(attributes);
   }
 
-  constructor(attributes: ModelAttributes) {
-    const ModelClass = this.constructor as typeof Model;
-    for (const prop in attributes) {
-      if (ModelClass.props.includes(prop)) {
-        (this as Record<string, unknown>)[prop] = attributes[prop];
-      }
-    }
-    Observer.notify();
-  }
-
   static create(attributes: ModelAttributes) {
-    const instance = new this(attributes);
+    const instance = new this(/* attributes */);
 
     for (const prop in attributes) {
       if (this.props.includes(prop)) {
-        (instance as Record<string, unknown>)[prop] = attributes[prop];
+        (instance as unknown as Record<string, unknown>)[prop] = attributes[prop];
       }
     }
-    const storeKey = this.meta.storeKey;
-    Store.all(storeKey).add(instance);
-    Observer.notify();
+
+    Store.all(this.meta.storeKey).add(instance);
+    Observer.notify(this);
     return instance;
   }
 }

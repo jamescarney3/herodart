@@ -64,13 +64,29 @@ describe('Model class', () => {
     });
   });
 
+  describe('#delete', () => {
+    it('removes the instance from the store collection', () => {
+      class TestModel extends Model {}
+      const instance = new TestModel() as TestModel;
+
+      sinon.stub(Store, 'all').returns([instance]);
+
+      instance.delete();
+
+      expect(Store.all('test-models').length).toBe(0);
+      expect(Store.all('test-models').includes(instance)).toBe(false);
+      Store.all.restore();
+    });
+  });
+
   describe('@prop property decorator', () => {
     it('defines an accessor on a model instance', () => {
       class Foo extends Model {
         @prop declare bar: string;
       }
 
-      const foo = new Foo({ bar: 'baz' });
+      const foo = new Foo();
+      foo.bar = 'baz';
       expect(foo.bar).toBe('baz');
     });
   });
@@ -81,7 +97,8 @@ describe('Model class', () => {
         @key declare bar: string;
       }
 
-      const foo = new Foo({ bar: 'baz' });
+      const foo = new Foo();
+      foo.bar = 'baz';
       expect(foo.bar).toBe('baz');
       expect(Foo.primaryKey).toBe('bar');
     });
@@ -110,9 +127,12 @@ describe('Model class', () => {
       const bar = new Bar();
       bar.id = 1;
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        get: sinon.stub().withArgs(1).returns(bar),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          get: sinon.stub().withArgs(1).returns(bar),
+        });
 
       foo.bar = bar;
       expect(foo.bar).toBe(bar);
@@ -132,9 +152,12 @@ describe('Model class', () => {
       const bar = new Bar();
       bar.fooId = 1;
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        findBy: sinon.stub().returns(bar),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          findBy: sinon.stub().returns(bar),
+        });
 
       foo.bar = bar;
       expect(foo.bar).toBe(bar);
@@ -158,11 +181,15 @@ describe('Model class', () => {
 
       foo.bars = [bar1, bar2, bar3];
 
-      sinon.stub(Store, 'all').withArgs('bars').returns({
-        where: sinon.stub().returns([bar1, bar2, bar3]),
-      });
+      sinon
+        .stub(Store, 'all')
+        .withArgs('bars')
+        .returns({
+          where: sinon.stub().returns([bar1, bar2, bar3]),
+        });
 
       expect(foo.bars).toStrictEqual([bar1, bar2, bar3]);
+      Store.all.restore();
     });
   });
 });

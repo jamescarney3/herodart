@@ -1,3 +1,5 @@
+type ObserverCallback<T> = (args: T) => unknown | void;
+
 class Observer {
   private constructor() {}
 
@@ -8,18 +10,18 @@ class Observer {
     return Observer.#instance;
   }
 
-  _observers = new Set();
+  _observers = new Set<ObserverCallback<unknown>>();
 
-  static subscribe(callback): void {
+  static subscribe(callback: ObserverCallback<unknown>): void {
     this.instance._observers.add(callback);
   }
 
-  static unsubscribe(callback): void {
+  static unsubscribe(callback: ObserverCallback<unknown>): void {
     this.instance._observers.delete(callback);
   }
 
-  static notify(data): void {
-    [...this.instance._observers].forEach(cb => cb(data));
+  static notify(data: unknown): void {
+    [...this.instance._observers].forEach((cb) => cb(data));
   }
 }
 

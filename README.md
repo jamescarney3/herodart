@@ -1,3 +1,5 @@
+[![test coverage](https://raw.githubusercontent.com/jamescarney3/herodart/gh-pages/coverage.svg)](https://github.com/jamescarney3/herodart/actions/workflows/coverage-badge.yml)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

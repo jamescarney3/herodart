@@ -1,6 +1,6 @@
 {
   "plugins": ["stylelint-scss"],
-  "extends": ["stylelint-config-standard"],
+  "extends": ["stylelint-config-standard", "stylelint-config-standard-scss"],
   "rules": {
     "import-notation": ["string"],
     "declaration-empty-line-before": ["always", { "ignore": ["after-declaration", "first-nested"] }],

@@ -1,15 +1,18 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 
 import useLegsGame from '~/hooks/use-legs-game';
 
 vi.mock('~/lib/legs/legs-game', async () => {
   class MockLegsGame {
-    static create() {
+    static create({ id }) {
       const newGame = new MockLegsGame();
       newGame.identifier = 'test game';
-      newGame.randomSeed = Math.round(Math.random() * 100000).toString();
+      newGame.randomSeed = id;
+      newGame.delete = () => void(0);
+      newGame.players = [];
+      newGame.rounds = [];
       return newGame;
     }
   }
@@ -21,12 +24,14 @@ describe('useLegsGame hook', () => {
 
   const DummyComponent = () => {
     const [testVal, setTestVal] = useState(true);
-    const { game } = useLegsGame();
+    const { game, newGame } = useLegsGame();
+    if (!game) return null;
     return (
       <>
         <div>{game.identifier}</div>
         <div data-testid="random-seed">{game.randomSeed}</div>
         <button onClick={() => setTestVal(!testVal)} data-testid="test-val-toggle" />
+        <button onClick={newGame} data-testid="new-game-trigger" />
       </>
     );
   };
@@ -45,5 +50,16 @@ describe('useLegsGame hook', () => {
     button.click();
     const secondRenderSeed = screen.getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).toBe(firstRenderSeed);
+  });
+
+  it('returns a newGame callback that begins a new legs game', async () => {
+    const { getByTestId } = render(<DummyComponent />);
+    const button = getByTestId('new-game-trigger');
+    const firstRenderSeed = getByTestId('random-seed').innerHTML;
+    button.click();
+    await waitFor(() => {
+      const secondRenderSeed = getByTestId('random-seed').innerHTML;
+      expect(secondRenderSeed).not.toBe(firstRenderSeed);
+    });
   });
 });
