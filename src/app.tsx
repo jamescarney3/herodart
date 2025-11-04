@@ -1,10 +1,7 @@
-function App() {
-  return (
-    <>
-      <div>[[under construction]]</div>
-    </>
-  );
+import { Game } from '~/components/legs';
 
+function App() {
+  return (<Game />);
 }
 
 export default App;
