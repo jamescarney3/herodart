@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/herodart/dev-sw.js?dev-sw', { scope: '/herodart/', type: 'classic' })
