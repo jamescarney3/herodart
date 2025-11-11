@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router';
 
 import { Keypad, PlayerCard } from '~/components/legs';
 import type LegsGame from '~/lib/legs/legs-game';
@@ -80,12 +81,13 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
       <section className="mt-auto shrink-0 flex flex-col gap-2">
         {!addingPlayer && (
           <>
-            <button onClick={onNewPlayer} type="button" className="block w-full">
-              add player
-            </button>
             <button onClick={onStart} type="button" disabled={!game.canStart} className="block w-full">
               start game
             </button>
+            <button onClick={onNewPlayer} type="button" className="block w-full">
+              add player
+            </button>
+            <Link to="/" className="button block w-full">cancel</Link>
           </>
         )}
         {addingPlayer && !splashing && (
