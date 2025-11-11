@@ -30,7 +30,7 @@ body {
   min-height: 100vh;
 }
 
-button {
+button, .button {
   border-radius: 8px;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -39,7 +39,12 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 
-  @apply shadow-[inset_0_0_4px_2px_rgba(161,161,170,0.15)]
+  &:hover {
+    color: unset;
+  }
+
+  @apply text-center
+    shadow-[inset_0_0_4px_2px_rgba(161,161,170,0.15)]
     bg-gradient-to-b from-[theme('colors.neutral.900')] to-[theme('colors.neutral.950')];
 
   &:active {
