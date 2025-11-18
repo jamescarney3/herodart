@@ -61,3 +61,30 @@ button:focus,
 button:focus-visible {
   // outline: 4px auto -webkit-focus-ring-color;
 }
+
+.btn-unstyled {
+  border-radius: unset;
+  padding: unset;
+  font-size: 1em;
+  font-weight: inherit;
+  font-family: inherit;
+  cursor: unset;
+  transition: unset;
+  box-shadow: unset; // undo box shadow
+
+  background-image: unset; // undo gradient
+
+  &:active {
+    background-image: unset;
+  }
+
+  &:disabled {
+    opacity: unset;
+    cursor: unset;
+    background-color: unset;
+    border-color: unset;
+    color: unset;
+    pointer-events: unset;
+    box-shadow: unset;
+  }
+}
