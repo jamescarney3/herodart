@@ -12,12 +12,12 @@ export default class ShanghaiPlayer extends Model {
   @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: Game;
   @hasMany('shanghai-rounds', { foreignKey: 'playerName' }) declare rounds: Round[];
 
-  get marks() {
+  get marks(): number {
     return this.rounds.reduce((marks, round) => marks + round.marks, 0);
   }
 
-  get mpr() {
-    return this.marks / this.rounds.length;
+  get mpr(): number {
+    return this.marks / (this.rounds.length || 1);
   }
 
   score(darts: ShanghaiDarts): void {
