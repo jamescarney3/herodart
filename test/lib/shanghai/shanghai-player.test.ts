@@ -26,6 +26,13 @@ describe('ShanghaiPlayer class', () => {
 
       expect(shanghaiPlayer.mpr).toBe((0 + 3 + 6 + 9) / 4);
     });
+
+    it('averages marks per round when player threw no rounds', () => {
+      const shanghaiPlayer = new ShanghaiPlayer();
+
+      vi.spyOn(shanghaiPlayer, 'rounds', 'get').mockReturnValue([]);
+      expect(shanghaiPlayer.mpr).toBe(0);
+    });
   });
 
   describe('#score', () => {
