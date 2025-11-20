@@ -190,6 +190,7 @@ describe('ShanghaiGame class', () => {
 
       vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
       vi.spyOn(game, 'rounds', 'get').mockReturnValue([]);
+      vi.spyOn(game, 'tie', 'get').mockReturnValue(false);
       vi.spyOn(game, 'players', 'get').mockImplementation(() => {
         const originalSort = players.sort.bind(players);
         players.sort = ((predicate) => {
@@ -200,6 +201,11 @@ describe('ShanghaiGame class', () => {
         return players;
       });
       expect(game.winner).toBe(cricket);
+    });
+
+    it('returns null when game is tied', () => {
+      vi.spyOn(game, 'tie', 'get').mockReturnValue(true);
+      expect(game.winner).toBe(null);
     });
   });
 

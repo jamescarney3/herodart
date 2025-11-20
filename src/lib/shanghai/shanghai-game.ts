@@ -71,6 +71,7 @@ export default class ShanghaiGame extends Model {
     const shanghai = rounds.find((round) => round.isShanghai);
 
     if (!this.finished) return null;
+    if (this.tie) return null;
     if (shanghai) return shanghai.player;
     // this is surely defined if the game is finished
     return players.sort((a: Player, b: Player) => b.marks - a.marks).first!;
