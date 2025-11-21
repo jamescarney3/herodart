@@ -63,7 +63,7 @@ export default class ShanghaiGame extends Model {
 
   get tie(): boolean {
     if (this.shanghaiScored) return false;
-    return this.tieWinners.length >= 2;
+    return (this.tieWinners ?? []).length >= 2;
   }
 
   get winner(): Player | null {
@@ -77,8 +77,10 @@ export default class ShanghaiGame extends Model {
     return players.sort((a: Player, b: Player) => b.marks - a.marks).first!;
   }
 
-  get tieWinners(): Player[] {
-    return this.players.where({ marks: this.bestMarks });
+  get tieWinners(): Player[] | null {
+    if (!this.finished) return null;
+    const players = this.players.where({ marks: this.bestMarks });
+    return players.length >= 2 ? players : null;
   }
 
   get playerOrder(): Collection<Player> {
@@ -94,6 +96,11 @@ export default class ShanghaiGame extends Model {
     const wrappedOrder = order.slice(currentPlayerIdx).concat(order.slice(0, currentPlayerIdx));
 
     return wrappedOrder as Collection<Player>;
+  }
+
+  get staticPlayerOrder(): Collection<Player> {
+    const { players } = this;
+    return players.sort((playerA, playerB) => playerB.splash - playerA.splash);
   }
 
   get currentPlayer(): Player | void {

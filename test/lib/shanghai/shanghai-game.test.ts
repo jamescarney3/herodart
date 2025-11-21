@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 
 import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import ShanghaiPlayer from '~/lib/shanghai/shanghai-player';
@@ -148,7 +148,13 @@ describe('ShanghaiGame class', () => {
     vi.spyOn(game, 'players', 'get').mockReturnValue(players);
     vi.spyOn(game, 'rounds', 'get').mockReturnValue(rounds);
 
+    it('returns false when game is not finished', () => {
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(false);
+      expect(game.tie).toBe(false);
+    });
+
     it('returns true when two or more players are tied with best marks', () => {
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
       vi.spyOn(game, 'players', 'get').mockReturnValue(new Collection([
         { marks: 30 },
         { marks: 30 },
@@ -211,17 +217,39 @@ describe('ShanghaiGame class', () => {
 
   describe('get tieWinners', () => {
     const game = new ShanghaiGame();
+    let arthur;
+    let ford;
+    let trillian;
+    let zaphod;
+    let marvin;
+    let players;
 
-    const arthur = { marks: 30 };
-    const ford = { marks: 30 };
-    const trillian = { marks: 30 };
-    const zaphod = { marks: 25 };
-    const marvin = { marks: 20 };
-    const players = new Collection([arthur, ford, trillian, zaphod, marvin]);
+    beforeEach(() => {
+      arthur = { marks: 30 };
+      ford = { marks: 30 };
+      trillian = { marks: 30 };
+      zaphod = { marks: 25 };
+      marvin = { marks: 20 };
+      players = new Collection([arthur, ford, trillian, zaphod, marvin]);
 
-    vi.spyOn(game, 'players', 'get').mockReturnValue(players);
+      vi.spyOn(game, 'players', 'get').mockReturnValue(players);
+    });
+
+    it('returns null when game is not finished', () => {
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(false);
+      expect(game.tieWinners).toBe(null);
+    });
+
+    it('returns null when fewer than two players have the best marks', () => {
+      ford.marks = 25;
+      trillian.marks = 25;
+
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
+      expect(game.tieWinners).toBe(null);
+    });
 
     it('returns multiple winners tied for best score', () => {
+      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
       expect(game.tieWinners).toContain(arthur, ford, trillian);
     });
   });
@@ -245,6 +273,20 @@ describe('ShanghaiGame class', () => {
 
       vi.spyOn(game, 'rounds', 'get').mockReturnValue({ last: { player: player10 } });
       expect(game.playerOrder).toEqual([player50, player40, player30, player20, player10]);
+    });
+  });
+
+  describe('get staticPlayerOrder', () => {
+    const player10 = { splash: 10 };
+    const player30 = { splash: 30 };
+    const player50 = { splash: 50 };
+    const player40 = { splash: 40 };
+    const player20 = { splash: 20 };
+
+    it('returns players ordered by splash disregarding turn', () => {
+      const game = new ShanghaiGame();
+      vi.spyOn(game, 'players', 'get').mockReturnValue([player10, player30, player50, player40, player20]);
+      expect(game.staticPlayerOrder).toEqual([player50, player40, player30, player20, player10]);
     });
   });
 
