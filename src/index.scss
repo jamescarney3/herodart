@@ -11,6 +11,9 @@
   color: theme('colors.neutral.300');
   background-color: theme('colors.neutral.800');
 
+  // disable pull-to-refresh
+  touch-action:none;
+
   font-synthesis: none;
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
