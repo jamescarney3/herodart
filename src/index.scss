@@ -17,6 +17,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+// disable pull-to-refresh
+@media (display-mode: standalone) {
+  :root {
+    touch-action:none;
+  }
+}
+
 a {
   font-weight: 500;
 }
