@@ -14,7 +14,10 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: {
-        map: [['~', path.resolve(__dirname, './src')]],
+        map: [
+          ['~', path.resolve(__dirname, './src')],
+          ['test', path.resolve(__dirname, './test')],
+        ],
         extensions: ['.js', '.jsx', '.ts', '.d.ts', '.tsx'],
       },
     },
