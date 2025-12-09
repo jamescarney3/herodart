@@ -11,6 +11,8 @@ export const LEGS_ELIMINATION = '💀';
 export const LEGS_SCORE = '✅';
 export const LEGS_ACTIVE_INDICATOR = '⭐';
 
+export const SHANGHAI_ACTIVE_INDICATOR = '⭐';
+
 export const hasOwnOrInherits = (target: object, prop: string): boolean => {
   if (target === null) return false;
   if (Object.hasOwn(target, prop)) return true;
