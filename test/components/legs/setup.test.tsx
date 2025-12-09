@@ -69,8 +69,9 @@ describe('LegsSetup', () => {
 
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
     fireEvent.click(getByText('9'));
+    fireEvent.click(getByText('enter'));
+
     waitFor(() => {
-      fireEvent.click(getByText('enter'));
       expect(getByText('add player')).toBeTruthy();
     });
   });
