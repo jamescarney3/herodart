@@ -4,6 +4,8 @@ import 'test/mocks/match-media';
 import {
   hasOwnOrInherits,
   runningInStandalone,
+  runningOnIOS,
+  hasBeforeInstallPromptEvent,
   formatEvalString,
   validateLegsScore,
   roundNumber,
@@ -59,21 +61,45 @@ describe('utils module', () => {
     });
 
     it('returns true when navigator condition is true', () => {
-      // memoize original nav standalone val and set to true
-      const originalStandalone = window.navigator.standalone;
+      const originalStandalone = window.navigator.standalone; // memoize original val
       window.navigator.standalone = true;
 
       expect(runningInStandalone()).toBe(true);
-
-      // restore nav standalone val
-      window.navigator.standalone = originalStandalone;
+      window.navigator.standalone = originalStandalone; // restore nav standalone val
     });
 
     it('returns true when media query condition is true', () => {
       // const originalMatchMedia = window.matchMedia; // preserve this just in case
       window.matchMedia = vi.fn().mockImplementation(() => ({ matches: true }));
       expect(runningInStandalone()).toBe(true);
+    });
+  });
 
+  describe('runningOnIOS', () => {
+    it('returns false when platform is not iOS', () => {
+      expect(runningOnIOS()).toBe(false);
+    });
+
+    it('returns true when platform is iOS', () => {
+      const originalNavigator = window.navigator; // memoize original val
+      window.navigator = { platform: 'iPhone|iPod|iPad' };
+
+      expect(runningOnIOS()).toBe(true);
+      window.navigator = originalNavigator; // restore nav standalone val
+    });
+  });
+
+  describe('hasBeforeInstallPromptEvent', () => {
+    it('returns false when BeforeInstallPromptEvent is not defined', () => {
+      expect(hasBeforeInstallPromptEvent()).toBe(false);
+    });
+
+    it('returns true when BeforeInstallPromptEvent is defined', () => {
+      const originalEvent = window.BeforeInstallPromptEvent; // memoize original val
+      window.BeforeInstallPromptEvent = Event;
+
+      expect(hasBeforeInstallPromptEvent()).toBe(true);
+      window.BeforeInstallPromptEvent = originalEvent; // restore nav standalone val
     });
   });
 
