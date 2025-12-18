@@ -1,3 +1,15 @@
+export type Nullable<T> = T | null | undefined;
+
+export interface BeforeInstallPromptEvent extends Event {
+  // these are also included on the event, but
+  // readonly platforms: string[];
+  // readonly userChoice: Promise<{
+  //   outcome: 'accepted' | 'dismissed';
+  //   platform: string;
+  // }>;
+  prompt(): Promise<void>;
+}
+
 export const MULT_MATH = '*';
 export const PLUS_MATH = '+';
 export const MULT = '×';
@@ -21,7 +33,7 @@ export const hasOwnOrInherits = (target: object, prop: string): boolean => {
   return hasOwnOrInherits(proto, prop);
 };
 
-export const runningInStandalone = () => {
+export const runningInStandalone = (): boolean => {
   // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator for notes on
   // Navigator.standalone property: "Available on Apple's iOS Safari only." at time of writing
   // NB: casting because the TS compiler reasonably doesn't see this as standard
@@ -36,6 +48,15 @@ export const runningInStandalone = () => {
   const mediaQueryStandalone = matchMedia('(display-mode: standalone)').matches;
 
   return [navigatorStandalone, mediaQueryStandalone].some(Boolean);
+};
+
+export const runningOnIOS = (): boolean => {
+  return !!window.navigator.platform.match(/iPhone|iPod|iPad/);
+};
+
+export const hasBeforeInstallPromptEvent = (): boolean => {
+  const castWindow = window as typeof window & { BeforeInstallPromptEvent: unknown };
+  return !!(castWindow).BeforeInstallPromptEvent;
 };
 
 export const formatEvalString = (evalString: string) => {
@@ -76,5 +97,3 @@ export const roundNumber = (value: number, places: number = 0): number => (
 export const validateLegsScore = (score: number) => {
   return score < THREE_DART_MAX && !IMPOSSIBLE_THREE_DART_SCORES.includes(score);
 };
-
-export type Nullable<T> = T | null | undefined;
