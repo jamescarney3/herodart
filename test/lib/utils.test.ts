@@ -1,6 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { hasOwnOrInherits, formatEvalString, validateLegsScore, roundNumber } from '~/lib/utils';
+import 'test/mocks/match-media';
+import {
+  hasOwnOrInherits,
+  runningInStandalone,
+  formatEvalString,
+  validateLegsScore,
+  roundNumber,
+} from '~/lib/utils';
 
 describe('utils module', () => {
   describe('hasOwnOrInherits', () => {
@@ -43,6 +50,30 @@ describe('utils module', () => {
 
       delete bar.inheritedMethod;
       expect(hasOwnOrInherits(bar, 'inheritedMethod')).toBe(true);
+    });
+  });
+
+  describe('runningInStandalone', () => {
+    it('returns false when no conditions are true', () => {
+      expect(runningInStandalone()).toBe(false);
+    });
+
+    it('returns true when navigator condition is true', () => {
+      // memoize original nav standalone val and set to true
+      const originalStandalone = window.navigator.standalone;
+      window.navigator.standalone = true;
+
+      expect(runningInStandalone()).toBe(true);
+
+      // restore nav standalone val
+      window.navigator.standalone = originalStandalone;
+    });
+
+    it('returns true when media query condition is true', () => {
+      // const originalMatchMedia = window.matchMedia; // preserve this just in case
+      window.matchMedia = vi.fn().mockImplementation(() => ({ matches: true }));
+      expect(runningInStandalone()).toBe(true);
+
     });
   });
 

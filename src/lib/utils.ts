@@ -21,6 +21,23 @@ export const hasOwnOrInherits = (target: object, prop: string): boolean => {
   return hasOwnOrInherits(proto, prop);
 };
 
+export const runningInStandalone = () => {
+  // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator for notes on
+  // Navigator.standalone property: "Available on Apple's iOS Safari only." at time of writing
+  // NB: casting because the TS compiler reasonably doesn't see this as standard
+  const navigator = window.navigator as typeof window.navigator & { standalone: boolean };
+  const navigatorStandalone = !!navigator.standalone;
+
+  // test dom doesn't seem to include the window.matchMedia methood, so this needs to be mocked in
+  // the test suite; the display-mode query isn't supported by firefox specifically at time of
+  // writing per:
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/display-mode
+  const { matchMedia } = window;
+  const mediaQueryStandalone = matchMedia('(display-mode: standalone)').matches;
+
+  return [navigatorStandalone, mediaQueryStandalone].some(Boolean);
+};
+
 export const formatEvalString = (evalString: string) => {
   const tokens = evalString.match(/\d+|\+|\*/g) || [];
   const result = [];
