@@ -33,7 +33,11 @@ const InstallButton = () => {
         </div>
       );
     } else {
-      return (<div>generic instructions</div>);
+      return (
+        <div>
+          Open in your main browser (Safari on iOS or Chrome) and follow instructions to install
+        </div>
+      );
     }
   };
 
