@@ -51,7 +51,7 @@ export const runningInStandalone = (): boolean => {
 };
 
 export const runningOnIOS = (): boolean => {
-  return !!window.navigator.platform.match(/iPhone|iPod|iPad/);
+  return !!window.navigator.userAgent.match(/iPhone|iPod|iPad/);
 };
 
 export const hasBeforeInstallPromptEvent = (): boolean => {
