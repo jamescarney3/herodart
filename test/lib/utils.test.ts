@@ -82,7 +82,7 @@ describe('utils module', () => {
 
     it('returns true when platform is iOS', () => {
       const originalNavigator = window.navigator; // memoize original val
-      window.navigator = { platform: 'iPhone|iPod|iPad' };
+      window.navigator = { userAgent: 'iPhone|iPod|iPad' };
 
       expect(runningOnIOS()).toBe(true);
       window.navigator = originalNavigator; // restore nav standalone val

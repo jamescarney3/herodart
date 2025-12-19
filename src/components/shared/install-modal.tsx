@@ -33,7 +33,9 @@ const InstallButton = () => {
         </div>
       );
     } else {
-      return (<div>generic instructions</div>);
+      return (
+        <div>Open in your main browser and follow instructions to install</div>
+      );
     }
   };
 
