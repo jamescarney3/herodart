@@ -8,37 +8,44 @@ import { usePwaInstallation } from '~/hooks';
 
 const InstallButton = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const { inStandaloneMode, hasPrompt, onIOS, promptToInstall } = usePwaInstallation();
+  const { inStandaloneMode, hasPrompt, /* onIOS, */promptToInstall } = usePwaInstallation();
 
   const handleClose = () => {
     setIsOpen(false);
   };
 
   const getInstructions = () => {
-    if (onIOS) {
-      return (
-        <div className="mt-4 flex flex-col gap-2">
-          <hr />
-          <div><Icon icon={faCompass} /> Open your main browser</div>
-          <div><Icon icon={faArrowUpFromBracket} /> Press "Share" in navigation bar</div>
-          <div><Icon icon={faSquarePlus} /> Press "Add to Home Screen"</div>
-          <button onClick={handleClose}>Not now</button>
-        </div>
-      );
-    } else if (hasPrompt) {
+    if (hasPrompt) {
       return (
         <div className="flex gap-2 mt-4">
           <button onClick={promptToInstall} className="btn-success w-1/2">Install</button>
           <button onClick={handleClose} className="w-1/2">Not now</button>
         </div>
       );
+    // } else if (onIOS) {
     } else {
       return (
-        <div>
-          Open in your main browser (Safari on iOS or Chrome) and follow instructions to install
+        <div className="mt-4 flex flex-col gap-2">
+          <hr />
+          <div><Icon icon={faCompass} /> Open your main browser (Safari on iOS or Chrome)</div>
+          <div><Icon icon={faArrowUpFromBracket} /> Press "Share" in nav bar</div>
+          <div><Icon icon={faSquarePlus} /> Press "Add to Home Screen"</div>
+          <button onClick={handleClose}>Not now</button>
         </div>
       );
     }
+    // } else {
+    //   return (
+    //     <div className="mt-4 flex flex-col gap-2">
+    //       <p>
+    //         Open in your main browser (Safari on iOS or Chrome) and follow instructions to install
+    //       </p>
+    //       <p>
+    //         Platform: {window.navigator.userAgent}
+    //       </p>
+    //     </div>
+    //   );
+    // }
   };
 
   // return early if app is already running in standalone mode
