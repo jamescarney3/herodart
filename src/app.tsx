@@ -6,7 +6,8 @@ import { InstallModal } from '~/components/shared';
 function App() {
   return (
     <BrowserRouter basename="herodart">
-      <InstallModal />
+      {/* see https://vite.dev/guide/env-and-mode */}
+      <InstallModal disabled={import.meta.env.DEV} />
       <Routes>
         <Route path="*" element={<LegsGame />} />
         <Route path="shanghai" element={<ShanghaiGame />} />
