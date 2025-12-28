@@ -26,7 +26,12 @@ describe('Keypad', () => {
   it('does not render in standalone mode', () => {
     mockUsePwaInstallation.mockReturnValue({ inStandaloneMode: true });
     const standaloneContainer = render(<InstallModal />);
-    expect(standaloneContainer).to.exist;
+    expect(standaloneContainer.baseElement.firstChild.innerHTML).toBeFalsy();
+  });
+
+  it('does not render when disabled', () => {
+    const standaloneContainer = render(<InstallModal disabled />);
+    expect(standaloneContainer.baseElement.firstChild.innerHTML).toBeFalsy();
   });
 
   it('renders instructions that correspond to platform', () => {
