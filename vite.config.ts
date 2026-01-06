@@ -83,5 +83,5 @@ export default defineConfig({
       },
     },
   },
-  base: '/herodart/',
+  base: '/herodart',
 });

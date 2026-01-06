@@ -6,7 +6,11 @@ import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 import { usePwaInstallation } from '~/hooks';
 
-const InstallButton = () => {
+interface InstallButtonProps {
+  disabled: boolean;
+}
+
+const InstallButton = ({ disabled = false }: InstallButtonProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const { inStandaloneMode, hasPrompt, /* onIOS, */promptToInstall } = usePwaInstallation();
 
@@ -34,19 +38,10 @@ const InstallButton = () => {
         </div>
       );
     }
-    // } else {
-    //   return (
-    //     <div className="mt-4 flex flex-col gap-2">
-    //       <p>
-    //         Open in your main browser (Safari on iOS or Chrome) and follow instructions to install
-    //       </p>
-    //       <p>
-    //         Platform: {window.navigator.userAgent}
-    //       </p>
-    //     </div>
-    //   );
-    // }
   };
+
+  // return early if disabled (probably aligned with a feature flag passed in at runtime)
+  if (disabled) return null;
 
   // return early if app is already running in standalone mode
   if (inStandaloneMode) return null;

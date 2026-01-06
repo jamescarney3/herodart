@@ -1,14 +1,16 @@
 import { BrowserRouter, Routes, Route } from 'react-router';
 
-import { LegsGame, ShanghaiGame } from '~/pages';
+import { MainMenu, LegsGame, ShanghaiGame } from '~/pages';
 import { InstallModal } from '~/components/shared';
 
 function App() {
   return (
     <BrowserRouter basename="herodart">
-      <InstallModal />
+      {/* see https://vite.dev/guide/env-and-mode */}
+      <InstallModal disabled={import.meta.env.DEV} />
       <Routes>
-        <Route path="*" element={<LegsGame />} />
+        <Route index={true} path="*" element={<MainMenu />} />
+        <Route path="legs" element={<LegsGame />} />
         <Route path="shanghai" element={<ShanghaiGame />} />
       </Routes>
     </BrowserRouter>

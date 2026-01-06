@@ -1,8 +1,10 @@
-import { useShanghaiGame } from '~/hooks';
+import { useShanghaiGame, useToggle } from '~/hooks';
 import { ShanghaiSetup, ShanghaiScoreboard, ShanghaiReport } from '~/components/shanghai';
+import { GameMenuModal, MenuButton } from '~/components/shared';
 
 const ShanghaiGame = () => {
   const { game, newGame } = useShanghaiGame();
+  const [menuOpen, toggleMenuOpen] = useToggle(false);
 
   const getGamePhase = () => {
     if (!game) return null;
@@ -13,6 +15,8 @@ const ShanghaiGame = () => {
 
   return (
     <div className="text-xl">
+      <MenuButton onClick={toggleMenuOpen} />
+      <GameMenuModal open={menuOpen} onClose={toggleMenuOpen} />
       {getGamePhase()}
     </div>
   );
