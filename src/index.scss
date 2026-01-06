@@ -37,7 +37,7 @@ body {
   min-height: 100vh;
 }
 
-button {
+button, .btn {
   border-radius: 8px;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -61,6 +61,10 @@ button {
     color: theme('colors.gray.500');
     pointer-events: none;
     box-shadow: none;
+  }
+
+  &:visited {
+    color: inherit;
   }
 
   &.btn-success {
