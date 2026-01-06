@@ -74,10 +74,12 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
 
       <section className="flex-shrink flex flex-col gap-2 overflow-scroll">
         {game.staticPlayerOrder.map((player) => (
-          <>
-            {/* <PlayerCard key={`player-${player.name}`} game={game} player={player} /> */}
+          <div
+            className="flex items-center p-2 shadow-xl/50 rounded-lg bg-zinc-700 first:z-40 gap-2"
+            key={`player-${player.name}`}
+          >
             {player.name}
-          </>
+          </div>
         ))}
       </section>
 
