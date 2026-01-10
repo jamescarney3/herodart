@@ -19,7 +19,8 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
   const scoreDart = (marks: number) => {
     const idx = editingDartsIdx ?? getNextDart();
     const skip = editingDartsIdx == null ? 0 : 1;
-    const result = darts.toSpliced(idx, skip, marks);
+    // don't score more than 3 marks!
+    const result = darts.toSpliced(idx, skip, marks).slice(0, 3);
 
     setDarts(result);
     setEditingDartsIdx(null);
