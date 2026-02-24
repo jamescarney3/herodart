@@ -2,17 +2,20 @@ import Store from '~/lib/v2/store';
 import Observer from '~/lib/v2/observer';
 import type Collection from '~/lib/v2/collection';
 
+interface ModelBase extends Model {
+  [key: string]: unknown;
+}
+
 const BASE_METADATA = {
   props: <string[]>[],
+  associations: <string[]>[],
   key: <null | string>null,
   customKeySet: false,
   storeKey: '',
 };
 Object.freeze(BASE_METADATA);
 
-export function prop(target: Model, propName: string): void {
-  const ModelClass = target.constructor as typeof Model;
-  ModelClass.meta.props.push(propName);
+function setProp(target: Model, propName: string): void {
   const backingField = `_${propName}`;
 
   Object.defineProperty(target, propName, {
@@ -24,6 +27,13 @@ export function prop(target: Model, propName: string): void {
       Observer.notify(this);
     },
   });
+}
+
+export function prop(target: Model, propName: string): void {
+  const ModelClass = target.constructor as typeof Model;
+  ModelClass.meta.props.push(propName);
+
+  setProp(target, propName);
 }
 
 export function key(target: Model, propName: string): void {
@@ -45,7 +55,7 @@ type RelationOptionsSignature = {
 export function belongsTo(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
     const ModelClass = target.constructor as typeof Model;
-    ModelClass.meta.props.push(propName);
+    ModelClass.meta.associations.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
 
     Object.defineProperty(target, propName, {
@@ -66,7 +76,7 @@ export function belongsTo(relationName: string, options: RelationOptionsSignatur
 export function hasOne(relationName: string, options: RelationOptionsSignature) {
   return (target: Model, propName: string): void => {
     const ModelClass = <typeof Model>target.constructor;
-    ModelClass.meta.props.push(propName);
+    ModelClass.meta.associations.push(propName);
     const { foreignKey } = <{ foreignKey: keyof Model }>options;
     const primaryKey = <keyof Model>ModelClass.primaryKey;
 
@@ -112,8 +122,8 @@ export default class Model {
   private static _meta = new Map();
 
   delete() {
-    const metadata = (this.constructor as typeof Model).meta;
-    const collection = Store.all((metadata as unknown as typeof BASE_METADATA).storeKey);
+    const metadata = (this.constructor as typeof Model).meta as typeof BASE_METADATA;
+    const collection = Store.all(metadata.storeKey);
     const idx = collection.indexOf(this);
     collection.splice(idx, 1);
     Observer.notify(this);
@@ -136,16 +146,16 @@ export default class Model {
     return this.meta.props;
   }
 
+  static get associations() {
+    return this.meta.associations;
+  }
+
   static get storeKey() {
     if (!this.meta.storeKey) {
       throw new Error(`Model ${this.constructor.name} storeKey not set`);
     }
     return this.meta.storeKey;
   }
-
-  // static get nextKey() {
-  //   // lol
-  // }
 
   static get all(): Collection<Model> {
     return Store.all(this.storeKey);
@@ -156,16 +166,29 @@ export default class Model {
   }
 
   static create(attributes: ModelAttributes) {
-    const instance = new this(/* attributes */);
+    // declare a fresh instance and assign whitelist of attributes
+    const instance = new this() as ModelBase;
 
-    for (const prop in attributes) {
-      if (this.props.includes(prop)) {
-        (instance as unknown as Record<string, unknown>)[prop] = attributes[prop];
+    for (const propName of this.props) {
+      if (propName in instance && instance[propName] === undefined) {
+        const value = instance[propName];
+        delete instance[propName];
+        setProp(instance, propName);
+        instance[propName] = value;
+      }
+      if (propName in attributes) {
+        instance[propName] = attributes[propName];
       }
     }
 
-    Store.all(this.meta.storeKey).add(instance);
+    for (const association of this.associations) {
+      if (association in attributes) {
+        instance[association] = attributes[association];
+      }
+    }
+
+    Store.all(this.meta.storeKey).add(instance as Model);
     Observer.notify(this);
-    return instance;
+    return instance as Model;
   }
 }
