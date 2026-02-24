@@ -29,6 +29,20 @@ describe('Model class', () => {
       expect(bar.baz).toBe(1);
       expect(bar.qux).toBe(2);
     });
+
+    it('assigns association attributes to a model instance', () => {
+      class Foo extends Model {
+        @belongsTo('bars', { foreignKey: 'barId' }) declare bar;
+      }
+
+      class Bar extends Model {}
+      const bar = new Bar();
+
+      Store.all.returns({ get: () => bar, add: sinon.stub() });
+      const foo = Foo.create({ bar: bar });
+
+      expect(foo.bar).toBe(bar);
+    });
   });
 
   describe('::all', () => {
