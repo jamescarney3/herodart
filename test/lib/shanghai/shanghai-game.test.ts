@@ -3,7 +3,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import ShanghaiPlayer from '~/lib/shanghai/shanghai-player';
 import ShanghaiRound from '~/lib/shanghai/shanghai-round';
-import Collection from '~/lib/v2/collection';
+import { Collection } from '@jamescarney3/microrm';
 
 vi.mock('~/lib/shanghai/shanghai-player', () => {
   class MockPlayer {

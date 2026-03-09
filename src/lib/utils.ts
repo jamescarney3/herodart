@@ -25,14 +25,6 @@ export const LEGS_ACTIVE_INDICATOR = '⭐';
 
 export const SHANGHAI_ACTIVE_INDICATOR = '⭐';
 
-export const hasOwnOrInherits = (target: object, prop: string): boolean => {
-  if (target === null) return false;
-  if (Object.hasOwn(target, prop)) return true;
-
-  const proto = Object.getPrototypeOf(target);
-  return hasOwnOrInherits(proto, prop);
-};
-
 export const runningInStandalone = (): boolean => {
   // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator for notes on
   // Navigator.standalone property: "Available on Apple's iOS Safari only." at time of writing
@@ -56,7 +48,7 @@ export const runningOnIOS = (): boolean => {
 
 export const hasBeforeInstallPromptEvent = (): boolean => {
   const castWindow = window as typeof window & { BeforeInstallPromptEvent: unknown };
-  return !!(castWindow).BeforeInstallPromptEvent;
+  return !!castWindow.BeforeInstallPromptEvent;
 };
 
 export const formatEvalString = (evalString: string) => {
@@ -68,19 +60,19 @@ export const formatEvalString = (evalString: string) => {
     // look ahead for multiplication operator
     if (tokens[i + 1] === MULT_MATH) {
       // look for multiplicand and parenthesize
-      if ((tokens[i + 2] ?? null)) {
+      if (tokens[i + 2] ?? null) {
         result.push('(' + tokens[i] + MULT + tokens[i + 2] + ')');
         i += 3;
-      // otherwise push friendly operator
+        // otherwise push friendly operator
       } else {
         result.push(tokens[i] + MULT);
         i += 2;
       }
-    // addition is easy - just push the operator
+      // addition is easy - just push the operator
     } else if (tokens[i] === PLUS_MATH) {
-      result.push (` ${PLUS} `);
+      result.push(` ${PLUS} `);
       i++;
-    // otherwise just push the number
+      // otherwise just push the number
     } else {
       result.push(tokens[i]);
       i++;
@@ -89,10 +81,9 @@ export const formatEvalString = (evalString: string) => {
   return result.join('');
 };
 
-export const roundNumber = (value: number, places: number = 0): number => (
+export const roundNumber = (value: number, places: number = 0): number =>
   // @ts-expect-error doing some base-10 exponential/scientific notation magick here
-  +(Math.round(value + 'e+' + places) + 'e-' + places)
-);
+  +(Math.round(value + 'e+' + places) + 'e-' + places);
 
 export const validateLegsScore = (score: number) => {
   return score < THREE_DART_MAX && !IMPOSSIBLE_THREE_DART_SCORES.includes(score);

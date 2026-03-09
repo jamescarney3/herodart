@@ -1,6 +1,4 @@
-import Model, { prop, key, hasMany } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
-import type Collection from '~/lib/v2/collection';
+import { Model, prop, key, hasMany, type Collection, register } from '@jamescarney3/microrm';
 import Player from '~/lib/shanghai/shanghai-player';
 import Round from '~/lib/shanghai/shanghai-round';
 import type { ShanghaiDarts } from '~/lib/shanghai/shanghai-round';

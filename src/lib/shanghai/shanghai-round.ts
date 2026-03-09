@@ -1,5 +1,4 @@
-import Model, { prop, belongsTo } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
+import { Model, prop, belongsTo, register } from '@jamescarney3/microrm';
 import type Player from '~/lib/shanghai/shanghai-player';
 import type Game from '~/lib/shanghai/shanghai-game';
 
