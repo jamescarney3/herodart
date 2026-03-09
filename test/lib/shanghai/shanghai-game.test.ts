@@ -1,9 +1,9 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { Collection } from '@jamescarney3/microrm';
 
 import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import ShanghaiPlayer from '~/lib/shanghai/shanghai-player';
 import ShanghaiRound from '~/lib/shanghai/shanghai-round';
-import { Collection } from '@jamescarney3/microrm';
 
 vi.mock('~/lib/shanghai/shanghai-player', () => {
   class MockPlayer {
@@ -60,11 +60,17 @@ describe('ShanghaiGame class', () => {
       vi.spyOn(game, 'players', 'get').mockReturnValue(['first', 'second', 'third']);
       vi.spyOn(game, 'rounds', 'get').mockReturnValue([
         // 1
-        firstRound, {}, thirdRound,
+        firstRound,
+        {},
+        thirdRound,
         // 2
-        {}, {}, {},
+        {},
+        {},
+        {},
         // 3
-        seventhRound, {}, {},
+        seventhRound,
+        {},
+        {},
       ]);
 
       expect(game.getWedgeByRound(firstRound)).toBe(1);
@@ -155,11 +161,7 @@ describe('ShanghaiGame class', () => {
 
     it('returns true when two or more players are tied with best marks', () => {
       vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
-      vi.spyOn(game, 'players', 'get').mockReturnValue(new Collection([
-        { marks: 30 },
-        { marks: 30 },
-        { marks: 20 },
-      ]));
+      vi.spyOn(game, 'players', 'get').mockReturnValue(new Collection([{ marks: 30 }, { marks: 30 }, { marks: 20 }]));
 
       expect(game.tie).toBe(true);
     });
@@ -199,11 +201,11 @@ describe('ShanghaiGame class', () => {
       vi.spyOn(game, 'tie', 'get').mockReturnValue(false);
       vi.spyOn(game, 'players', 'get').mockImplementation(() => {
         const originalSort = players.sort.bind(players);
-        players.sort = ((predicate) => {
+        players.sort = (predicate) => {
           const result = originalSort(predicate);
           result.first = result.at(0);
           return result;
-        });
+        };
         return players;
       });
       expect(game.winner).toBe(cricket);
@@ -301,7 +303,7 @@ describe('ShanghaiGame class', () => {
   });
 
   describe('get currentWedge', () => {
-    it('returns the target wedge for the current player\'s shot', () => {
+    it("returns the target wedge for the current player's shot", () => {
       const game = new ShanghaiGame();
 
       vi.spyOn(game, 'rounds', 'get').mockReturnValue(new Array(31).fill({}));
