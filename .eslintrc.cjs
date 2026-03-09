@@ -29,7 +29,7 @@ module.exports = {
     'max-len': ['warn', 120],
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     semi: ['warn'],
-    quotes: ['warn', 'single'],
+    quotes: ['warn', 'single', { avoidEscape: true }],
     'import/order': [
       'error',
       {
