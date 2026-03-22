@@ -1,6 +1,7 @@
-import { Model, prop, key, hasMany, type Collection, register } from '@jamescarney3/microrm';
+import { Model, prop, key, hasMany, hasOne, type Collection, register } from '@jamescarney3/microrm';
 import Player from '~/lib/shanghai/shanghai-player';
 import Round from '~/lib/shanghai/shanghai-round';
+import { ShanghaiRules } from '~/lib/shanghai';
 import type { ShanghaiDarts } from '~/lib/shanghai/shanghai-round';
 
 const WEDGES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
@@ -14,6 +15,7 @@ export default class ShanghaiGame extends Model {
 
   @hasMany('shanghai-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
   @hasMany('shanghai-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
+  @hasOne('shanghai-rules', { foreignKey: 'gameId'}) declare rules: Collection<ShanghaiRules>;
 
   createPlayer(attributes: { name: string; splash: number }): Player {
     return Player.create({ ...attributes, game: this }) as Player;
