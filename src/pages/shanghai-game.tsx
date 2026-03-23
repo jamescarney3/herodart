@@ -8,9 +8,9 @@ const ShanghaiGame = () => {
 
   const getGamePhase = () => {
     if (!game) return null;
-    if (game?.finished) return (<ShanghaiReport game={game} onNewGame={newGame} />);
-    if (game?.started) return (<ShanghaiScoreboard game={game} />);
-    return (<ShanghaiSetup game={game} />);
+    if (game.finished) return <ShanghaiReport game={game} onNewGame={newGame} />;
+    if (game.started) return <ShanghaiScoreboard game={game} />;
+    return <ShanghaiSetup game={game} />;
   };
 
   return (

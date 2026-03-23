@@ -20,16 +20,7 @@ const useLegsGame = () => {
   }, [forceUpdate, gameRef]);
 
   const newGame = () => {
-    // cleanup all legs-related model instances until there's a good serialization and
-    // storage strategy for them; likely localStorage initially if not server side
-    const game = gameRef.current;
-    if (game) {
-      const { players, rounds } = game;
-      game.delete();
-      players!.forEach((player) => player.delete());
-      rounds!.forEach((round) => round.delete());
-    }
-
+    // TODO: consider cleaning up after the current game if it exists
     gameRef.current = <LegsGame>LegsGame.create({ id: uuidv4() });
     forceUpdate(() => new Object());
   };
