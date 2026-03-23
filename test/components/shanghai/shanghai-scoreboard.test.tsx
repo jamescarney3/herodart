@@ -11,7 +11,7 @@ vi.mock('~/lib/shanghai/shanghai-game', () => {
     id: 'test-game',
     currentPlayer: { name: 'amos' },
     currentWedge: null,
-    staticPlayerOrder: [],
+    staticPlayerOrder: [{ name: 'amos' }, { name: 'holden' }],
     rounds: [{ player: { name: 'holden' }, darts: [1, 0, 1], wedge: 1 }],
     scoreRound: vi.fn(),
   }));
@@ -24,7 +24,7 @@ vi.mock('~/components/shanghai/shanghai-marks', () => {
     <div data-testid="marks">
       <div data-testid="editing-mark">{editing}</div>
       {darts.map((score, idx) => (
-        <button data-testid={`dart-${idx}`} key={`marks-${idx}`} onClick={() => onSelect(idx) }>
+        <button data-testid={`dart-${idx}`} key={`marks-${idx}`} onClick={() => onSelect(idx)}>
           {score}
         </button>
       ))}
@@ -36,10 +36,7 @@ vi.mock('~/components/shanghai/shanghai-marks', () => {
 vi.mock('~/components/shanghai/shanghai-round-item', () => {
   const DummyRoundItem = ({ round, editingRound, onClick }) => {
     return (
-      <button
-        data-testid={`${round.player.name}-round`}
-        onClick={() => onClick(round)}
-      >
+      <button data-testid={`${round.player.name}-round`} onClick={() => onClick(round)}>
         {editingRound === round && 'editing'}
       </button>
     );
@@ -87,10 +84,13 @@ describe('ShanghaiScoreboard component', () => {
 
     waitFor(() => {
       fireEvent.click(getByTestId('dart-1'));
+      fireEvent.click(getByTestId('dart-2'));
       expect(getByTestId('editing-mark').innerHtml).not.toBeDefined();
 
       fireEvent.click(getByText(1));
+      fireEvent.click(getByText(2));
       fireEvent.click(getByTestId('dart-1'));
+      fireEvent.click(getByTestId('dart-3'));
 
       expect(getByTestId('editing-mark')).toBe(1);
     });
