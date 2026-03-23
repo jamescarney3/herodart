@@ -16,9 +16,7 @@ export default defineConfig({
       babelConfig: {
         babelrc: false,
         configFile: false,
-        plugins: [
-          ['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }],
-        ],
+        plugins: [['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }]],
       },
     }),
     VitePWA({
@@ -29,24 +27,24 @@ export default defineConfig({
           {
             src: 'pwa-64x64.png',
             sizes: '64x64',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any'
+            purpose: 'any',
           },
           {
             src: 'maskable-icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable'
+            purpose: 'maskable',
           },
         ],
       },
@@ -55,14 +53,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
-      'test': path.resolve(__dirname, './test'),
+      test: path.resolve(__dirname, './test'),
     },
   },
   test: {
     environment: 'jsdom',
     coverage: {
       include: ['src'],
-      exclude: ['src/main.tsx', '**/*.d.ts', 'src/**/index.ts'],
+      exclude: ['src/main.tsx', 'src/index.scss', 'src/assets/*', 'src/**/index.ts', 'styles/*', '**/*.d.ts'],
       thresholds: {
         lines: 100,
         statements: 100,
