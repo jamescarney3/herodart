@@ -18,8 +18,8 @@ vi.mock('~/lib/legs/legs-game', () => {
       name,
       splash,
       score: vi.fn(),
-      strikes: 0
-    }))
+      strikes: 0,
+    })),
   }));
 
   return { default: MockLegsGame };

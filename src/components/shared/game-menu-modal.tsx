@@ -17,10 +17,16 @@ const GameMenuDialog = ({ open, onClose }: GameMenuDialogProps) => {
       {/* container div relative to which to position content */}
       <div className="fixed inset-0">
         <DialogPanel className="bg-neutral-800 m-2 p-2">
-          <DialogTitle as="h1" className="text-xl">Game Menu</DialogTitle>
+          <DialogTitle as="h1" className="text-xl">
+            Game Menu
+          </DialogTitle>
           <Description as="div" className="mt-4">
-            <Link className="btn block text-xl text-center w-full" to="/">Quit game</Link>
-            <button className="w-full" onClick={onClose}>Cancel</button>
+            <Link className="btn block text-xl text-center w-full" to="/">
+              Quit game
+            </Link>
+            <button className="w-full" onClick={onClose}>
+              Cancel
+            </button>
           </Description>
         </DialogPanel>
       </div>

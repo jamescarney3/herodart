@@ -12,7 +12,7 @@ interface InstallButtonProps {
 
 const InstallButton = ({ disabled = false }: InstallButtonProps) => {
   const [isOpen, setIsOpen] = useState(true);
-  const { inStandaloneMode, hasPrompt, /* onIOS, */promptToInstall } = usePwaInstallation();
+  const { inStandaloneMode, hasPrompt, /* onIOS, */ promptToInstall } = usePwaInstallation();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -22,18 +22,28 @@ const InstallButton = ({ disabled = false }: InstallButtonProps) => {
     if (hasPrompt) {
       return (
         <div className="flex gap-2 mt-4">
-          <button onClick={promptToInstall} className="btn-success w-1/2">Install</button>
-          <button onClick={handleClose} className="w-1/2">Not now</button>
+          <button onClick={promptToInstall} className="btn-success w-1/2">
+            Install
+          </button>
+          <button onClick={handleClose} className="w-1/2">
+            Not now
+          </button>
         </div>
       );
-    // } else if (onIOS) {
+      // } else if (onIOS) {
     } else {
       return (
         <div className="mt-4 flex flex-col gap-2">
           <hr />
-          <div><Icon icon={faCompass} /> Open your main browser (Safari on iOS or Chrome)</div>
-          <div><Icon icon={faArrowUpFromBracket} /> Press "Share" in nav bar</div>
-          <div><Icon icon={faSquarePlus} /> Press "Add to Home Screen"</div>
+          <div>
+            <Icon icon={faCompass} /> Open your main browser (Safari on iOS or Chrome)
+          </div>
+          <div>
+            <Icon icon={faArrowUpFromBracket} /> Press "Share" in nav bar
+          </div>
+          <div>
+            <Icon icon={faSquarePlus} /> Press "Add to Home Screen"
+          </div>
           <button onClick={handleClose}>Not now</button>
         </div>
       );
@@ -53,12 +63,11 @@ const InstallButton = ({ disabled = false }: InstallButtonProps) => {
       <div className="fixed inset-0">
         {/* dialog content */}
         <DialogPanel className="bg-neutral-800 m-2 p-2">
-          <DialogTitle as="h1" className="text-xl">Download Herodart</DialogTitle>
+          <DialogTitle as="h1" className="text-xl">
+            Download Herodart
+          </DialogTitle>
           <Description as="div" className="mt-4">
-            <p>
-              Herodart can be installed on your device for standalone app functionality and offline
-              availability
-            </p>
+            <p>Herodart can be installed on your device for standalone app functionality and offline availability</p>
             {getInstructions()}
           </Description>
         </DialogPanel>

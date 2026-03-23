@@ -12,19 +12,15 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
       <section>
         <h1 className="text-center text-6xl">Winner:</h1>
         <div className="text-center text-6xl">{game.winner?.name}</div>
-        <div className="text-center text-4xl">
-          Average: {roundNumber(game.winner!.average, 2)}
-        </div>
-        <div className="text-center text-4xl">
-          Opp. Average: {roundNumber(game.winner!.opponentAverage, 2)}
-        </div>
+        <div className="text-center text-4xl">Average: {roundNumber(game.winner!.average, 2)}</div>
+        <div className="text-center text-4xl">Opp. Average: {roundNumber(game.winner!.opponentAverage, 2)}</div>
       </section>
 
       <section>
         <h2 className="text-2xl border-bottom mt-4">Player Performance</h2>
         <table className="w-full">
           <thead>
-            <tr className='[&>th]:text-left'>
+            <tr className="[&>th]:text-left">
               <th />
               <th>Turns</th>
               <th>Avg</th>
@@ -32,14 +28,16 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
             </tr>
           </thead>
           <tbody>
-            {game.players.sort((a, b) => b.splash - a.splash).map((player) => (
-              <tr key={`player-${player.name}`}>
-                <td>{player.name}</td>
-                <td>{player.rounds.length}</td>
-                <td>{roundNumber(player.average, 2)}</td>
-                <td>{roundNumber(player.opponentAverage, 2)}</td>
-              </tr>
-            ))}
+            {game.players
+              .sort((a, b) => b.splash - a.splash)
+              .map((player) => (
+                <tr key={`player-${player.name}`}>
+                  <td>{player.name}</td>
+                  <td>{player.rounds.length}</td>
+                  <td>{roundNumber(player.average, 2)}</td>
+                  <td>{roundNumber(player.opponentAverage, 2)}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </section>
@@ -49,7 +47,7 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
         <div className="grow basis-0 overflow-auto">
           <table className="w-full">
             <thead>
-              <tr className='[&>th]:text-left'>
+              <tr className="[&>th]:text-left">
                 <th />
                 <th>Player</th>
                 <th>Score</th>
@@ -74,7 +72,9 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
       </section>
 
       <section>
-        <button onClick={onNewGame} className="w-full">new game</button>
+        <button onClick={onNewGame} className="w-full">
+          new game
+        </button>
       </section>
     </div>
   );

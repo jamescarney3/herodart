@@ -28,11 +28,7 @@ describe('LegsPlayer class', () => {
     it('calculates player 3DA', () => {
       const legsPlayer = new LegsPlayer({ name: 'moe' });
 
-      const rounds = [
-        { score: 60 },
-        { score: 120 },
-        { score: 100 },
-      ];
+      const rounds = [{ score: 60 }, { score: 120 }, { score: 100 }];
 
       vi.spyOn(legsPlayer, 'rounds', 'get').mockReturnValue(rounds);
 
