@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { evaluate } from 'mathjs';
 
 import { Keypad, PlayerCard } from '~/components/legs';
 import type LegsGame from '~/lib/legs/legs-game';
@@ -42,12 +43,12 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
 
   const onSubmit = () => {
     try {
-      game.createPlayer({ name, splash: eval(splash)! });
+      game.createPlayer({ name, splash: evaluate(splash)! });
       setSplash('');
       setName('');
       setAddingPlayer(false);
       setSplashing(false);
-    } catch (e: unknown) {
+    } catch (e) {
       console.log((e as Error).message);
     }
   };

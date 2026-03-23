@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { evaluate } from 'mathjs';
 
 import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import { Keypad } from '~/components/shared';
@@ -42,7 +43,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
 
   const onSubmit = () => {
     try {
-      game.createPlayer({ name, splash: eval(splash)! });
+      game.createPlayer({ name, splash: evaluate(splash)! });
       setSplash('');
       setName('');
       setAddingPlayer(false);
