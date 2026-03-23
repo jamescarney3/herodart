@@ -4,7 +4,7 @@ import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import { Keypad } from '~/components/shared';
 
 interface ShanghaiSetupProps {
-  game: ShanghaiGame
+  game: ShanghaiGame;
 }
 
 const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
@@ -47,10 +47,11 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
       setName('');
       setAddingPlayer(false);
       setSplashing(false);
-    /* v8 ignore next 3 */
-    } catch (e: unknown) {
+      /* istanbul ignore start -- @preserve */
+    } catch (e) {
       console.log((e as Error).message);
     }
+    /* istanbul ignore stop -- @preserve */
   };
 
   return (
@@ -58,7 +59,9 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
       <section className="h-48 shrink-0 flex flex-col gap-2">
         <h1 className="text-center text-6xl mb-auto">Shanghai Setup</h1>
         {splashing && <p className="test-center">splash (2 darts) for turn order:</p>}
-        <label htmlFor="player-name" className="hidden">Name:</label>
+        <label htmlFor="player-name" className="hidden">
+          Name:
+        </label>
         <input
           ref={nameInputRef}
           name="player-name"
@@ -67,7 +70,9 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
           value={name}
           disabled={splashing || !addingPlayer}
           onChange={(e) => setName(e.target.value)}
-          onKeyUp={(e) => { if (e.key === 'Enter') setSplashing(true); }}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') setSplashing(true);
+          }}
           className="w-full text-center py-4 text-2xl focus:outline-none"
         />
       </section>

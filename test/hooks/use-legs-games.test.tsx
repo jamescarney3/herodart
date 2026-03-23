@@ -4,19 +4,29 @@ import { useState } from 'react';
 
 import useLegsGame from '~/hooks/use-legs-game';
 
-vi.mock('~/lib/legs/legs-game', async () => {
+vi.mock('~/lib/legs/legs-game', () => {
   class MockLegsGame {
     static create({ id }) {
       const newGame = new MockLegsGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = () => void(0);
+      newGame.delete = () => void 0;
       newGame.players = [];
       newGame.rounds = [];
       return newGame;
     }
   }
   return { default: MockLegsGame };
+});
+
+vi.mock('@jamescarney3/microrm', () => {
+  class MockObserver {
+    // invoke this right away, don't worry about observer inner workings
+    static subscribe(callback: () => void) {
+      callback();
+    }
+  }
+  return { Observer: MockObserver };
 });
 
 describe('useLegsGame hook', () => {

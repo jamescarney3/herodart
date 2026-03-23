@@ -27,15 +27,19 @@ const ScoreToast = ({ game, score }: ScoreToastProps) => {
     'translate-x-[-100%]',
     // typogratphy
     'text-8xl',
-    ...(scoring ? [
-      // animate during scoring action
-      'transition-transform',
-      'ease-linear',
-      'duration-500', // constantize this?
-      // slide all the way from left to right
-      'translate-x-[var(--container-width)]',
-    ] : []),
-  ].filter(Boolean).join(' ');
+    ...(scoring
+      ? [
+          // animate during scoring action
+          'transition-transform',
+          'ease-linear',
+          'duration-500', // constantize this?
+          // slide all the way from left to right
+          'translate-x-[var(--container-width)]',
+        ]
+      : []),
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // need to cast type here because rect doesn't think --container-width is a real key; it's not,
   // but it *is* a programmatic way to get a value interpolated into a tailwind util arbitrary val
@@ -45,10 +49,15 @@ const ScoreToast = ({ game, score }: ScoreToastProps) => {
     if (!scoring) return;
     if (game.scoreWouldEliminateCurrentPlayer(score)) return LEGS_ELIMINATION;
     if (game.scoreWouldBeStrike(score)) return LEGS_STRIKE;
-    if (scoring) return LEGS_SCORE;
+    /* if (scoring) */
+    return LEGS_SCORE;
   })();
 
-  return (<div className={toastClass} style={toastStyle}>{toastContent}</div>);
+  return (
+    <div className={toastClass} style={toastStyle}>
+      {toastContent}
+    </div>
+  );
 };
 
 export default ScoreToast;

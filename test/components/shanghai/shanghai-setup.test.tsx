@@ -4,14 +4,14 @@ import { cleanup, render, fireEvent, waitFor } from '@testing-library/react';
 import ShanghaiSetup from '~/components/shanghai/shanghai-setup';
 import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 
-const consoleMock = vi.spyOn(console, 'log').mockImplementation(() => void(0));
+const consoleMock = vi.spyOn(console, 'log').mockImplementation(() => void 0);
 
 vi.mock('~/lib/shanghai/shanghai-game', () => {
   const MockShanghaiGame = vi.fn();
 
   MockShanghaiGame.create = vi.fn().mockImplementation(() => ({
     id: 'test-game',
-    staticPlayerOrder: [],
+    staticPlayerOrder: [{ name: 'mac' }, { name: 'charlie' }],
     createPlayer: vi.fn(),
     start: vi.fn(),
   }));
@@ -56,6 +56,7 @@ describe('ShanghaiSetup component', () => {
     fireEvent.click(getByText('add player'));
     const nameInput = getByRole('textbox');
     fireEvent.change(nameInput, { target: { value: 'Artemis' } });
+    fireEvent.keyUp(nameInput, { key: '' });
     fireEvent.keyUp(nameInput, { key: 'Enter', code: 'Enter', charCode: 13 });
 
     expect(getByText(1)).toBeDefined();

@@ -13,31 +13,12 @@ const useLegsGame = () => {
   useEffect(() => {
     gameRef.current ??= <ShanghaiGame>ShanghaiGame.create({ id: uuidv4() });
 
-    // if (gameRef.current) {
-    //   const game = gameRef.current;
-    //
-    //   if (!game.players.length) {
-    //     game.createPlayer({ name: 'james', splash: 20 });
-    //     game.createPlayer({ name: 'maloof', splash: 30 });
-    //     game.createPlayer({ name: 'scotty', splash: 40 });
-    //
-    //     game.start();
-    //   }
-    // }
-
     Observer.subscribe(() => forceUpdate(() => new Object()));
     forceUpdate(() => new Object());
   }, [forceUpdate, gameRef]);
 
   const newGame = () => {
-    const game = gameRef.current;
-    if (game) {
-      const { players, rounds } = game;
-      game.delete();
-      players!.forEach((player) => player.delete());
-      rounds!.forEach((round) => round.delete());
-    }
-
+    // TODO: consider cleaning up after the current game if it exists
     gameRef.current = <ShanghaiGame>ShanghaiGame.create({ id: uuidv4() });
     forceUpdate(() => new Object());
   };

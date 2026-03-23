@@ -10,13 +10,23 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = () => void(0);
+      newGame.delete = () => void 0;
       newGame.players = [];
       newGame.rounds = [];
       return newGame;
     }
   }
   return { default: MockShanghaiGame };
+});
+
+vi.mock('@jamescarney3/microrm', () => {
+  class MockObserver {
+    // invoke this right away, don't worry about observer inner workings
+    static subscribe(callback: () => void) {
+      callback();
+    }
+  }
+  return { Observer: MockObserver };
 });
 
 describe('useShanghaiGame hook', () => {
