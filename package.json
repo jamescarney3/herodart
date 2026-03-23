@@ -45,7 +45,7 @@
     "@typescript-eslint/parser": "^7.18.0",
     "@vite-pwa/assets-generator": "^1.0.2",
     "@vitejs/plugin-react-swc": "^3.11.0",
-    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/coverage-v8": "^4.1.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.57.1",
     "eslint-import-resolver-alias": "^1.1.2",
