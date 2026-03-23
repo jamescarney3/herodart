@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { evaluate } from 'mathjs';
 
 import { PlayerCard, Keypad, ScoreToast } from '~/components/legs';
 import type LegsGame from '~/lib/legs/legs-game';
@@ -13,14 +14,14 @@ const LegsScoreboard = ({ game }: LegsScoreboardProps) => {
   const [scoring, setScoring] = useState(false);
 
   const scoreRound = () => {
-    game.currentPlayer?.score(eval(score));
+    game.currentPlayer?.score(evaluate(score));
     setScore('');
     setPendingScore(null);
     setScoring(false);
   };
 
   const onSubmit = () => {
-    setPendingScore(eval(score));
+    setPendingScore(evaluate(score));
     setScoring(true);
     setTimeout(scoreRound, 500);
   };
