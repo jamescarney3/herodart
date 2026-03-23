@@ -8,17 +8,9 @@ describe('ShanghaiReport component', () => {
   let mockGame: ShanghaiGame;
 
   beforeEach(() => {
-    const mockPlayers = [
-      { name: 'charlie' },
-      { name: 'mac' },
-      { name: 'dennis' },
-    ];
+    const mockPlayers = [{ name: 'charlie' }, { name: 'mac' }, { name: 'dennis' }];
 
-    const rounds = [
-      { player: mockPlayers[0] },
-      { player: mockPlayers[1] },
-      { player: mockPlayers[2] },
-    ];
+    const rounds = [{ player: mockPlayers[0] }, { player: mockPlayers[1] }, { player: mockPlayers[2] }];
 
     mockGame = {
       players: [],

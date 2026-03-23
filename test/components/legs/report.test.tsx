@@ -31,7 +31,7 @@ describe('LegsReport', () => {
         average: 72.3,
         opponentAverage: 85.6,
         splash: 90,
-      }
+      },
     ] as unknown as LegsPlayer[];
 
     mockRounds = [
@@ -52,7 +52,7 @@ describe('LegsReport', () => {
         score: 60,
         wasStrike: true,
         wasEliminationRound: true,
-      }
+      },
     ] as unknown as LegsRound[];
 
     mockGame = {

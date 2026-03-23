@@ -37,7 +37,8 @@ body {
   min-height: 100vh;
 }
 
-button, .btn {
+button,
+.btn {
   border-radius: 8px;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -71,9 +72,9 @@ button, .btn {
     @apply shadow-[inset_0_0_4px_2px_rgba(161,161,170,0.15)]
       bg-gradient-to-b from-[theme('colors.green.800')] to-[theme('colors.green.900')];
 
-      &:active {
-        @apply bg-gradient-to-b to-[theme('colors.green.800')] from-[theme('colors.green.900')];
-      }
+    &:active {
+      @apply bg-gradient-to-b to-[theme('colors.green.800')] from-[theme('colors.green.900')];
+    }
   }
 
   &.btn-danger {

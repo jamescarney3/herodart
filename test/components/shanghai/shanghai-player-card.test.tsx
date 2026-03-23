@@ -4,7 +4,7 @@ import { render, cleanup } from '@testing-library/react';
 import ShanghaiPlayerCard from '~/components/shanghai/shanghai-player-card';
 
 vi.mock('~/lib/utils', () => ({
-  SHANGHAI_ACTIVE_INDICATOR: 'x'
+  SHANGHAI_ACTIVE_INDICATOR: 'x',
 }));
 
 describe('ShanghaiPlayerCard component', () => {

@@ -39,7 +39,7 @@ describe('LegsPlayerCard', () => {
     const { getByText } = render(
       <div>
         <LegsPlayerCard player={player} game={game} score={0} />
-      </div>
+      </div>,
     );
 
     const card = getByText(LEGS_ACTIVE_INDICATOR).parentElement as HTMLElement;
@@ -57,7 +57,7 @@ describe('LegsPlayerCard', () => {
       <div>
         <LegsPlayerCard player={player} game={game} scoring score={0} />
         <LegsPlayerCard player={{ name: 'other' }} game={game} />
-      </div>
+      </div>,
     );
 
     const card = getByText('Pangloss').parentElement as HTMLElement;
@@ -81,7 +81,7 @@ describe('LegsPlayerCard', () => {
       <div>
         <LegsPlayerCard player={player} game={game} scoring score={10} />
         <LegsPlayerCard player={{ name: 'other' }} game={game} />
-      </div>
+      </div>,
     );
 
     const card = getByText('Cacambo').parentElement as HTMLElement;

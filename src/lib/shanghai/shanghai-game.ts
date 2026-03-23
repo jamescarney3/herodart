@@ -15,7 +15,7 @@ export default class ShanghaiGame extends Model {
 
   @hasMany('shanghai-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
   @hasMany('shanghai-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
-  @hasOne('shanghai-rules', { foreignKey: 'gameId'}) declare rules: Collection<ShanghaiRules>;
+  @hasOne('shanghai-rules', { foreignKey: 'gameId' }) declare rules: Collection<ShanghaiRules>;
 
   createPlayer(attributes: { name: string; splash: number }): Player {
     return Player.create({ ...attributes, game: this }) as Player;
@@ -28,10 +28,10 @@ export default class ShanghaiGame extends Model {
 
   getWedgeByRound(round: Round): number {
     const { players, rounds } = this;
-    const roundIdx = rounds.findIndex(current => current === round);
+    const roundIdx = rounds.findIndex((current) => current === round);
     const playersCount = players.length;
 
-    return (roundIdx - roundIdx % playersCount) / playersCount + 1;
+    return (roundIdx - (roundIdx % playersCount)) / playersCount + 1;
   }
 
   scoreRound(player: Player, darts: ShanghaiDarts): void {
@@ -48,7 +48,10 @@ export default class ShanghaiGame extends Model {
 
   get bestMarks(): number | undefined {
     const { players } = this;
-    return players.map((player: Player) => player.marks).sort()!.at(-1);
+    return players
+      .map((player: Player) => player.marks)
+      .sort()!
+      .at(-1);
   }
 
   get shanghaiScored(): boolean {
@@ -107,12 +110,12 @@ export default class ShanghaiGame extends Model {
     return this.playerOrder.first;
   }
 
-  get currentWedge() : number {
+  get currentWedge(): number {
     const { players, rounds } = this;
     const playersCount = players.length;
     const roundsCount = rounds.length;
 
-    return (roundsCount - roundsCount % playersCount) / playersCount + 1;
+    return (roundsCount - (roundsCount % playersCount)) / playersCount + 1;
     /**
      * alernative approaches using bitwise operators' integer cast
      *
