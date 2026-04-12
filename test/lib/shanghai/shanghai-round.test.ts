@@ -1,44 +1,51 @@
 import { describe, expect, it, vi } from 'vitest';
+import { sum } from 'mathjs';
 
 import ShanghaiRound from '~/lib/shanghai/shanghai-round';
 
 describe('ShanghaiRound class', () => {
+  const baseRound = ShanghaiRound.create({ darts: [] });
+  const rules = { calculateRoundScore: ({ darts }) => sum(darts) };
+  const game = { rules, getWedgeByRound: () => 6 };
+
+  vi.spyOn(baseRound, 'game', 'get').mockReturnValue(game);
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('instantiates with props', () => {
     const testDarts = [1, 1, 1];
     const shanghaiRound = ShanghaiRound.create({ darts: testDarts });
-
     expect(shanghaiRound.darts).toBe(testDarts);
   });
 
   describe('get marks', () => {
     it('sums darts in a round', () => {
-      const shanghaiRound = new ShanghaiRound();
-      shanghaiRound.darts = [2, 3, 1];
+      vi.spyOn(baseRound, 'darts', 'get').mockReturnValue([1, 3, 1]);
+      expect(baseRound.marks).toBe(5);
+    });
+  });
 
-      expect(shanghaiRound.marks).toBe(6);
+  describe('get score', () => {
+    it('returns a score per rules', () => {
+      vi.spyOn(baseRound, 'darts', 'get').mockReturnValue([1, 1, 1]);
+      expect(baseRound.score).toBe(sum([1, 1, 1]));
     });
   });
 
   describe('get wedge', () => {
     it('gets wedge from associated game', () => {
-      const shanghaiRound = new ShanghaiRound();
-      vi.spyOn(shanghaiRound, 'game', 'get').mockReturnValue({
-        getWedgeByRound: vi.fn().mockReturnValue(6),
-      });
-
-      expect(shanghaiRound.wedge).toBe(6);
+      expect(baseRound.wedge).toBe(6);
     });
   });
 
   describe('get isShanghai', () => {
     it('identifies a scored shanghai', () => {
-      const shanghaiRound = new ShanghaiRound();
-      shanghaiRound.darts = [1, 1, 1];
+      expect(baseRound.isShanghai).toBeFalsy();
 
-      expect(shanghaiRound.isShanghai).toBeFalsy();
-
-      shanghaiRound.darts = [1, 2, 3];
-      expect(shanghaiRound.isShanghai).toBeTruthy();
+      vi.spyOn(baseRound, 'darts', 'get').mockReturnValue([1, 2, 3]);
+      expect(baseRound.isShanghai).toBeTruthy();
     });
   });
 });
