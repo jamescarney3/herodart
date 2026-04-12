@@ -1,4 +1,4 @@
-import ShanghaiGame from '~/lib/shanghai/shanghai-game';
+import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
 import { roundNumber } from '~/lib/utils';
 
 interface ShanghaiReportProps {
@@ -6,41 +6,41 @@ interface ShanghaiReportProps {
   onNewGame: () => void;
 }
 
+export enum WINNER_HEADING {
+  SINGLE = 'Winner:',
+  MULTIPLE = 'Winners (tie):',
+}
+
+const formatWinnersHeader = (winners: ShanghaiPlayer[]) => {
+  if (winners.length === 1) return WINNER_HEADING.SINGLE;
+  return WINNER_HEADING.MULTIPLE;
+};
+
 const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
   return (
     <div className="h-screen flex flex-col gap-2 p-2">
       <section>
-        {/* istanbul ignore start -- @preserve */}
-        {game.tieWinners && (
+        {game.winners && (
           <>
-            <h1 className="text-center text-6xl">Winners (tie):</h1>
-            <table>
+            <h1 className="text-center text-6xl">{formatWinnersHeader(game.winners)}</h1>
+            <table className="w-full">
               <thead>
                 <tr className="[&>th]:text-left">
                   <th />
-                  <th>Marks</th>
+                  <th>Total</th>
                   <th>MPR</th>
                 </tr>
               </thead>
               <tbody>
-                {game.tieWinners.map((player) => (
+                {game.winners.map((player) => (
                   <tr key={`player-${player.name}`}>
                     <td>{player.name}</td>
-                    <td>{player.marks}</td>
+                    <td>{player.totalScore}</td>
                     <td>{player.mpr}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </>
-        )}
-
-        {game.winner && (
-          <>
-            <h1 className="text-center text-6xl">Winner:</h1>
-            <div className="text-center text-6xl">{game.winner.name}</div>
-            <div className="text-center text-4xl">Marks: {game.winner.marks}</div>
-            <div className="text-center text-4xl">MPR: {roundNumber(game.winner.mpr, 2)}</div>
           </>
         )}
       </section>
@@ -73,18 +73,18 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
           <table className="w-full">
             <thead>
               <tr className="[&>th]:text-left">
-                <th />
+                <th>Wedge</th>
                 <th>Player</th>
-                <th>Marks</th>
+                <th>Score</th>
                 {game.shanghaiScored && <th>Shanghai?</th>}
               </tr>
             </thead>
             <tbody>
               {game.rounds.map((round, idx) => (
                 <tr key={`round-${idx}`}>
-                  <td>{idx + 1}</td>
+                  <td>{round.wedge}</td>
                   <td>{round.player.name}</td>
-                  <td>{round.marks}</td>
+                  <td>{round.score}</td>
                   {game.shanghaiScored && <td>{round.isShanghai && <span>Shanghai!</span>}</td>}
                 </tr>
               ))}

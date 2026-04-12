@@ -18,7 +18,7 @@ describe('ShanghaiPlayerCard component', () => {
   });
 
   it('renders with current player', () => {
-    const player = { name: 'frodo' };
+    const player = { name: 'frodo', totalScore: 10 };
     const { getByText } = render(<ShanghaiPlayerCard player={player} currentPlayer={player} />);
     const playerName = getByText('frodo');
     const activeIndicator = getByText('x');

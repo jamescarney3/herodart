@@ -17,7 +17,7 @@ const ShanghaiPlayerCard = ({ player, currentPlayer }: ShanghaiPlayerCardProps) 
     >
       <div className={getActivePlayerIndicatorClasses(player)}>{SHANGHAI_ACTIVE_INDICATOR}</div>
       <div>{player.name}</div>
-      <div className="ml-auto">{player.marks}</div>
+      <div className="ml-auto">{player.totalScore}</div>
     </div>
   );
 };
