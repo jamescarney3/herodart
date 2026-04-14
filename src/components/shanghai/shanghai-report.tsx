@@ -6,7 +6,7 @@ interface ShanghaiReportProps {
   onNewGame: () => void;
 }
 
-export enum WINNER_HEADING {
+enum WINNER_HEADING {
   SINGLE = 'Winner:',
   MULTIPLE = 'Winners (tie):',
 }

@@ -1,7 +1,7 @@
 import { describe, it, afterEach, expect, beforeEach } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
 
-import ShanghaiReport, { WINNER_HEADING } from '~/components/shanghai/shanghai-report';
+import ShanghaiReport from '~/components/shanghai/shanghai-report';
 import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
 
 describe('ShanghaiReport component', () => {
@@ -36,14 +36,14 @@ describe('ShanghaiReport component', () => {
     const game = vi.mockObject(mockGame);
     game.winners = [{ name: 'zaphod' }];
     const { getByText } = render(<ShanghaiReport game={game} />);
-    expect(getByText(WINNER_HEADING.SINGLE)).toBeDefined();
+    expect(getByText('Winner:')).toBeDefined();
   });
 
   it('displays multiple winners correctly', () => {
     const game = vi.mockObject(mockGame);
     game.winners = [{ name: 'zaphod' }, { name: 'arthur' }, { name: 'ford' }];
     const { getByText } = render(<ShanghaiReport game={game} />);
-    expect(getByText(WINNER_HEADING.MULTIPLE)).toBeDefined();
+    expect(getByText('Winners (tie):')).toBeDefined();
   });
 
   it('displays players', () => {
