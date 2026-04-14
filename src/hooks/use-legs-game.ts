@@ -4,6 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { Observer } from '@jamescarney3/microrm';
 import LegsGame from '~/lib/legs/legs-game';
 
+const cleanupLegsGame = (game: LegsGame): void => {
+  game.rounds.forEach((round) => round.delete());
+  game.players.forEach((player) => player.delete());
+  game.delete();
+};
+
 const useLegsGame = () => {
   const [, forceUpdate] = useState<unknown>(new Object());
   const gameRef = useRef<LegsGame | null>(null);
@@ -20,7 +26,8 @@ const useLegsGame = () => {
   }, [forceUpdate, gameRef]);
 
   const newGame = () => {
-    // TODO: consider cleaning up after the current game if it exists
+    // current game ref is always set in effect hook
+    cleanupLegsGame(gameRef.current!);
     gameRef.current = <LegsGame>LegsGame.create({ id: uuidv4() });
     forceUpdate(() => new Object());
   };

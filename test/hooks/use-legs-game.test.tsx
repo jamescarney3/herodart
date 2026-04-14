@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import { useState } from 'react';
 
 import useLegsGame from '~/hooks/use-legs-game';
@@ -10,9 +10,9 @@ vi.mock('~/lib/legs/legs-game', () => {
       const newGame = new MockLegsGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = () => void 0;
-      newGame.players = [];
-      newGame.rounds = [];
+      newGame.delete = vi.fn();
+      newGame.players = [{ delete: vi.fn() }];
+      newGame.rounds = [{ delete: vi.fn() }];
       return newGame;
     }
   }
@@ -53,11 +53,11 @@ describe('useLegsGame hook', () => {
     expect(screen.getByText('test game')).to.exist;
   });
 
-  it('maintains reference to game instance between renders', () => {
+  it('maintains reference to game instance between renders', async () => {
     render(<DummyComponent />);
     const button = screen.getByTestId('test-val-toggle');
     const firstRenderSeed = screen.getByTestId('random-seed').innerHTML;
-    button.click();
+    await act(async () => button.click());
     const secondRenderSeed = screen.getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).toBe(firstRenderSeed);
   });
@@ -66,10 +66,8 @@ describe('useLegsGame hook', () => {
     const { getByTestId } = render(<DummyComponent />);
     const button = getByTestId('new-game-trigger');
     const firstRenderSeed = getByTestId('random-seed').innerHTML;
-    button.click();
-    await waitFor(() => {
-      const secondRenderSeed = getByTestId('random-seed').innerHTML;
-      expect(secondRenderSeed).not.toBe(firstRenderSeed);
-    });
+    await act(async () => button.click());
+    const secondRenderSeed = getByTestId('random-seed').innerHTML;
+    expect(secondRenderSeed).not.toBe(firstRenderSeed);
   });
 });
