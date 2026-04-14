@@ -10,10 +10,9 @@ vi.mock('~/lib/legs/legs-game', () => {
       const newGame = new MockLegsGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = () => void 0;
-      newGame.players = [{ delete: () => {} }];
-      newGame.rounds = [{ delete: () => {} }];
-      newGame.delete = () => {};
+      newGame.delete = vi.fn();
+      newGame.players = [{ delete: vi.fn() }];
+      newGame.rounds = [{ delete: vi.fn() }];
       return newGame;
     }
   }

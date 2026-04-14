@@ -26,7 +26,8 @@ const useLegsGame = () => {
   }, [forceUpdate, gameRef]);
 
   const newGame = () => {
-    cleanupLegsGame(gameRef.current);
+    // current game ref is always set in effect hook
+    cleanupLegsGame(gameRef.current!);
     gameRef.current = <LegsGame>LegsGame.create({ id: uuidv4() });
     forceUpdate(() => new Object());
   };

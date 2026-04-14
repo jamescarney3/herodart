@@ -30,7 +30,8 @@ const useLegsGame = () => {
   }, [forceUpdate, gameRef]);
 
   const newGame = () => {
-    cleanupShanghaiGame(gameRef.current);
+    // current game ref is always set in effect hook
+    cleanupShanghaiGame(gameRef.current!);
     gameRef.current = initShanghaiGame();
     forceUpdate(() => new Object());
   };

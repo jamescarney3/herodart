@@ -10,10 +10,10 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.players = [{ delete: () => {} }];
-      newGame.rounds = [{ delete: () => {} }];
+      newGame.delete = vi.fn();
+      newGame.players = [{ delete: vi.fn() }];
+      newGame.rounds = [{ delete: vi.fn() }];
       newGame.rules = rules;
-      newGame.delete = () => {};
       return newGame;
     }
   }
@@ -22,7 +22,7 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
 
 vi.mock('~/lib/shanghai/shanghai-rules', async () => {
   class MockShanghaiRules {
-    static create({ id }) {
+    static create() {
       const newRules = new MockShanghaiRules();
       newRules.identifier = 'test rules';
       return newRules;
@@ -70,7 +70,7 @@ describe('useShanghaiGame hook', () => {
     render(<DummyComponent />);
     const button = screen.getByTestId('test-val-toggle');
     const firstRenderSeed = screen.getByTestId('random-seed').innerHTML;
-    await act((async) => button.click());
+    await act(() => button.click());
     const secondRenderSeed = screen.getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).toBe(firstRenderSeed);
   });

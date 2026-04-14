@@ -1,5 +1,5 @@
 import { describe, it, afterEach, expect, beforeEach } from 'vitest';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 
 import ShanghaiReport, { WINNER_HEADING } from '~/components/shanghai/shanghai-report';
 import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
@@ -61,7 +61,7 @@ describe('ShanghaiReport component', () => {
     game.shanghaiScored = true;
     game.rounds = [{ player: mockPlayers[0] }, { player: mockPlayers[0], isShanghai: true }];
     const { getByText } = render(<ShanghaiReport game={game} />);
-    expect('Shanghai?').toBeDefined();
-    expect('Shanghai!').toBeDefined();
+    expect(getByText('Shanghai?')).toBeDefined();
+    expect(getByText('Shanghai!')).toBeDefined();
   });
 });
