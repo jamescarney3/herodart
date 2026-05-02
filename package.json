@@ -10,6 +10,7 @@
     "compile:watch": "tsc -b --noEmit --watch",
     "lint": "pnpm run lint:app && pnpm run lint:styles",
     "lint:app": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:app:watch": "watch-eslint . --ext ts,tsx --report-unused-disable-directives --quiet",
     "lint:app:fix": "prettier . --write && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "lint:styles": "stylelint **/*.{css,scss}",
     "lint:styles:fix": "stylelint --fix **/*.{css,scss}",
@@ -71,6 +72,7 @@
     "vite-plugin-babel": "^1.3.2",
     "vite-plugin-pwa": "^1.1.0",
     "vitest": "^4.1.0",
-    "vitest-nyancat-reporter": "^1.0.0"
+    "vitest-nyancat-reporter": "^1.0.0",
+    "watch-eslint": "^1.1.3"
   }
 }
