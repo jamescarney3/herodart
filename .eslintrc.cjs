@@ -22,7 +22,7 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignorePatterns: ['dist', '.eslintrc.cjs', '.scss'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {
