@@ -41,19 +41,33 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
     return cancelNewPlayer;
   };
 
-  const onSubmit = () => {
+  const createPlayer = () => {
     try {
-      game.createPlayer({ name, splash: evaluate(splash)! });
+      game.createPlayer({ name, splash: evaluate(splash) });
       setSplash('');
       setName('');
       setAddingPlayer(false);
       setSplashing(false);
       /* istanbul ignore start -- @preserve */
     } catch (e) {
+      // TODO: how about an error toast for this
       console.log((e as Error).message);
     }
     /* istanbul ignore stop -- @preserve */
   };
+
+  const handleConfirmPlayer = {
+    RANDOM: createPlayer,
+    ENTRY: createPlayer,
+    BY_SHOT: () => setSplashing(true),
+  }[game.rules.turnOrder];
+
+  // const handleConfirmSplash = {
+  //   BY_SHOT: createPlayer,
+  //   /* these dont happen because random and entry turn orders don't get to splash phase */
+  //   RANDOM: () => {},
+  //   ENTRY: () => {},
+  // }[game.rules.turnOrder];
 
   return (
     <div className="h-screen flex flex-col p-2 gap-2">
@@ -72,7 +86,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
           disabled={splashing || !addingPlayer}
           onChange={(e) => setName(e.target.value)}
           onKeyUp={(e) => {
-            if (e.key === 'Enter') setSplashing(true);
+            if (e.key === 'Enter') handleConfirmPlayer();
           }}
           className="w-full text-center py-4 text-2xl focus:outline-none"
         />
@@ -102,7 +116,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
         )}
         {addingPlayer && !splashing && (
           <>
-            <button onClick={() => setSplashing(true)} disabled={!name} type="button" className="block w-full">
+            <button onClick={handleConfirmPlayer} disabled={!name} type="button" className="block w-full">
               enter
             </button>
             <button onClick={cancelNewPlayer} type="button" className="block w-full">
@@ -115,7 +129,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
             value={splash}
             onChange={(e) => setSplash(e.target.value)}
             onUndo={generateUndoHandler()}
-            onSubmit={onSubmit}
+            onSubmit={createPlayer}
             className="mt-auto xt-aspect:w-full t-aspect:w-full"
           />
         )}
