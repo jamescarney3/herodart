@@ -27,7 +27,7 @@ export enum TURN_ORDER {
 
 @register('shanghai-rules')
 export default class ShanghaiRules extends Model {
-  @belongsTo('shanghai-game', { foreignKey: 'gameId' }) declare game: ShanghaiGame;
+  @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: ShanghaiGame;
 
   @key declare id: string;
   @prop scoring: SCORING = SCORING.MARKS;
