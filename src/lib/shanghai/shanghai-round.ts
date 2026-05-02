@@ -1,7 +1,7 @@
-import Model, { prop, belongsTo } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
-import type Player from '~/lib/shanghai/shanghai-player';
-import type Game from '~/lib/shanghai/shanghai-game';
+import { Model, prop, belongsTo, register } from '@jamescarney3/microrm';
+import { sum } from 'mathjs';
+
+import type { ShanghaiRules, ShanghaiPlayer, ShanghaiGame } from '~/lib/shanghai';
 
 export type ShanghaiDarts = [number, number, number];
 
@@ -9,11 +9,16 @@ export type ShanghaiDarts = [number, number, number];
 export default class ShanghaiRound extends Model {
   @prop declare darts: ShanghaiDarts;
 
-  @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: Game;
-  @belongsTo('shanghai-players', { foreignKey: 'playerName' }) declare player: Player;
+  @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: ShanghaiGame;
+  @belongsTo('shanghai-players', { foreignKey: 'playerName' }) declare player: ShanghaiPlayer;
 
   get marks(): number {
-    return this.darts.reduce((total, marks) => total + marks, 0);
+    const { darts } = this;
+    return sum(darts);
+  }
+
+  get score(): number {
+    return this.rules.calculateRoundScore(this);
   }
 
   get wedge(): number {
@@ -22,5 +27,10 @@ export default class ShanghaiRound extends Model {
 
   get isShanghai(): boolean {
     return [3, 2, 1].every((value) => this.darts.includes(value));
+  }
+
+  // potentially better if this can be a has-one-through kind of relation
+  private get rules(): ShanghaiRules {
+    return this.game.rules;
   }
 }

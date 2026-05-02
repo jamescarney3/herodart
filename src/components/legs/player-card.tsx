@@ -30,11 +30,9 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
 
     const currentPlayer = player === game.currentPlayer;
 
-    const playerEliminated = [
-      score ?? null,
-      currentPlayer,
-      game.scoreWouldEliminateCurrentPlayer(score || 0),
-    ].every(Boolean);
+    const playerEliminated = [score ?? null, currentPlayer, game.scoreWouldEliminateCurrentPlayer(score || 0)].every(
+      Boolean,
+    );
 
     const baseTransition = ['transition-transform', 'duration-300', 'ease-linear']; // constantize this
 
@@ -51,8 +49,8 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
 
       while (idx < cards.length - 1) {
         const { height } = cards[idx].getBoundingClientRect();
-        totalHeight += (height + gap);
-        idx ++;
+        totalHeight += height + gap;
+        idx++;
       }
 
       return `${totalHeight}px`;
@@ -87,21 +85,16 @@ const LegsPlayerCard = ({ player, game, scoring, score }: LegsPlayerCardProps) =
 
   const currentPlayer = player === game.currentPlayer;
 
-  const currentPlayerBadgeClasses = [
-    'transition-opacity',
-    'opacity-0',
-    currentPlayer && !scoring && 'opacity-100',
-  ].filter(Boolean).join(' ');
+  const currentPlayerBadgeClasses = ['transition-opacity', 'opacity-0', currentPlayer && !scoring && 'opacity-100']
+    .filter(Boolean)
+    .join(' ');
 
-  const strikes = new Array(player.strikes).fill(null).map((_, idx) => (
-    <span key={`strike-${idx}`}>{LEGS_STRIKE}</span>
-  ));
+  const strikes = new Array(player.strikes)
+    .fill(null)
+    .map((_, idx) => <span key={`strike-${idx}`}>{LEGS_STRIKE}</span>);
 
   return (
-    <div
-      ref={cardRef}
-      className="flex items-center p-4 shadow-xl/50 rounded-lg bg-zinc-700 first:z-40 gap-2"
-    >
+    <div ref={cardRef} className="flex items-center p-4 shadow-xl/50 rounded-lg bg-zinc-700 first:z-40 gap-2">
       <div className={currentPlayerBadgeClasses}>{LEGS_ACTIVE_INDICATOR}</div>
       <div>{player.name}</div>
       <div className="ml-auto">{strikes}</div>

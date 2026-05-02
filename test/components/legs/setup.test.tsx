@@ -3,6 +3,8 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import LegsGame from '~/lib/legs/legs-game';
 import LegsSetup from '~/components/legs/setup';
 
+vi.mock('~/components/legs/player-card');
+
 vi.mock('~/lib/legs/legs-game', () => {
   const MockLegsGame = vi.fn();
 
@@ -52,6 +54,7 @@ describe('LegsSetup', () => {
     const { getAllByRole } = rendered;
 
     fireEvent.change(nameInput, { target: { value: 'Artemis' } });
+    fireEvent.keyUp(nameInput, { key: '' });
     fireEvent.keyUp(nameInput, { key: 'Enter', code: 'Enter', charCode: 13 });
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
   });
@@ -127,6 +130,7 @@ describe('LegsSetup', () => {
 
   it('starts game when start button is clicked', () => {
     game.canStart = true;
+    game.playerOrder = [{ name: 'Artemis' }, { name: 'Freyja' }];
     const { getByText } = render(<LegsSetup game={game} />);
     const startButton = getByText('start game');
 

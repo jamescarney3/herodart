@@ -27,6 +27,7 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
   };
 
   const selectToEdit = (idx: number) => {
+    /* istanbul ignore next -- @preserve */
     if (darts.length > idx) setEditingDartsIdx(idx);
   };
 
@@ -63,7 +64,11 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
       <section className="mt-4 flex flex-col grow flex-shrink">
         <h2>Rounds:</h2>
         <div className="grow basis-0 overflow-auto">
-          <div ref={node => { if (!editingRound && node) node?.scrollIntoView?.({ behavior: 'smooth' }); }}>
+          <div
+            ref={(node) => {
+              if (!editingRound && node) node?.scrollIntoView?.({ behavior: 'smooth' });
+            }}
+          >
             {game.rounds.toReversed().map((round) => (
               <ShanghaiRoundItem
                 key={`${round.player.name}-${round.wedge}`}

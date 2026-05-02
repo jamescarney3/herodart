@@ -7,7 +7,7 @@ describe('ShanghaiRoundItem component', () => {
   let round;
 
   beforeEach(() => {
-    round = { wedge: 17, marks: 9, player: { name: 'boromir' }};
+    round = { wedge: 17, marks: 9, player: { name: 'boromir' } };
   });
 
   afterEach(cleanup);

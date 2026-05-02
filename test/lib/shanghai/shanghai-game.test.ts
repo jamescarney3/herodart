@@ -1,13 +1,13 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { Collection } from '@jamescarney3/microrm';
 
 import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import ShanghaiPlayer from '~/lib/shanghai/shanghai-player';
 import ShanghaiRound from '~/lib/shanghai/shanghai-round';
-import Collection from '~/lib/v2/collection';
 
 vi.mock('~/lib/shanghai/shanghai-player', () => {
   class MockPlayer {
-    static create = vi.fn().mockImplementation(() => 'extant player');
+    static create = vi.fn().mockImplementation(() => ({}));
   }
 
   return { default: MockPlayer };
@@ -22,22 +22,44 @@ vi.mock('~/lib/shanghai/shanghai-round', () => {
 });
 
 describe('ShanghaiGame class', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+  const baseGame = ShanghaiGame.create({ id: 'test-id' });
+
+  const rules = { endWedge: 20, generatePlayerOrderCalculator: () => () => 1 };
+  const charlie = { name: 'charlie', splash: 10, eliminated: false };
+  const mac = { name: 'mac', splash: 20, eliminated: false };
+  const dennis = { name: 'dennis', splash: 30, eliminated: false };
+  const players = new Collection([charlie, mac, dennis]);
+  const rounds = new Collection([
+    { wedge: 1, marks: 1, player: charlie },
+    { wedge: 1, marks: 1, player: mac },
+    { wedge: 1, marks: 1, player: dennis },
+    { wedge: 2, marks: 1, player: charlie },
+    { wedge: 2, marks: 1, player: mac },
+    { wedge: 2, marks: 1, player: dennis },
+    { wedge: 3, marks: 2, player: charlie },
+    { wedge: 3, marks: 2, player: mac },
+    { wedge: 3, marks: 2, player: dennis },
+  ]);
+  charlie.rounds = rounds.filter((r) => r.player === charlie);
+  mac.rounds = rounds.filter((r) => r.player === mac);
+  dennis.rounds = rounds.filter((r) => r.player === dennis);
+
+  beforeEach(() => {
+    vi.spyOn(baseGame, 'rules', 'get').mockReturnValue(rules);
+    vi.spyOn(baseGame, 'players', 'get').mockReturnValue(players);
+    vi.spyOn(baseGame, 'rounds', 'get').mockReturnValue(rounds);
   });
 
-  it('instantiates with props', () => {
-    const shanghaiGame = ShanghaiGame.create({ id: 'test-id' });
-
-    expect(shanghaiGame.id).toBe('test-id');
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   describe('#createPlayer', () => {
     it('creates a a player instance', () => {
       const game = new ShanghaiGame();
+      vi.spyOn(game, 'rules', 'get').mockReturnValue(rules);
       const player = game.createPlayer({});
-
-      expect(ShanghaiPlayer.create).toHaveBeenCalledWith({ game });
+      expect(ShanghaiPlayer.create).toHaveBeenCalledWith({ game: game });
       expect(player).toBeTruthy();
     });
   });
@@ -52,69 +74,102 @@ describe('ShanghaiGame class', () => {
 
   describe('#getWedgeByRound', () => {
     it('calculates the wedge for a given round', () => {
-      const game = new ShanghaiGame();
-      const firstRound = vi.fn();
-      const thirdRound = vi.fn();
-      const seventhRound = vi.fn();
-
-      vi.spyOn(game, 'players', 'get').mockReturnValue(['first', 'second', 'third']);
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue([
-        // 1
-        firstRound, {}, thirdRound,
-        // 2
-        {}, {}, {},
-        // 3
-        seventhRound, {}, {},
+      const rounds = new Collection([
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'frank' },
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'frank' },
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'frank' },
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'charlie' },
+        { player: 'dennis' },
+        { player: 'charlie' },
+        { player: 'dennis' },
       ]);
+      vi.spyOn(baseGame, 'rounds', 'get').mockReturnValue(rounds);
 
-      expect(game.getWedgeByRound(firstRound)).toBe(1);
-      expect(game.getWedgeByRound(thirdRound)).toBe(1);
-      expect(game.getWedgeByRound(seventhRound)).toBe(3);
+      expect(baseGame.getWedgeByRound(rounds.at(0))).toBe(1);
+      expect(baseGame.getWedgeByRound(rounds.at(-1))).toBe(7);
     });
   });
 
   describe('#scoreRound', () => {
     it('scores a round of shanghai', () => {
-      const game = new ShanghaiGame();
       const player = new ShanghaiPlayer();
       const darts = [3, 1, 1];
-
-      game.scoreRound(player, darts);
-      expect(ShanghaiRound.create).toHaveBeenCalledWith({ game, player, darts });
+      baseGame.scoreRound(player, darts);
+      expect(ShanghaiRound.create).toHaveBeenCalledWith({ game: baseGame, player, darts });
     });
   });
 
   describe('#playerExistsWithName', () => {
     it('returns true when player exists with given name and false when one does not', () => {
-      const game = new ShanghaiGame();
+      vi.spyOn(baseGame, 'players', 'get').mockReturnValue([{ name: 'James' }, { name: 'Matt' }]);
 
-      vi.spyOn(game, 'players', 'get').mockReturnValue([{ name: 'James' }, { name: 'Matt' }]);
-
-      expect(game.playerExistsWithName('James')).toBe(true);
-      expect(game.playerExistsWithName('Maloof')).toBe(false);
+      expect(baseGame.playerExistsWithName('James')).toBe(true);
+      expect(baseGame.playerExistsWithName('Maloof')).toBe(false);
     });
   });
 
   describe('get finished', () => {
-    it('returns true when all rounds are thrown', () => {
-      const game = new ShanghaiGame();
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue(new Array(60).fill({}));
-      vi.spyOn(game, 'players', 'get').mockReturnValue(new Array(3).fill({}));
+    it('returns false when game has not started', () => {
+      vi.spyOn(baseGame, 'started', 'get').mockReturnValue(false);
+      expect(baseGame.finished).toBe(false);
+    });
 
-      expect(game.finished).toBe(true);
+    it('returns true when all rounds are thrown', () => {
+      vi.spyOn(baseGame, 'started', 'get').mockReturnValue(true);
+      vi.spyOn(baseGame, 'shanghaiScored', 'get').mockReturnValue(false);
+      vi.spyOn(baseGame, 'rules', 'get').mockReturnValue({ endWedge: 20 });
+      expect(baseGame.finished).toBe(false);
+
+      vi.spyOn(baseGame, 'rules', 'get').mockReturnValue({ endWedge: 3 });
+      expect(baseGame.finished).toBe(true);
     });
 
     it('returns true when a shanghai round has been thrown', () => {
+      vi.spyOn(baseGame, 'started', 'get').mockReturnValue(true);
+      vi.spyOn(baseGame, 'shanghaiScored', 'get').mockReturnValue(true);
+      expect(baseGame.finished).toBe(true);
+    });
+  });
+
+  describe('get bestTotalScore', () => {
+    it('returns best total score for a player', () => {
+      const players = new Collection([
+        { totalScore: 1 },
+        { totalScore: 10 },
+        { totalScore: 20 },
+        { totalScore: 2 },
+        { totalScore: 4 },
+        { totalScore: 8 },
+      ]);
+      vi.spyOn(baseGame, 'players', 'get').mockReturnValue(players);
+
+      expect(baseGame.bestTotalScore).toBe(20);
+    });
+  });
+
+  describe('get shanghaiScored', () => {
+    it('returns true when shanghai has been scored', () => {
       const game = new ShanghaiGame();
-      const rounds = new Array(59).fill({});
-
+      const rounds = [{ isShanghai: true }];
       vi.spyOn(game, 'rounds', 'get').mockReturnValue(rounds);
-      vi.spyOn(game, 'players', 'get').mockReturnValue(new Array(3).fill({}));
+      expect(game.shanghaiScored).toBe(true);
+    });
 
-      expect(game.finished).toBe(false);
-
-      rounds[37] = { isShanghai: true };
-      expect(game.finished).toBe(true);
+    it('returns true false shanghai has not been scored', () => {
+      const game = new ShanghaiGame();
+      const rounds = [{ isShanghai: false }];
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue(rounds);
+      expect(game.shanghaiScored).toBe(false);
     });
   });
 
@@ -133,90 +188,9 @@ describe('ShanghaiGame class', () => {
       players.push('dennis');
       expect(game.canStart).toBe(true);
     });
-
-    it('is false when game is already started', () => {
-      game.started = true;
-      expect(game.canStart).toBe(false);
-    });
   });
 
-  describe('get tie', () => {
-    const game = new ShanghaiGame();
-    const players = new Collection();
-    const rounds = new Collection();
-
-    vi.spyOn(game, 'players', 'get').mockReturnValue(players);
-    vi.spyOn(game, 'rounds', 'get').mockReturnValue(rounds);
-
-    it('returns false when game is not finished', () => {
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(false);
-      expect(game.tie).toBe(false);
-    });
-
-    it('returns true when two or more players are tied with best marks', () => {
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
-      vi.spyOn(game, 'players', 'get').mockReturnValue(new Collection([
-        { marks: 30 },
-        { marks: 30 },
-        { marks: 20 },
-      ]));
-
-      expect(game.tie).toBe(true);
-    });
-
-    it('returns false when shanghai scoring round is present', () => {
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue(new Collection([{ isShanghai: true }]));
-      expect(game.tie).toBe(false);
-    });
-  });
-
-  describe('get winner', () => {
-    const game = new ShanghaiGame();
-    vi.spyOn(game, 'players', 'get').mockReturnValue([]);
-    vi.spyOn(game, 'rounds', 'get').mockReturnValue([]);
-
-    it('returns null when game is not finished', () => {
-      expect(game.winner).toBe(null);
-    });
-
-    it('returns a player with a shanghai round', () => {
-      const frank = 'frank reynolds';
-      const shanghai = { isShanghai: true, player: frank };
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue([shanghai]);
-
-      expect(game.winner).toBe(frank);
-    });
-
-    it('returns the player with the highest total marks if no shanghai', () => {
-      const dee = { marks: 30 };
-      const cricket = { marks: 40 };
-      const liam = { marks: 25 };
-      const ryan = { marks: 15 };
-      const players = [dee, cricket, liam, ryan];
-
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue([]);
-      vi.spyOn(game, 'tie', 'get').mockReturnValue(false);
-      vi.spyOn(game, 'players', 'get').mockImplementation(() => {
-        const originalSort = players.sort.bind(players);
-        players.sort = ((predicate) => {
-          const result = originalSort(predicate);
-          result.first = result.at(0);
-          return result;
-        });
-        return players;
-      });
-      expect(game.winner).toBe(cricket);
-    });
-
-    it('returns null when game is tied', () => {
-      vi.spyOn(game, 'tie', 'get').mockReturnValue(true);
-      expect(game.winner).toBe(null);
-    });
-  });
-
-  describe('get tieWinners', () => {
-    const game = new ShanghaiGame();
+  describe('get winners', () => {
     let arthur;
     let ford;
     let trillian;
@@ -225,32 +199,33 @@ describe('ShanghaiGame class', () => {
     let players;
 
     beforeEach(() => {
-      arthur = { marks: 30 };
-      ford = { marks: 30 };
-      trillian = { marks: 30 };
-      zaphod = { marks: 25 };
-      marvin = { marks: 20 };
+      arthur = { totalScore: 30, rounds: [] };
+      ford = { totalScore: 30, rounds: [] };
+      trillian = { totalScore: 30, rounds: [] };
+      zaphod = { totalScore: 25, rounds: [] };
+      marvin = { totalScore: 20, rounds: [] };
       players = new Collection([arthur, ford, trillian, zaphod, marvin]);
 
-      vi.spyOn(game, 'players', 'get').mockReturnValue(players);
+      vi.spyOn(baseGame, 'players', 'get').mockReturnValue(players);
+      vi.spyOn(baseGame, 'finished', 'get').mockReturnValue(true);
+      vi.spyOn(baseGame, 'shanghaiScored', 'get').mockReturnValue(false);
+      vi.spyOn(baseGame, 'bestTotalScore', 'get').mockReturnValue(30);
     });
 
-    it('returns null when game is not finished', () => {
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(false);
-      expect(game.tieWinners).toBe(null);
+    it('returns empty array when game is unfinished', () => {
+      vi.spyOn(baseGame, 'finished', 'get').mockReturnValue(false);
+      expect(baseGame.winners).toEqual([]);
     });
 
-    it('returns null when fewer than two players have the best marks', () => {
-      ford.marks = 25;
-      trillian.marks = 25;
-
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
-      expect(game.tieWinners).toBe(null);
+    it('returns player who scored shanghai when shanghai was scored', () => {
+      const rounds = new Collection([{ isShanghai: true, player: zaphod }]);
+      vi.spyOn(baseGame, 'shanghaiScored', 'get').mockReturnValue(true);
+      vi.spyOn(baseGame, 'rounds', 'get').mockReturnValue(rounds);
+      expect(baseGame.winners).toEqual([zaphod]);
     });
 
-    it('returns multiple winners tied for best score', () => {
-      vi.spyOn(game, 'finished', 'get').mockReturnValue(true);
-      expect(game.tieWinners).toContain(arthur, ford, trillian);
+    it('returns players with best total scores when no shanghai is scored', () => {
+      expect(baseGame.winners).toEqual([arthur, ford, trillian]);
     });
   });
 
@@ -301,11 +276,10 @@ describe('ShanghaiGame class', () => {
   });
 
   describe('get currentWedge', () => {
-    it('returns the target wedge for the current player\'s shot', () => {
+    it("returns the target wedge for the current player's shot", () => {
       const game = new ShanghaiGame();
 
-      vi.spyOn(game, 'rounds', 'get').mockReturnValue(new Array(31).fill({}));
-      vi.spyOn(game, 'players', 'get').mockReturnValue(new Array(3).fill({}));
+      vi.spyOn(game, 'currentPlayer', 'get').mockReturnValue({ rounds: new Array(10) });
 
       expect(game.currentWedge).toBe(11);
     });

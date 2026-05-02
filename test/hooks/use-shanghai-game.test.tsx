@@ -1,22 +1,45 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import { useState } from 'react';
 
 import useShanghaiGame from '~/hooks/use-shanghai-game';
 
 vi.mock('~/lib/shanghai/shanghai-game', async () => {
   class MockShanghaiGame {
-    static create({ id }) {
+    static create({ id, rules }) {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = () => void(0);
-      newGame.players = [];
-      newGame.rounds = [];
+      newGame.delete = vi.fn();
+      newGame.players = [{ delete: vi.fn() }];
+      newGame.rounds = [{ delete: vi.fn() }];
+      newGame.rules = rules;
       return newGame;
     }
   }
   return { default: MockShanghaiGame };
+});
+
+vi.mock('~/lib/shanghai/shanghai-rules', async () => {
+  class MockShanghaiRules {
+    static create() {
+      const newRules = new MockShanghaiRules();
+      newRules.identifier = 'test rules';
+      return newRules;
+    }
+  }
+  return { default: MockShanghaiRules };
+});
+
+vi.mock('@jamescarney3/microrm', async (importOriginal) => {
+  const actual = await importOriginal();
+
+  class MockObserver {
+    static subscribe(cb) {
+      cb();
+    }
+  }
+  return { ...actual, Observer: MockObserver };
 });
 
 describe('useShanghaiGame hook', () => {
@@ -36,30 +59,28 @@ describe('useShanghaiGame hook', () => {
     );
   };
 
-  it('instantiates and returns a legs game', () => {
+  it('instantiates and returns a shanghai game', () => {
     const { container } = render(<DummyComponent />);
     expect(container).to.exist;
     // TODO: assert correct args passed to game instance
     expect(screen.getByText('test game')).to.exist;
   });
 
-  it('maintains reference to game instance between renders', () => {
+  it('maintains reference to game instance between renders', async () => {
     render(<DummyComponent />);
     const button = screen.getByTestId('test-val-toggle');
     const firstRenderSeed = screen.getByTestId('random-seed').innerHTML;
-    button.click();
+    await act(() => button.click());
     const secondRenderSeed = screen.getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).toBe(firstRenderSeed);
   });
 
-  it('returns a newGame callback that begins a new legs game', async () => {
+  it('returns a newGame callback that begins a new shanghai game', async () => {
     const { getByTestId } = render(<DummyComponent />);
     const button = getByTestId('new-game-trigger');
     const firstRenderSeed = getByTestId('random-seed').innerHTML;
-    button.click();
-    await waitFor(() => {
-      const secondRenderSeed = getByTestId('random-seed').innerHTML;
-      expect(secondRenderSeed).not.toBe(firstRenderSeed);
-    });
+    await act(() => button.click());
+    const secondRenderSeed = getByTestId('random-seed').innerHTML;
+    expect(secondRenderSeed).not.toBe(firstRenderSeed);
   });
 });

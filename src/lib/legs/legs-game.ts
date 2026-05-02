@@ -1,6 +1,4 @@
-import Model, { prop, key, hasMany } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
-import type Collection from '~/lib/v2/collection';
+import { Model, prop, key, hasMany, type Collection, register } from '@jamescarney3/microrm';
 import Player from '~/lib/legs/legs-player';
 import Round from '~/lib/legs/legs-round';
 
@@ -47,7 +45,7 @@ export default class LegsGame extends Model {
 
   scoreWouldEliminateCurrentPlayer(score: number): boolean {
     // if any players have strikes, at least one round has been shot so assert this.rounds.last
-    return this.currentPlayer?.strikes === 2 && score < (this.rounds.last!.score);
+    return this.currentPlayer?.strikes === 2 && score < this.rounds.last!.score;
   }
 
   playerExistsWithName(name: string): boolean {

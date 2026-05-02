@@ -1,7 +1,5 @@
-import Model, { prop, key, hasMany, belongsTo } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
+import { Model, prop, key, hasMany, belongsTo, register } from '@jamescarney3/microrm';
 import type Round from '~/lib/legs/legs-round';
-
 import type Game from '~/lib/legs/legs-game';
 
 @register('legs-players')

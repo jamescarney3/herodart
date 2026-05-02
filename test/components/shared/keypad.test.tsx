@@ -62,9 +62,7 @@ describe('Keypad', () => {
     const onChange = vi.fn();
     const onSubmit = vi.fn();
     const validate = (value) => value < 10;
-    const { getByText } = render(
-      <Keypad onChange={onChange} onSubmit={onSubmit} validate={validate} value="" />
-    );
+    const { getByText } = render(<Keypad onChange={onChange} onSubmit={onSubmit} validate={validate} value="" />);
     fireEvent.click(getByText('enter'));
     expect(onSubmit).toHaveBeenCalled();
     fireEvent.click(getByText('+'));

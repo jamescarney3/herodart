@@ -1,54 +1,85 @@
-import Model, { prop, key, hasMany } from '~/lib/v2/model';
-import { register } from '~/lib/v2/store';
-import type Collection from '~/lib/v2/collection';
-import Player from '~/lib/shanghai/shanghai-player';
-import Round from '~/lib/shanghai/shanghai-round';
-import type { ShanghaiDarts } from '~/lib/shanghai/shanghai-round';
+import { Model, prop, key, hasOne, hasMany, register } from '@jamescarney3/microrm';
+import type { Collection } from '@jamescarney3/microrm';
 
-const WEDGES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+import { ShanghaiPlayer, ShanghaiRound, ShanghaiRules } from '~/lib/shanghai';
+import type { ShanghaiDarts } from '~/lib/shanghai/shanghai-round';
 
 @register('shanghai-games')
 export default class ShanghaiGame extends Model {
   @key declare id: string;
-  // TODO: declared ok for now but find out right way to give this a default value, setting default
-  // in class definition seems to overwrite getter/setter defined by @prop decorator
   @prop declare started: boolean;
 
-  @hasMany('shanghai-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
-  @hasMany('shanghai-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
+  @hasMany('shanghai-players', { foreignKey: 'gameId' }) declare players: Collection<ShanghaiPlayer>;
+  @hasMany('shanghai-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<ShanghaiRound>;
+  @hasOne('shanghai-rules', { foreignKey: 'gameId' }) declare rules: ShanghaiRules;
 
-  createPlayer(attributes: { name: string; splash: number }): Player {
-    return Player.create({ ...attributes, game: this }) as Player;
+  createPlayer(attributes: { name: string; splash?: number }): ShanghaiPlayer {
+    const player = ShanghaiPlayer.create({ ...attributes, game: this }) as ShanghaiPlayer;
+    player.splash = this.rules.generatePlayerOrderCalculator(player, attributes.splash)();
+    return player;
   }
 
   start() {
-    // check canStart and throw error if not?
     this.started = true;
   }
 
-  getWedgeByRound(round: Round): number {
-    const { players, rounds } = this;
-    const roundIdx = rounds.findIndex(current => current === round);
-    const playersCount = players.length;
-
-    return (roundIdx - roundIdx % playersCount) / playersCount + 1;
-  }
-
-  scoreRound(player: Player, darts: ShanghaiDarts): void {
-    Round.create({ player, darts, game: this });
+  scoreRound(player: ShanghaiPlayer, darts: ShanghaiDarts): void {
+    ShanghaiRound.create({ player, darts, game: this });
   }
 
   playerExistsWithName(name: string): boolean {
     return this.players.map((p) => p.name).includes(name);
   }
 
-  get canStart(): boolean {
-    return this.players.length >= 2 && !this.started;
+  getWedgeByRound(round: ShanghaiRound): number {
+    const { rounds } = this;
+    const playerRounds = rounds.where({ player: round.player });
+    return playerRounds.indexOf(round) + 1;
   }
 
-  get bestMarks(): number | undefined {
+  get canStart(): boolean {
+    return this.players.length >= 2;
+  }
+
+  // ACTIVE PHASE
+
+  get playerOrder(): Collection<ShanghaiPlayer> {
+    const { players, rounds } = this;
+    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+
+    const lastPlayer = rounds?.last?.player;
+    if (!lastPlayer) return order as Collection<ShanghaiPlayer>;
+
+    const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
+    const currentPlayerIdx = lastPlayerIdx + 1;
+    // no spreading or else this is a vanilla JS array without collection convenience methods
+    const wrappedOrder = order.slice(currentPlayerIdx).concat(order.slice(0, currentPlayerIdx));
+
+    return wrappedOrder as Collection<ShanghaiPlayer>;
+  }
+
+  get staticPlayerOrder(): Collection<ShanghaiPlayer> {
     const { players } = this;
-    return players.map((player: Player) => player.marks).sort()!.at(-1);
+    return players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+  }
+
+  get currentPlayer(): ShanghaiPlayer | void {
+    return this.playerOrder.first;
+  }
+
+  get currentWedge(): number {
+    const { currentPlayer } = this;
+    return currentPlayer!.rounds.length + 1;
+  }
+
+  // END PHASE
+
+  get bestTotalScore(): number | undefined {
+    const { players } = this;
+    return players
+      .map((player: ShanghaiPlayer) => player.totalScore)
+      .sort((a, b) => a - b)!
+      .at(-1);
   }
 
   get shanghaiScored(): boolean {
@@ -57,70 +88,33 @@ export default class ShanghaiGame extends Model {
   }
 
   get finished(): boolean {
-    const { rounds, players } = this;
-    return rounds.length / players.length === WEDGES.length || this.shanghaiScored;
+    const { started, players, shanghaiScored, allRoundsShot } = this;
+    const singlePlayerRemaining = players.where({ eliminated: false }).length === 1;
+    return started && (shanghaiScored || allRoundsShot || singlePlayerRemaining);
   }
 
-  get tie(): boolean {
-    if (this.shanghaiScored) return false;
-    return (this.tieWinners ?? []).length >= 2;
-  }
-
-  get winner(): Player | null {
-    const { players, rounds } = this;
-    const shanghai = rounds.find((round) => round.isShanghai);
-
-    if (!this.finished) return null;
-    if (this.tie) return null;
-    if (shanghai) return shanghai.player;
-    // this is surely defined if the game is finished
-    return players.sort((a: Player, b: Player) => b.marks - a.marks).first!;
-  }
-
-  get tieWinners(): Player[] | null {
-    if (!this.finished) return null;
-    const players = this.players.where({ marks: this.bestMarks });
-    return players.length >= 2 ? players : null;
-  }
-
-  get playerOrder(): Collection<Player> {
-    const { players, rounds } = this;
-    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
-
-    const lastPlayer = rounds?.last?.player;
-    if (!lastPlayer) return order as Collection<Player>;
-
-    const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
-    const currentPlayerIdx = lastPlayerIdx + 1;
-    // no spreading or alse this is a vanilla JS array without collection convenience methods
-    const wrappedOrder = order.slice(currentPlayerIdx).concat(order.slice(0, currentPlayerIdx));
-
-    return wrappedOrder as Collection<Player>;
-  }
-
-  get staticPlayerOrder(): Collection<Player> {
+  get playersRemaining(): ShanghaiPlayer[] {
     const { players } = this;
-    return players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+    return players.where({ eliminated: false });
   }
 
-  get currentPlayer(): Player | void {
-    return this.playerOrder.first;
+  get allRoundsShot(): boolean {
+    const { playersRemaining } = this;
+    const { endWedge } = this.rules;
+    return playersRemaining.every((player) => player.rounds.length === endWedge);
   }
 
-  get currentWedge() : number {
-    const { players, rounds } = this;
-    const playersCount = players.length;
-    const roundsCount = rounds.length;
+  get winners(): ShanghaiPlayer[] {
+    const { players, rounds, shanghaiScored, finished, bestTotalScore } = this;
 
-    return (roundsCount - roundsCount % playersCount) / playersCount + 1;
-    /**
-     * alernative approaches using bitwise operators' integer cast
-     *
-     * bitwise OR casts quotient to integer and OR-transforms each bit with 0 preserving initial val
-     * (roundsCount / playersCount + 1) | 0
-     *
-     * bitwise double negation casts quotient to integer and double NOT-flips each bit
-     * ~~(roundsCount / playersCount + 1)
-     */
+    if (!finished) return [];
+    if (shanghaiScored) return [rounds.findBy((round: ShanghaiRound) => round.isShanghai)!.player];
+    return players.reduce((winners, player) => {
+      if (player.totalScore === bestTotalScore) {
+        return [...winners, player];
+      } else {
+        return winners;
+      }
+    }, []);
   }
 }

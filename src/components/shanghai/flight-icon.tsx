@@ -20,7 +20,9 @@ const FlightIcon = ({ editing, complete, children, className }: FlightIconProps)
     complete && 'bg-green-500',
     editing && 'bg-opacity-75 bg-yellow-500',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={iconClassName}>

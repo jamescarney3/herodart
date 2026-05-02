@@ -9,9 +9,9 @@ const Game = () => {
 
   const getGamePhase = () => {
     if (!game) return null;
-    if (game?.finished) return (<Report game={game} onNewGame={newGame} />);
-    if (game?.started) return (<Scoreboard game={game} />);
-    return (<Setup game={game} />);
+    if (game.finished) return <Report game={game} onNewGame={newGame} />;
+    if (game.started) return <Scoreboard game={game} />;
+    return <Setup game={game} />;
   };
 
   return (

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { evaluate } from 'mathjs';
 import type { ChangeEvent, SyntheticEvent, ChangeEventHandler } from 'react';
 import { formatEvalString, MULT, PLUS, MULT_MATH, PLUS_MATH } from '~/lib/utils';
 
@@ -51,16 +52,16 @@ const Keypad = ({ onSubmit, onChange, onUndo, value, disabled, validate, classNa
 
   const scoreValid = (evalString: string) => {
     if (operators.includes(evalString.at(-1))) return false;
-    const result = validate?.(eval(evalString) ?? 0);
+    const result = validate?.(evaluate(evalString) ?? 0);
     return result ?? true;
-    // return validate?.(eval(evalString) ?? 0) ?? true;
+    // return validate?.(evaluate(evalString) ?? 0) ?? true;
   };
 
   const partialScoreValid = (evalString: string) => {
     if (operators.includes(evalString.at(-1))) return true;
-    const result = validate?.(eval(evalString));
+    const result = validate?.(evaluate(evalString));
     return result ?? true;
-    // return validate?.(eval(evalString) ?? 0) ?? true;
+    // return validate?.(evaluate(evalString) ?? 0) ?? true;
   };
 
   const onNumericKeyPress = (e: SyntheticEvent) => {

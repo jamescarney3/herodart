@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { evaluate } from 'mathjs';
 
 import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import { Keypad } from '~/components/shared';
 
 interface ShanghaiSetupProps {
-  game: ShanghaiGame
+  game: ShanghaiGame;
 }
 
 const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
@@ -40,25 +41,42 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
     return cancelNewPlayer;
   };
 
-  const onSubmit = () => {
+  const createPlayer = () => {
     try {
-      game.createPlayer({ name, splash: eval(splash)! });
+      game.createPlayer({ name, splash: evaluate(splash) });
       setSplash('');
       setName('');
       setAddingPlayer(false);
       setSplashing(false);
-    /* v8 ignore next 3 */
-    } catch (e: unknown) {
+      /* istanbul ignore start -- @preserve */
+    } catch (e) {
+      // TODO: how about an error toast for this
       console.log((e as Error).message);
     }
+    /* istanbul ignore stop -- @preserve */
   };
+
+  const handleConfirmPlayer = {
+    RANDOM: createPlayer,
+    ENTRY: createPlayer,
+    BY_SHOT: () => setSplashing(true),
+  }[game.rules.turnOrder];
+
+  // const handleConfirmSplash = {
+  //   BY_SHOT: createPlayer,
+  //   /* these dont happen because random and entry turn orders don't get to splash phase */
+  //   RANDOM: () => {},
+  //   ENTRY: () => {},
+  // }[game.rules.turnOrder];
 
   return (
     <div className="h-screen flex flex-col p-2 gap-2">
       <section className="h-48 shrink-0 flex flex-col gap-2">
         <h1 className="text-center text-6xl mb-auto">Shanghai Setup</h1>
         {splashing && <p className="test-center">splash (2 darts) for turn order:</p>}
-        <label htmlFor="player-name" className="hidden">Name:</label>
+        <label htmlFor="player-name" className="hidden">
+          Name:
+        </label>
         <input
           ref={nameInputRef}
           name="player-name"
@@ -67,7 +85,9 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
           value={name}
           disabled={splashing || !addingPlayer}
           onChange={(e) => setName(e.target.value)}
-          onKeyUp={(e) => { if (e.key === 'Enter') setSplashing(true); }}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') handleConfirmPlayer();
+          }}
           className="w-full text-center py-4 text-2xl focus:outline-none"
         />
       </section>
@@ -96,7 +116,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
         )}
         {addingPlayer && !splashing && (
           <>
-            <button onClick={() => setSplashing(true)} disabled={!name} type="button" className="block w-full">
+            <button onClick={handleConfirmPlayer} disabled={!name} type="button" className="block w-full">
               enter
             </button>
             <button onClick={cancelNewPlayer} type="button" className="block w-full">
@@ -109,7 +129,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
             value={splash}
             onChange={(e) => setSplash(e.target.value)}
             onUndo={generateUndoHandler()}
-            onSubmit={onSubmit}
+            onSubmit={createPlayer}
             className="mt-auto xt-aspect:w-full t-aspect:w-full"
           />
         )}

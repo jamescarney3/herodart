@@ -23,13 +23,13 @@ describe('LegsRound class', () => {
       });
 
       expect(rounds[0].wasStrike).toBe(false); // no previous
-      expect(rounds[1].wasStrike).toBe(true);  // 60 < 100
+      expect(rounds[1].wasStrike).toBe(true); // 60 < 100
       expect(rounds[2].wasStrike).toBe(false); // 120 > 60
     });
   });
 
   describe('#wasEliminationRound', () => {
-    it('returns true when round score is player\'s third strike', () => {
+    it("returns true when round score is player's third strike", () => {
       const playerA = { name: 'wile e coyote' };
       const playerB = { name: 'road runner' };
 
