@@ -88,16 +88,20 @@ export default class ShanghaiGame extends Model {
   }
 
   get finished(): boolean {
-    const { started, players, shanghaiScored } = this;
+    const { started, players, shanghaiScored, allRoundsShot } = this;
+    const singlePlayerRemaining = players.where({ eliminated: false }).length === 1;
+    return started && (shanghaiScored || allRoundsShot || singlePlayerRemaining);
+  }
+
+  get playersRemaining(): ShanghaiPlayer[] {
+    const { players } = this;
+    return players.where({ eliminated: false });
+  }
+
+  get allRoundsShot(): boolean {
+    const { playersRemaining } = this;
     const { endWedge } = this.rules;
-
-    const allRoundsShot =
-      !!players.length &&
-      players
-        .where({ eliminated: false })
-        .every((player) => player.rounds.some((round: ShanghaiRound) => round.wedge === endWedge));
-
-    return started && (shanghaiScored || allRoundsShot);
+    return playersRemaining.every((player) => player.rounds.length === endWedge);
   }
 
   get winners(): ShanghaiPlayer[] {

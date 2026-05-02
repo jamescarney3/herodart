@@ -6,3 +6,4 @@ export { default as ShanghaiMarks } from '~/components/shanghai/shanghai-marks';
 export { default as ShanghaiKeypad } from '~/components/shanghai/shanghai-keypad';
 export { default as ShanghaiPlayerCard } from '~/components/shanghai/shanghai-player-card';
 export { default as ShanghaiRoundItem } from '~/components/shanghai/shanghai-round-item';
+export { default as ShanghaiRules } from '~/components/shanghai/shanghai-rules';
