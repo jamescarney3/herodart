@@ -1,25 +1,32 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 
 import InstallModal from '~/components/shared/install-modal';
 import usePwaInstallation from '~/hooks/use-pwa-installation';
 
+vi.mock('@headlessui/react', () => ({
+  Description: ({ children }) => <div>{children}</div>,
+  Dialog: ({ children, open }) => (open ? <div>{children}</div> : null),
+  DialogPanel: ({ children }) => <div>{children}</div>,
+  DialogTitle: ({ children }) => <div>{children}</div>,
+  DialogBackdrop: () => null,
+}));
 vi.mock('~/hooks/use-pwa-installation');
 
-describe('Keypad', () => {
+describe('InstallModal', () => {
   const mockUsePwaInstallation = vi.mocked(usePwaInstallation);
 
   beforeEach(() => {
-    mockUsePwaInstallation.mockReturnValue({});
+    vi.mocked(usePwaInstallation).mockReturnValue({});
   });
 
   afterEach(() => {
     vi.clearAllMocks();
-    cleanup();
   });
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     const container = render(<InstallModal />);
+
     expect(container).to.exist;
   });
 
@@ -48,20 +55,26 @@ describe('Keypad', () => {
     expect(fallbackContainer).to.exist;
   });
 
-  it('invokes install prompt on install button click', () => {
+  it('invokes install prompt on install button click', async () => {
     const promptToInstall = vi.fn();
     mockUsePwaInstallation.mockReturnValue({ onIOS: false, hasPrompt: true, promptToInstall });
     const { getByText } = render(<InstallModal />);
 
-    fireEvent.click(getByText('Install'));
+    await act(() => {
+      fireEvent.click(getByText('Install'));
+    });
+
     expect(promptToInstall).toHaveBeenCalled();
   });
 
-  it('can be closed', () => {
+  it('can be closed', async () => {
     mockUsePwaInstallation.mockReturnValue({ hasPrompt: true });
     const { getByText, queryByText } = render(<InstallModal />);
 
-    fireEvent.click(getByText('Not now'));
+    await act(() => {
+      fireEvent.click(getByText('Not now'));
+    });
+
     expect(queryByText('Not now')).toBeNull();
   });
 });
