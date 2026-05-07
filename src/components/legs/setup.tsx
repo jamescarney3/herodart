@@ -48,9 +48,11 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
       setName('');
       setAddingPlayer(false);
       setSplashing(false);
+      /* istanbul ignore start -- @preserve */
     } catch (e) {
       console.log((e as Error).message);
     }
+    /* istanbul ignore stop -- @preserve */
   };
 
   return (

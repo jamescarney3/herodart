@@ -1,4 +1,4 @@
-import { cleanup, render, fireEvent, waitFor } from '@testing-library/react';
+import { cleanup, render, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import LegsGame from '~/lib/legs/legs-game';
 import LegsSetup from '~/components/legs/setup';
@@ -11,6 +11,7 @@ vi.mock('~/lib/legs/legs-game', () => {
   MockLegsGame.create = vi.fn().mockImplementation(() => ({
     playerOrder: [],
     start: vi.fn(),
+    createPlayer: vi.fn(),
   }));
 
   return { default: MockLegsGame };
@@ -67,19 +68,22 @@ describe('LegsSetup', () => {
     expect(cancelButton).toBeTruthy();
     expect(enterButton.disabled).toBeTruthy();
 
-    fireEvent.change(nameInput, { target: { value: 'Artemis' } });
-    fireEvent.click(enterButton);
+    await act(() => {
+      fireEvent.change(nameInput, { target: { value: 'Artemis' } });
+      fireEvent.click(enterButton);
+    });
 
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
-    fireEvent.click(getByText('9'));
-    fireEvent.click(getByText('enter'));
 
-    waitFor(() => {
-      expect(getByText('add player')).toBeTruthy();
+    await act(() => {
+      fireEvent.click(getByText('9'));
+      fireEvent.click(getByText('enter'));
     });
+
+    expect(getByText('add player')).toBeTruthy();
   });
 
-  it('adds a player without a splash', () => {
+  it('adds a player without a splash', async () => {
     const { enterButton, cancelButton, nameInput, rendered } = startAddingPlayer();
     const { getAllByRole, getByText } = rendered;
 
@@ -87,14 +91,18 @@ describe('LegsSetup', () => {
     expect(cancelButton).toBeTruthy();
     expect(enterButton.disabled).toBeTruthy();
 
-    fireEvent.change(nameInput, { target: { value: 'Artemis' } });
-    fireEvent.click(enterButton);
+    await act(() => {
+      fireEvent.change(nameInput, { target: { value: 'Artemis' } });
+      fireEvent.click(enterButton);
+    });
 
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
-    waitFor(() => {
+
+    await act(() => {
       fireEvent.click(getByText('enter'));
-      expect(getByText('add player')).toBeTruthy();
     });
+
+    expect(getByText('add player')).toBeTruthy();
   });
 
   it('does not add a player with an invalid splash', () => {
