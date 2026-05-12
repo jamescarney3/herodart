@@ -64,7 +64,11 @@ export default class ShanghaiGame extends Model {
   }
 
   get currentPlayer(): ShanghaiPlayer | void {
-    return this.playerOrder.first;
+    const { staticPlayerOrder, rounds } = this;
+    const lastPlayer = rounds?.last?.player;
+    const lastPlayerIdx = staticPlayerOrder.findIndex((player) => player === lastPlayer);
+    const wrappedOrder = staticPlayerOrder.slice(lastPlayerIdx).concat(staticPlayerOrder.slice(0, lastPlayerIdx));
+    return wrappedOrder.slice(1).where({ eliminated: false }).first;
   }
 
   get currentWedge(): number {
