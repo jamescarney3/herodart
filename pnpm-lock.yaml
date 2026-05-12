@@ -52,8 +52,8 @@ importers:
         specifier: ^7.28.0
         version: 7.28.0(@babel/core@7.25.2)
       '@jamescarney3/microrm':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.2(vite@6.4.1(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.92.1)(terser@5.46.1)(yaml@2.8.1))
@@ -1156,8 +1156,8 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@jamescarney3/microrm@0.0.3':
-    resolution: {integrity: sha512-x8SfNDcDbmxcqAvQb65rNT3FVEOrd85WW2q4i1eDjiBIH/3DSznYTOlBCr27auDlGhGX2RKn8r5m6rAgv7OR2g==}
+  '@jamescarney3/microrm@0.0.4':
+    resolution: {integrity: sha512-u2wENeb5elYrezuWRatYrFjv0VbYr9NFwPBFqutBKVYszu46NfSgqF/otmJ+vzsuJZxCQaC1Ok0uiLncqLsTTg==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -5529,7 +5529,7 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@jamescarney3/microrm@0.0.3': {}
+  '@jamescarney3/microrm@0.0.4': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
