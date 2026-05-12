@@ -268,10 +268,16 @@ describe('ShanghaiGame class', () => {
   describe('get currentPlayer', () => {
     it('returns next player to shoot', () => {
       const game = new ShanghaiGame();
-      const firstPlayer = {};
-      vi.spyOn(game, 'playerOrder', 'get').mockReturnValue({ first: firstPlayer });
+      const [moe, larry, curly, shemp] = [
+        { name: 'moe', eliminated: false },
+        { name: 'larry', eliminated: true },
+        { name: 'curly', eliminated: true },
+        { name: 'shemp', eliminated: false },
+      ];
+      vi.spyOn(game, 'staticPlayerOrder', 'get').mockReturnValue(new Collection([moe, larry, curly, shemp]));
+      vi.spyOn(game, 'rounds', 'get').mockReturnValue(new Collection([{ player: larry }]));
 
-      expect(game.currentPlayer).toBe(firstPlayer);
+      expect(game.currentPlayer).toBe(shemp);
     });
   });
 
