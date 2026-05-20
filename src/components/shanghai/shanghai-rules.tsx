@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { Container } from '~/components/layout';
+
 import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import { SCORING, ELIMINATION, END_WEDGE, TURN_ORDER } from '~/lib/shanghai';
 import { RadioGroup } from '~/components/shared';
@@ -26,7 +28,7 @@ const ShanghaiRules = ({ game, onConfirm }: ShanghaiRulesProps) => {
   };
 
   return (
-    <div className="h-screen flex flex-col p-2 gap-2">
+    <Container>
       <section className="flex flex-col gap-2">
         <h1 className="text-center text-6xl">Game Rules</h1>
       </section>
@@ -85,7 +87,7 @@ const ShanghaiRules = ({ game, onConfirm }: ShanghaiRulesProps) => {
           confirm rules
         </button>
       </section>
-    </div>
+    </Container>
   );
 };
 

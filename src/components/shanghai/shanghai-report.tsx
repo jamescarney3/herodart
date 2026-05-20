@@ -1,5 +1,6 @@
 import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
 import { roundNumber } from '~/lib/utils';
+import { Container } from '~/components/layout';
 
 interface ShanghaiReportProps {
   game: ShanghaiGame;
@@ -18,7 +19,7 @@ const formatWinnersHeader = (winners: ShanghaiPlayer[]) => {
 
 const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
   return (
-    <div className="h-screen flex flex-col gap-2 p-2">
+    <Container>
       <section>
         {game.winners && (
           <>
@@ -36,7 +37,7 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
                   <tr key={`player-${player.name}`}>
                     <td>{player.name}</td>
                     <td>{player.totalScore}</td>
-                    <td>{player.mpr}</td>
+                    <td>{roundNumber(player.mpr, 2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -98,7 +99,7 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
           new game
         </button>
       </section>
-    </div>
+    </Container>
   );
 };
 

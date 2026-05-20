@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { evaluate } from 'mathjs';
 
+import { Container } from '~/components/layout';
 import { Keypad, PlayerCard } from '~/components/legs';
 import type LegsGame from '~/lib/legs/legs-game';
 
@@ -56,7 +57,7 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
   };
 
   return (
-    <div className="h-screen flex flex-col p-2 gap-2">
+    <Container>
       <section className="h-48 shrink-0 flex flex-col gap-2">
         <h1 className="text-center text-6xl mb-auto">Legs Setup</h1>
         {splashing && <p className="test-center">splash (2 darts) for turn order:</p>}
@@ -115,7 +116,7 @@ const LegsSetup = ({ game }: LegsSetupProps) => {
           />
         )}
       </section>
-    </div>
+    </Container>
   );
 };
 

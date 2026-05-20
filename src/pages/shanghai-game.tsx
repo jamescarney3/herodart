@@ -22,11 +22,11 @@ const ShanghaiGame = () => {
   };
 
   return (
-    <div>
+    <>
       <MenuButton onClick={toggleMenuOpen} />
       <GameMenuModal open={menuOpen} onClose={toggleMenuOpen} />
       {renderGameContent()}
-    </div>
+    </>
   );
 };
 
