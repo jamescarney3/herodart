@@ -33,6 +33,9 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            ${{ github.run_id }}
 
       - name: Install dependencies
         run: pnpm i
