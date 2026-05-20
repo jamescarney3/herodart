@@ -5,6 +5,7 @@ import { KofiLink } from '~/components/shared';
 const MainMenu = () => {
   return (
     <div className="h-screen flex flex-col p-2 gap-2">
+      testing 123
       <h1 className="text-center text-6xl">Herodart</h1>
       <p>Scoring app for local play:</p>
       <nav className="flex flex-col gap-2">
