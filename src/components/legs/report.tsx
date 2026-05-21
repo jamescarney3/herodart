@@ -1,5 +1,6 @@
 import LegsGame from '~/lib/legs/legs-game';
 import { roundNumber, LEGS_ELIMINATION, LEGS_STRIKE } from '~/lib/utils';
+import { Container } from '~/components/layout';
 
 interface LegsReportProps {
   game: LegsGame;
@@ -8,7 +9,7 @@ interface LegsReportProps {
 
 const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
   return (
-    <div className="h-screen flex flex-col gap-2 p-2">
+    <Container>
       <section>
         <h1 className="text-center text-6xl">Winner:</h1>
         <div className="text-center text-6xl">{game.winner?.name}</div>
@@ -76,7 +77,7 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
           new game
         </button>
       </section>
-    </div>
+    </Container>
   );
 };
 

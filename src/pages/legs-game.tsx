@@ -15,11 +15,11 @@ const Game = () => {
   };
 
   return (
-    <div className="text-xl">
+    <>
       <MenuButton onClick={toggleMenuOpen} />
       <GameMenuModal open={menuOpen} onClose={toggleMenuOpen} />
       {getGamePhase()}
-    </div>
+    </>
   );
 };
 

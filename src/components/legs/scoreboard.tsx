@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { evaluate } from 'mathjs';
 
+import { Container } from '~/components/layout';
 import { PlayerCard, Keypad, ScoreToast } from '~/components/legs';
 import type LegsGame from '~/lib/legs/legs-game';
 
@@ -27,7 +28,7 @@ const LegsScoreboard = ({ game }: LegsScoreboardProps) => {
   };
 
   return (
-    <div className="h-screen flex flex-col gap-2 p-2">
+    <Container>
       <section className="h-48 flex flex-col shrink-0">
         <h1 className="text-center text-6xl">Target:</h1>
         <div className="text-center text-9xl">{game.targetScore}</div>
@@ -50,7 +51,7 @@ const LegsScoreboard = ({ game }: LegsScoreboardProps) => {
         className="mt-auto xt-aspect:w-full t-aspect:w-full"
       />
       <ScoreToast game={game} score={pendingScore || undefined} />
-    </div>
+    </Container>
   );
 };
 
