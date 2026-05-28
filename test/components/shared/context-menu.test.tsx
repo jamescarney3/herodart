@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { act, render, fireEvent, waitFor } from '@testing-library/react';
-import { useState } from 'react';
 
 import LegsMenu from '~/components/shared/context-menu';
 

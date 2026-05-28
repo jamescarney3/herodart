@@ -13,11 +13,11 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
     declare identifier: string;
     declare randomSeed: string;
     declare delete: () => void;
-    declare rules: {};
+    declare rules: object;
     declare players: { delete: () => void }[];
     declare rounds: { delete: () => void }[];
 
-    static create({ id, rules }: { id: string; rules: {} }) {
+    static create({ id, rules }: { id: string; rules: object }) {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
