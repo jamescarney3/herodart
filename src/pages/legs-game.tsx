@@ -1,11 +1,9 @@
 import useLegsGame from '~/hooks/use-legs-game';
-import { useToggle } from '~/hooks';
 import { Setup, Scoreboard, Report } from '~/components/legs';
-import { GameMenuModal, MenuButton } from '~/components/shared';
+import { ContextMenu } from '~/components/shared';
 
 const Game = () => {
-  const { game, newGame } = useLegsGame();
-  const [menuOpen, toggleMenuOpen] = useToggle(false);
+  const { game, newGame, clearGame } = useLegsGame();
 
   const getGamePhase = () => {
     if (!game) return null;
@@ -16,8 +14,7 @@ const Game = () => {
 
   return (
     <>
-      <MenuButton onClick={toggleMenuOpen} />
-      <GameMenuModal open={menuOpen} onClose={toggleMenuOpen} />
+      <ContextMenu options={[{ label: 'Quit Game', onClick: clearGame }]} />
       {getGamePhase()}
     </>
   );
