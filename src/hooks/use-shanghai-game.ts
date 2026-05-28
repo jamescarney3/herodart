@@ -36,7 +36,12 @@ const useLegsGame = () => {
     forceUpdate(() => new Object());
   };
 
-  return { game: gameRef.current, newGame };
+  const clearGame = () => {
+    // current game ref is always set in effect hook
+    cleanupShanghaiGame(gameRef.current!);
+  };
+
+  return { game: gameRef.current, newGame, clearGame };
 };
 
 export default useLegsGame;
