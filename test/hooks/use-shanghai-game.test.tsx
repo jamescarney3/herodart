@@ -4,15 +4,26 @@ import { useState } from 'react';
 
 import useShanghaiGame from '~/hooks/use-shanghai-game';
 
+const deleteGame = vi.fn();
+const deletePlayer = vi.fn();
+const deleteRound = vi.fn();
+
 vi.mock('~/lib/shanghai/shanghai-game', async () => {
   class MockShanghaiGame {
-    static create({ id, rules }) {
+    declare identifier: string;
+    declare randomSeed: string;
+    declare delete: () => void;
+    declare rules: {};
+    declare players: { delete: () => void }[];
+    declare rounds: { delete: () => void }[];
+
+    static create({ id, rules }: { id: string; rules: {} }) {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
-      newGame.delete = vi.fn();
-      newGame.players = [{ delete: vi.fn() }];
-      newGame.rounds = [{ delete: vi.fn() }];
+      newGame.delete = deleteGame;
+      newGame.players = [{ delete: deletePlayer }];
+      newGame.rounds = [{ delete: deleteRound }];
       newGame.rules = rules;
       return newGame;
     }
@@ -47,7 +58,7 @@ describe('useShanghaiGame hook', () => {
 
   const DummyComponent = () => {
     const [testVal, setTestVal] = useState(true);
-    const { game, newGame } = useShanghaiGame();
+    const { game, newGame, clearGame } = useShanghaiGame();
     if (!game) return null;
     return (
       <>
@@ -55,6 +66,7 @@ describe('useShanghaiGame hook', () => {
         <div data-testid="random-seed">{game.randomSeed}</div>
         <button onClick={() => setTestVal(!testVal)} data-testid="test-val-toggle" />
         <button onClick={newGame} data-testid="new-game-trigger" />
+        <button onClick={clearGame} data-testid="clear-game-trigger" />
       </>
     );
   };
@@ -67,20 +79,29 @@ describe('useShanghaiGame hook', () => {
   });
 
   it('maintains reference to game instance between renders', async () => {
-    render(<DummyComponent />);
-    const button = screen.getByTestId('test-val-toggle');
-    const firstRenderSeed = screen.getByTestId('random-seed').innerHTML;
-    await act(() => button.click());
-    const secondRenderSeed = screen.getByTestId('random-seed').innerHTML;
+    const { getByTestId, findByTestId } = render(<DummyComponent />);
+    const button = await findByTestId('test-val-toggle');
+    const firstRenderSeed = getByTestId('random-seed').innerHTML;
+    act(() => button.click());
+    const secondRenderSeed = getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).toBe(firstRenderSeed);
   });
 
   it('returns a newGame callback that begins a new shanghai game', async () => {
-    const { getByTestId } = render(<DummyComponent />);
-    const button = getByTestId('new-game-trigger');
+    const { getByTestId, findByTestId } = render(<DummyComponent />);
+    const button = await findByTestId('new-game-trigger');
     const firstRenderSeed = getByTestId('random-seed').innerHTML;
-    await act(() => button.click());
+    act(() => button.click());
     const secondRenderSeed = getByTestId('random-seed').innerHTML;
     expect(secondRenderSeed).not.toBe(firstRenderSeed);
+  });
+
+  it('returns a clearGame callback that deletes game and associated models', async () => {
+    const { findByTestId } = render(<DummyComponent />);
+    const button = await findByTestId('clear-game-trigger');
+    await act(async () => button.click());
+    expect(deleteGame).toHaveBeenCalled();
+    expect(deletePlayer).toHaveBeenCalled();
+    expect(deleteRound).toHaveBeenCalled();
   });
 });
