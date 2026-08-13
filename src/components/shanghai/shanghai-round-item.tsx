@@ -21,7 +21,7 @@ const ShanghaiRoundItem = ({ round, editingRound, onClick }: ShanghaiRoundItemPr
   return (
     <button className={buttonClass} onClick={() => onClick(round)}>
       <div className="mr-2">{round.wedge}</div>
-      <div>{round.player.name}</div>
+      <div>{round.shanghaiPlayer.name}</div>
       <div className="ml-auto">{round.marks} marks</div>
     </button>
   );

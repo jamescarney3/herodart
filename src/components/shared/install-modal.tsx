@@ -7,7 +7,7 @@ import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { usePwaInstallation } from '~/hooks';
 
 interface InstallButtonProps {
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 const InstallButton = ({ disabled = false }: InstallButtonProps) => {

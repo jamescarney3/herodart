@@ -3,42 +3,32 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import LegsGame from '~/lib/legs/legs-game';
 import LegsScoreboard from '~/components/legs/scoreboard';
 
-vi.mock('~/lib/legs/legs-game', () => {
-  const MockLegsGame = vi.fn();
-
-  MockLegsGame.create = vi.fn().mockImplementation(() => ({
-    id: 'test-game',
-    targetScore: 0,
-    currentPlayer: null,
-    playerOrder: [],
-    start: vi.fn(),
-    scoreWouldEliminateCurrentPlayer: vi.fn().mockReturnValue(false),
-    scoreWouldBeStrike: vi.fn().mockReturnValue(false),
-    createPlayer: vi.fn().mockImplementation(({ name, splash }) => ({
-      name,
-      splash,
-      score: vi.fn(),
-      strikes: 0,
-    })),
-  }));
-
-  return { default: MockLegsGame };
-});
+vi.mock('~/lib/legs/legs-game');
 
 describe('LegsScoreboard', () => {
   let game: LegsGame;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    game = LegsGame.create();
-
-    // Setup mock player order
-    const player1 = game.createPlayer({ name: 'Player 1', splash: 100 });
-    const player2 = game.createPlayer({ name: 'Player 2', splash: 90 });
-    game.playerOrder = [player1, player2];
-    game.currentPlayer = player1;
-
-    game.start();
+    const playerOrder = [
+      { name: 'Player 1', splash: 100 },
+      { name: 'Player 2', splash: 90 },
+    ] as LegsGame['playerOrder'];
+    game = {
+      id: 'test-game',
+      targetScore: 0,
+      playerOrder: playerOrder,
+      currentPlayer: playerOrder[0],
+      start: vi.fn(),
+      scoreWouldEliminateCurrentPlayer: vi.fn().mockReturnValue(false),
+      scoreWouldBeStrike: vi.fn().mockReturnValue(false),
+      createPlayer: vi.fn().mockImplementation(({ name, splash }) => ({
+        name,
+        splash,
+        score: vi.fn(),
+        strikes: 0,
+      })),
+    } as unknown as LegsGame;
   });
 
   afterEach(() => {
@@ -49,7 +39,8 @@ describe('LegsScoreboard', () => {
     const { container, getByText } = render(<LegsScoreboard game={game} />);
 
     expect(getByText('Target:')).toBeTruthy();
-    expect(container.querySelector('h1 + div').textContent).toBe('0');
+    const target = container.querySelector('h1 + div') as HTMLElement;
+    expect(target.textContent).toBe('0');
     game.playerOrder.forEach((player) => expect(getByText(player.name)).toBeTruthy());
   });
 
@@ -75,6 +66,7 @@ describe('LegsScoreboard', () => {
 
   it('submits score when enter is pressed', async () => {
     vi.useFakeTimers();
+    vi.spyOn(game, 'currentPlayer', 'get').mockReturnValue({ score: vi.fn() } as unknown as LegsGame['currentPlayer']);
     const { getByText, getAllByDisplayValue } = render(<LegsScoreboard game={game} />);
 
     fireEvent.click(getByText('5'));
@@ -90,13 +82,14 @@ describe('LegsScoreboard', () => {
 
     const clearedInput = getAllByDisplayValue('');
     expect(clearedInput).toBeDefined();
-    expect(game.currentPlayer.score).toHaveBeenCalledWith(51);
+    expect(game.currentPlayer!.score).toHaveBeenCalledWith(51);
 
     vi.useRealTimers();
   });
 
   it('handles mathematical expressions in score input', async () => {
     vi.useFakeTimers();
+    vi.spyOn(game, 'currentPlayer', 'get').mockReturnValue({ score: vi.fn() } as unknown as LegsGame['currentPlayer']);
     const { getByText } = render(<LegsScoreboard game={game} />);
 
     fireEvent.click(getByText('1'));
@@ -110,7 +103,7 @@ describe('LegsScoreboard', () => {
       vi.runAllTimers();
     });
 
-    expect(game.currentPlayer.score).toHaveBeenCalledWith(46);
+    expect(game.currentPlayer!.score).toHaveBeenCalledWith(46);
 
     vi.useRealTimers();
   });

@@ -1,26 +1,26 @@
-import { describe, it, afterEach, expect, beforeEach } from 'vitest';
+import { describe, it, afterEach, expect, beforeEach, vi } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
 
 import ShanghaiReport from '~/components/shanghai/shanghai-report';
-import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
+import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 
 describe('ShanghaiReport component', () => {
   let mockGame: ShanghaiGame;
-  let mockPlayers: ShanghaiPlayer[];
+  let mockPlayers: ShanghaiGame['shanghaiPlayers'];
 
   beforeEach(() => {
     mockPlayers = [
       { name: 'charlie', splash: 10, totalScore: 15, mpr: 1 },
       { name: 'mac', splash: 11, totalScore: 16, mpr: 2 },
       { name: 'dennis', splash: 12, totalScore: 17, mpr: 3 },
-    ];
+    ] as ShanghaiGame['shanghaiPlayers'];
 
-    const rounds = [{ player: mockPlayers[0] }, { player: mockPlayers[1] }, { player: mockPlayers[2] }];
-
-    mockGame = {
-      players: [],
-      rounds: rounds,
-    };
+    mockGame = vi.mockObject({
+      shanghaiPlayers: [] as unknown as ShanghaiGame['shanghaiPlayers'],
+      shanghaiRounds: [] as unknown as ShanghaiGame['shanghaiRounds'],
+      winners: [] as unknown as ShanghaiGame['winners'],
+      shanghaiScored: false,
+    } as ShanghaiGame);
   });
 
   afterEach(() => {
@@ -28,39 +28,40 @@ describe('ShanghaiReport component', () => {
   });
 
   it('renders without crashing', () => {
-    const { container } = render(<ShanghaiReport game={mockGame} />);
+    const { container } = render(<ShanghaiReport game={mockGame} onNewGame={() => {}} />);
     expect(container).toBeDefined();
   });
 
   it('displays a single winner correctly', () => {
-    const game = vi.mockObject(mockGame);
-    game.winners = [{ name: 'zaphod' }];
-    const { getByText } = render(<ShanghaiReport game={game} />);
+    const zaphod = { name: 'zaphod', total: 69, mpr: 2 };
+    vi.spyOn(mockGame, 'winners', 'get').mockReturnValue([zaphod] as unknown as ShanghaiGame['winners']);
+    const { getByText } = render(<ShanghaiReport game={mockGame} onNewGame={vi.fn()} />);
     expect(getByText('Winner:')).toBeDefined();
   });
 
   it('displays multiple winners correctly', () => {
-    const game = vi.mockObject(mockGame);
-    game.winners = [{ name: 'zaphod' }, { name: 'arthur' }, { name: 'ford' }];
-    const { getByText } = render(<ShanghaiReport game={game} />);
+    const winners = [{ name: 'zaphod' }, { name: 'arthur' }, { name: 'ford' }];
+    vi.spyOn(mockGame, 'winners', 'get').mockReturnValue(winners as unknown as ShanghaiGame['winners']);
+    const { getByText } = render(<ShanghaiReport game={mockGame} onNewGame={() => {}} />);
     expect(getByText('Winners (tie):')).toBeDefined();
   });
 
   it('displays players', () => {
-    const game = vi.mockObject(mockGame);
-    game.players = mockPlayers;
-    const { getByText } = render(<ShanghaiReport game={game} />);
+    vi.spyOn(mockGame, 'shanghaiPlayers', 'get').mockReturnValue(mockPlayers);
+    const { getAllByText } = render(<ShanghaiReport game={mockGame} onNewGame={() => {}} />);
 
-    expect(getByText(mockPlayers.at(0).name)).toBeDefined();
-    expect(getByText(mockPlayers.at(1).name)).toBeDefined();
-    expect(getByText(mockPlayers.at(2).name)).toBeDefined();
+    expect(getAllByText(mockPlayers.at(0)!.name).length).toBeGreaterThan(0);
+    expect(getAllByText(mockPlayers.at(1)!.name).length).toBeGreaterThan(0);
+    expect(getAllByText(mockPlayers.at(2)!.name).length).toBeGreaterThan(0);
   });
 
   it('displays shanghai result', () => {
-    const game = vi.mockObject(mockGame);
-    game.shanghaiScored = true;
-    game.rounds = [{ player: mockPlayers[0] }, { player: mockPlayers[0], isShanghai: true }];
-    const { getByText } = render(<ShanghaiReport game={game} />);
+    vi.spyOn(mockGame, 'shanghaiScored', 'get').mockReturnValue(true);
+    vi.spyOn(mockGame, 'shanghaiRounds', 'get').mockReturnValue([
+      { shanghaiPlayer: mockPlayers[0] },
+      { shanghaiPlayer: mockPlayers[1], isShanghai: true },
+    ] as unknown as ShanghaiGame['shanghaiRounds']);
+    const { getByText } = render(<ShanghaiReport game={mockGame} onNewGame={() => {}} />);
     expect(getByText('Shanghai?')).toBeDefined();
     expect(getByText('Shanghai!')).toBeDefined();
   });

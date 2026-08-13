@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup, act } from '@testing-library/react';
+import { render, cleanup, act } from '@testing-library/react';
 import { useState } from 'react';
 
 import useShanghaiGame from '~/hooks/use-shanghai-game';
@@ -13,18 +13,17 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
     declare identifier: string;
     declare randomSeed: string;
     declare delete: () => void;
-    declare rules: object;
-    declare players: { delete: () => void }[];
-    declare rounds: { delete: () => void }[];
-
-    static create({ id, rules }: { id: string; rules: object }) {
+    declare shanghaiRules: object;
+    declare shanghaiPlayers: { delete: () => void }[];
+    declare shanghaiRounds: { delete: () => void }[];
+    static create({ id, shanghaiRules }: { id: string; shanghaiRules: object }) {
       const newGame = new MockShanghaiGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
       newGame.delete = deleteGame;
-      newGame.players = [{ delete: deletePlayer }];
-      newGame.rounds = [{ delete: deleteRound }];
-      newGame.rules = rules;
+      newGame.shanghaiPlayers = [{ delete: deletePlayer }];
+      newGame.shanghaiRounds = [{ delete: deleteRound }];
+      newGame.shanghaiRules = shanghaiRules;
       return newGame;
     }
   }
@@ -33,6 +32,8 @@ vi.mock('~/lib/shanghai/shanghai-game', async () => {
 
 vi.mock('~/lib/shanghai/shanghai-rules', async () => {
   class MockShanghaiRules {
+    declare identifier: string;
+
     static create() {
       const newRules = new MockShanghaiRules();
       newRules.identifier = 'test rules';
@@ -44,17 +45,19 @@ vi.mock('~/lib/shanghai/shanghai-rules', async () => {
 
 vi.mock('@jamescarney3/microrm', async (importOriginal) => {
   const actual = await importOriginal();
-
   class MockObserver {
-    static subscribe(cb) {
-      cb();
+    // invoke this right away, don't worry about observer inner workings
+    static subscribe(callback: () => void) {
+      callback();
     }
   }
-  return { ...actual, Observer: MockObserver };
+  return { ...actual!, Observer: MockObserver };
 });
 
 describe('useShanghaiGame hook', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+  });
 
   const DummyComponent = () => {
     const [testVal, setTestVal] = useState(true);
@@ -62,8 +65,8 @@ describe('useShanghaiGame hook', () => {
     if (!game) return null;
     return (
       <>
-        <div>{game.identifier}</div>
-        <div data-testid="random-seed">{game.randomSeed}</div>
+        <div>{game.identifier as string}</div>
+        <div data-testid="random-seed">{game.randomSeed as string}</div>
         <button onClick={() => setTestVal(!testVal)} data-testid="test-val-toggle" />
         <button onClick={newGame} data-testid="new-game-trigger" />
         <button onClick={clearGame} data-testid="clear-game-trigger" />
@@ -71,11 +74,11 @@ describe('useShanghaiGame hook', () => {
     );
   };
 
-  it('instantiates and returns a shanghai game', () => {
-    const { container } = render(<DummyComponent />);
+  it('instantiates and returns a shanghai game', async () => {
+    const { container, findByText } = render(<DummyComponent />);
     expect(container).to.exist;
     // TODO: assert correct args passed to game instance
-    expect(screen.getByText('test game')).to.exist;
+    expect(await findByText('test game')).toBeDefined();
   });
 
   it('maintains reference to game instance between renders', async () => {

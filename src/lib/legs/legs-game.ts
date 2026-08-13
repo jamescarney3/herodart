@@ -9,28 +9,28 @@ export default class LegsGame extends Model {
   // in class definition seems to overwrite getter/setter defined by @prop decorator
   @prop declare started: boolean;
 
-  @hasMany('legs-players', { foreignKey: 'gameId' }) declare players: Collection<Player>;
-  @hasMany('legs-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<Round>;
+  @hasMany declare legsPlayers: Collection<Player>;
+  @hasMany declare legsRounds: Collection<Round>;
 
   createPlayer(attributes: { name: string; splash: number }): Player {
-    return Player.create({ ...attributes, game: this }) as Player;
+    return Player.create({ ...attributes, legsGame: this }) as Player;
   }
 
   start() {
-    if (this.players.length < 2) {
+    if (this.legsPlayers.length < 2) {
       throw new Error('legs requires at least 2 players to start');
     }
     this.started = true;
   }
 
   scoreRound(player: Player, score: number): void {
-    Round.create({ player, score, game: this });
+    Round.create({ legsPlayer: player, score, legsGame: this });
   }
 
   calculateStrikes(player: Player): number {
-    return this.rounds.reduce((strikes, round, idx) => {
-      if (round.player === player) {
-        if (this.rounds[idx - 1]?.score > round.score) {
+    return this.legsRounds.reduce((strikes, round, idx) => {
+      if (round.legsPlayer === player) {
+        if (this.legsRounds[idx - 1]?.score > round.score) {
           return strikes + 1;
         }
       }
@@ -39,39 +39,35 @@ export default class LegsGame extends Model {
   }
 
   scoreWouldBeStrike(score: number): boolean {
-    if (!this.rounds.last) return false;
-    return score < this.rounds.last.score;
+    if (!this.legsRounds.last) return false;
+    return score < this.legsRounds.last.score;
   }
 
   scoreWouldEliminateCurrentPlayer(score: number): boolean {
-    // if any players have strikes, at least one round has been shot so assert this.rounds.last
-    return this.currentPlayer?.strikes === 2 && score < this.rounds.last!.score;
-  }
-
-  playerExistsWithName(name: string): boolean {
-    return this.players.map((p) => p.name).includes(name);
+    // if any players have strikes, at least one round has been shot so assert this.legsRounds.last
+    return this.currentPlayer?.strikes === 2 && score < this.legsRounds.last!.score;
   }
 
   get finished(): boolean {
-    return [this.started, this.players.filter((player) => player.strikes < 3).length === 1].every(
+    return [this.started, this.legsPlayers.filter((player) => player.strikes < 3).length === 1].every(
       (condition) => !!condition,
     );
   }
 
   get canStart(): boolean {
-    return this.players.length >= 2 && !this.finished;
+    return this.legsPlayers.length >= 2 && !this.finished;
   }
 
   get winner(): Player | null {
     if (!this.finished) return null;
-    return this.players.find((player) => player.strikes < 3);
+    return this.legsPlayers.find((player) => player.strikes < 3)!;
   }
 
   get playerOrder(): Collection<Player> {
-    const { players, rounds } = this;
-    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+    const { legsPlayers, legsRounds } = this;
+    const order = legsPlayers.sort((playerA, playerB) => playerB.splash - playerA.splash);
 
-    const lastPlayer = rounds?.last?.player;
+    const lastPlayer = legsRounds?.last?.legsPlayer;
     if (!lastPlayer) return order as Collection<Player>;
 
     const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
@@ -83,7 +79,7 @@ export default class LegsGame extends Model {
   }
 
   get targetScore(): number {
-    return this.rounds.last?.score || 0;
+    return this.legsRounds.last?.score || 0;
   }
 
   get currentPlayer() {

@@ -1,18 +1,22 @@
 import { cleanup, render, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import LegsGame from '~/lib/legs/legs-game';
+
 import LegsSetup from '~/components/legs/setup';
+import LegsGame from '~/lib/legs/legs-game';
 
 vi.mock('~/components/legs/player-card');
-
 vi.mock('~/lib/legs/legs-game', () => {
-  const MockLegsGame = vi.fn();
-
-  MockLegsGame.create = vi.fn().mockImplementation(() => ({
-    playerOrder: [],
-    start: vi.fn(),
-    createPlayer: vi.fn(),
-  }));
+  const MockLegsGame = vi.fn(
+    class {
+      canStart: boolean = false;
+      playerOrder = [];
+      start = vi.fn();
+      createPlayer = vi.fn();
+      static create() {
+        return new this();
+      }
+    },
+  );
 
   return { default: MockLegsGame };
 });
@@ -20,18 +24,18 @@ vi.mock('~/lib/legs/legs-game', () => {
 describe('LegsSetup', () => {
   let game: LegsGame;
 
-  const startAddingPlayer = (name) => {
+  const startAddingPlayer = () => {
     const rendered = render(<LegsSetup game={game} />);
     const { getByText, getByRole } = rendered;
 
     const addPlayerButton = getByText('add player');
     fireEvent.click(addPlayerButton);
 
-    const enterButton = getByText('enter');
-    const cancelButton = getByText('cancel');
-    const nameInput = getByRole('textbox');
+    const enterButton = getByText('enter') as HTMLButtonElement;
+    const cancelButton = getByText('cancel') as HTMLButtonElement;
+    const nameInput = getByRole('textbox') as HTMLInputElement;
 
-    if (!name) return { enterButton, cancelButton, nameInput, rendered };
+    return { enterButton, cancelButton, nameInput, rendered };
   };
 
   beforeEach(() => {
@@ -47,7 +51,7 @@ describe('LegsSetup', () => {
     const { getByText } = render(<LegsSetup game={game} />);
 
     expect(getByText('add player')).toBeTruthy();
-    expect(getByText('start game').disabled).toBeTruthy();
+    expect((getByText('start game') as HTMLButtonElement).disabled).toBeTruthy();
   });
 
   it('starts adding a player on enter press', () => {
@@ -68,14 +72,14 @@ describe('LegsSetup', () => {
     expect(cancelButton).toBeTruthy();
     expect(enterButton.disabled).toBeTruthy();
 
-    await act(() => {
+    act(() => {
       fireEvent.change(nameInput, { target: { value: 'Artemis' } });
       fireEvent.click(enterButton);
     });
 
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
 
-    await act(() => {
+    act(() => {
       fireEvent.click(getByText('9'));
       fireEvent.click(getByText('enter'));
     });
@@ -91,14 +95,14 @@ describe('LegsSetup', () => {
     expect(cancelButton).toBeTruthy();
     expect(enterButton.disabled).toBeTruthy();
 
-    await act(() => {
+    act(() => {
       fireEvent.change(nameInput, { target: { value: 'Artemis' } });
       fireEvent.click(enterButton);
     });
 
     expect(getAllByRole('textbox').length).toBeGreaterThan(1);
 
-    await act(() => {
+    act(() => {
       fireEvent.click(getByText('enter'));
     });
 
@@ -133,16 +137,19 @@ describe('LegsSetup', () => {
     fireEvent.click(cancelButton);
 
     expect(getByText('add player')).toBeTruthy();
-    expect(getByText('start game').disabled).toBeTruthy();
+    expect((getByText('start game') as HTMLButtonElement).disabled).toBeTruthy();
   });
 
   it('starts game when start button is clicked', () => {
-    game.canStart = true;
-    game.playerOrder = [{ name: 'Artemis' }, { name: 'Freyja' }];
+    vi.spyOn(game, 'canStart', 'get').mockReturnValue(true);
+    vi.spyOn(game, 'playerOrder', 'get').mockReturnValue([
+      { name: 'Artemis' },
+      { name: 'Freyja' },
+    ] as unknown as LegsGame['playerOrder']);
     const { getByText } = render(<LegsSetup game={game} />);
     const startButton = getByText('start game');
 
-    expect(getByText('start game').disabled).toBeFalsy();
+    expect((getByText('start game') as HTMLButtonElement).disabled).toBeFalsy();
     fireEvent.click(startButton);
     expect(game.start).toHaveBeenCalled();
   });

@@ -1,36 +1,32 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import LegsPlayer from '~/lib/legs/legs-player';
+import type LegsGame from '~/lib/legs/legs-game';
+import type LegsRound from '~/lib/legs/legs-round';
 
-vi.mock('~/lib/legs/legs-game', () => {
-  class MockGame {
-    static create = vi.fn().mockImplementation(() => 'extant round');
-  }
-
-  return { default: MockGame };
-});
+vi.mock('~/lib/legs/legs-game');
+vi.mock('~/lib/legs/legs-round');
 
 describe('LegsPlayer class', () => {
   describe('get strikes', () => {
     it('returns a strike count', () => {
-      const legsPlayer = new LegsPlayer({ id: 'testPlayer' });
+      const legsPlayer = new LegsPlayer();
 
-      vi.spyOn(legsPlayer, 'game', 'get').mockReturnValue({
-        calculateStrikes: vi.fn().mockReturnValue(2),
-      });
+      vi.spyOn(legsPlayer, 'legsGame', 'get').mockReturnValue({
+        calculateStrikes: (player: LegsPlayer) => (player === legsPlayer ? 2 : 0),
+      } as LegsGame);
 
       expect(legsPlayer.strikes).toBe(2);
-      expect(legsPlayer.game.calculateStrikes).toHaveBeenCalledWith(legsPlayer);
     });
   });
 
   describe('get average', () => {
     it('calculates player 3DA', () => {
-      const legsPlayer = new LegsPlayer({ name: 'moe' });
+      const legsPlayer = new LegsPlayer();
 
-      const rounds = [{ score: 60 }, { score: 120 }, { score: 100 }];
+      const rounds = [{ score: 60 }, { score: 120 }, { score: 100 }] as LegsRound[];
 
-      vi.spyOn(legsPlayer, 'rounds', 'get').mockReturnValue(rounds);
+      vi.spyOn(legsPlayer, 'legsRounds', 'get').mockReturnValue(rounds);
 
       const total = 60 + 120 + 100;
       const expected = total / 3;
@@ -40,19 +36,19 @@ describe('LegsPlayer class', () => {
 
   describe('get opponentAverage', () => {
     it('calculates aggregate preceding player 3DA', () => {
-      const legsPlayer = new LegsPlayer({ name: 'larry' });
-      const opponentA = { name: 'curly' };
-      const opponentB = { name: 'shemp' };
+      const legsPlayer = new LegsPlayer();
+      const opponentA = new LegsPlayer();
+      const opponentB = new LegsPlayer();
 
       const rounds = [
-        { player: opponentA, score: 80 },
-        { player: opponentB, score: 50 },
-        { player: legsPlayer, score: 100 },
-        { player: opponentA, score: 60 },
-        { player: legsPlayer, score: 120 },
+        { legsPlayer: opponentA, score: 80 },
+        { legsPlayer: opponentB, score: 50 },
+        { legsPlayer: legsPlayer, score: 100 },
+        { legsPlayer: opponentA, score: 60 },
+        { legsPlayer: legsPlayer, score: 120 },
       ];
 
-      vi.spyOn(legsPlayer, 'game', 'get').mockReturnValue({ rounds });
+      vi.spyOn(legsPlayer, 'legsGame', 'get').mockReturnValue({ legsRounds: rounds } as LegsGame);
 
       expect(legsPlayer.opponentAverage).toBe((50 + 60) / 2);
     });
@@ -60,15 +56,13 @@ describe('LegsPlayer class', () => {
 
   describe('#score', () => {
     it('scores a legs round', () => {
-      const legsPlayer = new LegsPlayer({ id: 'testPlayer' });
+      const legsPlayer = new LegsPlayer();
 
-      vi.spyOn(legsPlayer, 'game', 'get').mockReturnValue({
-        scoreRound: vi.fn(),
-      });
+      vi.spyOn(legsPlayer, 'legsGame', 'get').mockReturnValue({ scoreRound: vi.fn() } as unknown as LegsGame);
 
       legsPlayer.score(180);
 
-      expect(legsPlayer.game.scoreRound).toHaveBeenCalledWith(legsPlayer, 180);
+      expect(legsPlayer.legsGame.scoreRound).toHaveBeenCalledWith(legsPlayer, 180);
     });
   });
 });

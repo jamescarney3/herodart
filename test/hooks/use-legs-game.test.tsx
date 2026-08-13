@@ -13,16 +13,16 @@ vi.mock('~/lib/legs/legs-game', () => {
     declare identifier: string;
     declare randomSeed: string;
     declare delete: () => void;
-    declare players: { delete: () => void }[];
-    declare rounds: { delete: () => void }[];
+    declare legsPlayers: { delete: () => void }[];
+    declare legsRounds: { delete: () => void }[];
 
     static create({ id }: { id: string }) {
       const newGame = new MockLegsGame();
       newGame.identifier = 'test game';
       newGame.randomSeed = id;
       newGame.delete = deleteGame;
-      newGame.players = [{ delete: deletePlayer }];
-      newGame.rounds = [{ delete: deleteRound }];
+      newGame.legsPlayers = [{ delete: deletePlayer }];
+      newGame.legsRounds = [{ delete: deleteRound }];
       return newGame;
     }
   }
@@ -48,8 +48,8 @@ describe('useLegsGame hook', () => {
     if (!game) return null;
     return (
       <>
-        <div>{game.identifier}</div>
-        <div data-testid="random-seed">{game.randomSeed}</div>
+        <div>{game.identifier as string}</div>
+        <div data-testid="random-seed">{game.randomSeed as string}</div>
         <button onClick={() => setTestVal(!testVal)} data-testid="test-val-toggle" />
         <button onClick={newGame} data-testid="new-game-trigger" />
         <button onClick={clearGame} data-testid="clear-game-trigger" />

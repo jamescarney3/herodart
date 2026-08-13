@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useShanghaiGame } from '~/hooks';
 import { ContextMenu } from '~/components/shared';
@@ -7,9 +8,15 @@ import { ShanghaiSetup, ShanghaiScoreboard, ShanghaiReport, ShanghaiRules } from
 const ShanghaiGame = () => {
   const { game, newGame, clearGame } = useShanghaiGame();
   const [rulesConfirmed, setRulesConfirmed] = useState(false);
+  const navigate = useNavigate();
 
   const confirmRules = () => {
     setRulesConfirmed(true);
+  };
+
+  const quitGame = () => {
+    clearGame();
+    navigate('/');
   };
 
   const renderGameContent = () => {
@@ -22,7 +29,7 @@ const ShanghaiGame = () => {
 
   return (
     <>
-      <ContextMenu options={[{ label: 'Quit Game', onClick: clearGame }]} />
+      <ContextMenu options={[{ label: 'Quit Game', onClick: quitGame }]} />
       {renderGameContent()}
     </>
   );
