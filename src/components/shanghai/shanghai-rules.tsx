@@ -12,7 +12,7 @@ interface ShanghaiRulesProps {
 }
 
 const ShanghaiRules = ({ game, onConfirm }: ShanghaiRulesProps) => {
-  const { rules } = game;
+  const { shanghaiRules: rules } = game;
 
   const [scoring, setScoring] = useState<SCORING>(rules.scoring);
   const [elimination, setElimination] = useState<ELIMINATION>(rules.elimination);

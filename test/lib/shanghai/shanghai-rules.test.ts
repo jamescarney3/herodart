@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 
 import ShanghaiRules, { SCORING, ELIMINATION, TURN_ORDER } from '~/lib/shanghai/shanghai-rules';
-import type { ShanghaiRound, ShanghaiPlayer } from '~/lib/shanghai';
+import type { ShanghaiRound, ShanghaiPlayer, ShanghaiGame } from '~/lib/shanghai';
 
 describe('ShanghaiRules class', () => {
-  const baseRules = ShanghaiRules.create({ id: 'base-rules' });
+  const baseRules = new ShanghaiRules();
 
   afterEach(() => vi.clearAllMocks());
 
@@ -50,8 +50,8 @@ describe('ShanghaiRules class', () => {
       const charlie = { name: 'charlie' } as ShanghaiPlayer;
       const mac = { name: 'mac' } as ShanghaiPlayer;
       const dennis = { name: 'dennis' } as ShanghaiPlayer;
-      const mockGame = { players: [charlie, mac, dennis] };
-      vi.spyOn(baseRules, 'game', 'get').mockReturnValue(mockGame);
+      const mockGame = { shanghaiPlayers: [charlie, mac, dennis] };
+      vi.spyOn(baseRules, 'shanghaiGame', 'get').mockReturnValue(mockGame as ShanghaiGame);
       const calculateCharlieOrder = baseRules.generatePlayerOrderCalculator(charlie);
       const calculateMacOrder = baseRules.generatePlayerOrderCalculator(mac);
       expect(calculateMacOrder()).toBeLessThan(calculateCharlieOrder());

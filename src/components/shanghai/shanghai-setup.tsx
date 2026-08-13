@@ -61,7 +61,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
     RANDOM: createPlayer,
     ENTRY: createPlayer,
     BY_SHOT: () => setSplashing(true),
-  }[game.rules.turnOrder];
+  }[game.shanghaiRules.turnOrder];
 
   return (
     <Container>

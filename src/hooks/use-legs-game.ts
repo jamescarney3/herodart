@@ -5,8 +5,8 @@ import { Observer } from '@jamescarney3/microrm';
 import LegsGame from '~/lib/legs/legs-game';
 
 const cleanupLegsGame = (game: LegsGame): void => {
-  game.rounds.forEach((round) => round.delete());
-  game.players.forEach((player) => player.delete());
+  game.legsRounds.forEach((round) => round.delete());
+  game.legsPlayers.forEach((player) => player.delete());
   game.delete();
 };
 

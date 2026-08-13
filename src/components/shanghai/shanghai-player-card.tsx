@@ -2,12 +2,12 @@ import { SHANGHAI_ACTIVE_INDICATOR } from '~/lib/utils';
 import type { ShanghaiPlayer } from '~/lib/shanghai';
 
 interface ShanghaiPlayerCardProps {
-  player: ShanghaiPlayer;
-  currentPlayer?: ShanghaiPlayer;
+  player: Pick<ShanghaiPlayer, 'name' | 'totalScore'>;
+  currentPlayer?: Pick<ShanghaiPlayer, 'name' | 'totalScore'>;
 }
 
 const ShanghaiPlayerCard = ({ player, currentPlayer }: ShanghaiPlayerCardProps) => {
-  const getActivePlayerIndicatorClasses = (player: ShanghaiPlayer) =>
+  const getActivePlayerIndicatorClasses = (player: ShanghaiPlayerCardProps['player']) =>
     ['transition-opacity opacity-0', player === currentPlayer && 'opacity-100'].filter(Boolean).join(' ');
 
   return (

@@ -61,7 +61,7 @@ describe('Keypad', () => {
   it('conditionally validates input', () => {
     const onChange = vi.fn();
     const onSubmit = vi.fn();
-    const validate = (value) => value < 10;
+    const validate = (value: number) => value < 10;
     const { getByText } = render(<Keypad onChange={onChange} onSubmit={onSubmit} validate={validate} value="" />);
     fireEvent.click(getByText('enter'));
     expect(onSubmit).toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe('Keypad', () => {
     fireEvent.click(getByText('2'));
     fireEvent.click(getByText('enter'));
     expect(onChange).toHaveBeenCalledTimes(3);
-    expect(onSubmit).toHaveBeenCalled(2);
+    expect(onSubmit).toHaveBeenCalledTimes(2);
   });
 
   it('deletes last character on back', () => {
@@ -88,7 +88,7 @@ describe('Keypad', () => {
 
   it('conditionally calls onUndo on undo', () => {
     const onUndo = vi.fn();
-    const { getByText } = render(<Keypad onUndo={onUndo} value="123" />);
+    const { getByText } = render(<Keypad onUndo={onUndo} onChange={vi.fn()} onSubmit={vi.fn()} value="123" />);
     fireEvent.click(getByText('back'));
     expect(onUndo).toHaveBeenCalled();
   });

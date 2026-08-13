@@ -20,14 +20,14 @@ describe('LegsReport', () => {
     mockPlayers = [
       {
         name: 'Player 1',
-        rounds: [],
+        legsRounds: [],
         average: 85.5,
         opponentAverage: 75.2,
         splash: 100,
       },
       {
         name: 'Player 2',
-        rounds: [],
+        legsRounds: [],
         average: 72.3,
         opponentAverage: 85.6,
         splash: 90,
@@ -36,19 +36,19 @@ describe('LegsReport', () => {
 
     mockRounds = [
       {
-        player: mockPlayers[0],
+        legsPlayer: mockPlayers[0],
         score: 100,
         wasStrike: false,
         wasEliminationRound: false,
       },
       {
-        player: mockPlayers[1],
+        legsPlayer: mockPlayers[1],
         score: 80,
         wasStrike: true,
         wasEliminationRound: false,
       },
       {
-        player: mockPlayers[1],
+        legsPlayer: mockPlayers[1],
         score: 60,
         wasStrike: true,
         wasEliminationRound: true,
@@ -57,8 +57,8 @@ describe('LegsReport', () => {
 
     mockGame = {
       winner: mockPlayers[0],
-      players: mockPlayers,
-      rounds: mockRounds,
+      legsPlayers: mockPlayers,
+      legsRounds: mockRounds,
     } as unknown as LegsGame;
   });
 
@@ -67,12 +67,12 @@ describe('LegsReport', () => {
   });
 
   it('renders without crashing', () => {
-    const { container } = render(<LegsReport game={mockGame} />);
+    const { container } = render(<LegsReport game={mockGame} onNewGame={() => {}} />);
     expect(container).toBeDefined();
   });
 
   it('displays winning player', () => {
-    const { getByText, getAllByText } = render(<LegsReport game={mockGame} />);
+    const { getByText, getAllByText } = render(<LegsReport game={mockGame} onNewGame={() => {}} />);
     expect(getByText('Winner:')).toBeDefined();
     expect(getAllByText('Player 1').length).toBeGreaterThan(0);
     expect(getByText('Average: 85.5')).toBeDefined();
@@ -80,7 +80,7 @@ describe('LegsReport', () => {
   });
 
   it('renders player performance table with averages', () => {
-    const { getAllByRole } = render(<LegsReport game={mockGame} />);
+    const { getAllByRole } = render(<LegsReport game={mockGame} onNewGame={() => {}} />);
     const perfTable = getAllByRole('table')[0];
     const rows = rt.getAllByRole(perfTable, 'row');
 
@@ -93,7 +93,7 @@ describe('LegsReport', () => {
   });
 
   it('renders game log with all rounds', () => {
-    const { getAllByRole } = render(<LegsReport game={mockGame} />);
+    const { getAllByRole } = render(<LegsReport game={mockGame} onNewGame={() => {}} />);
     const roundsLogTable = getAllByRole('table')[1];
     const rows = rt.getAllByRole(roundsLogTable, 'row');
 

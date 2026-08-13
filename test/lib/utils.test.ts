@@ -17,11 +17,12 @@ describe('utils module', () => {
     });
 
     it('returns true when navigator condition is true', () => {
-      const originalStandalone = window.navigator.standalone; // memoize original val
-      window.navigator.standalone = true;
+      const navigator: typeof window.navigator & { standalone?: boolean } = window.navigator;
+      const originalStandalone = navigator.standalone; // memoize original val
+      navigator.standalone = true;
 
       expect(runningInStandalone()).toBe(true);
-      window.navigator.standalone = originalStandalone; // restore nav standalone val
+      navigator.standalone = originalStandalone; // restore nav standalone val
     });
 
     it('returns true when media query condition is true', () => {
@@ -38,7 +39,7 @@ describe('utils module', () => {
 
     it('returns true when platform is iOS', () => {
       const originalNavigator = window.navigator; // memoize original val
-      window.navigator = { userAgent: 'iPhone|iPod|iPad' };
+      window.navigator = { userAgent: 'iPhone|iPod|iPad' } as typeof window.navigator;
 
       expect(runningOnIOS()).toBe(true);
       window.navigator = originalNavigator; // restore nav standalone val
@@ -51,11 +52,13 @@ describe('utils module', () => {
     });
 
     it('returns true when BeforeInstallPromptEvent is defined', () => {
-      const originalEvent = window.BeforeInstallPromptEvent; // memoize original val
-      window.BeforeInstallPromptEvent = Event;
+      const installEventWindow = window as typeof window & { BeforeInstallPromptEvent: typeof Event };
+      // memoize original val
+      const originalEvent = installEventWindow.BeforeInstallPromptEvent;
+      installEventWindow.BeforeInstallPromptEvent = Event;
 
       expect(hasBeforeInstallPromptEvent()).toBe(true);
-      window.BeforeInstallPromptEvent = originalEvent; // restore nav standalone val
+      installEventWindow.BeforeInstallPromptEvent = originalEvent; // restore nav standalone val
     });
   });
 

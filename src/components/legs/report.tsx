@@ -29,12 +29,12 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
             </tr>
           </thead>
           <tbody>
-            {game.players
+            {game.legsPlayers
               .sort((a, b) => b.splash - a.splash)
               .map((player) => (
                 <tr key={`player-${player.name}`}>
                   <td>{player.name}</td>
-                  <td>{player.rounds.length}</td>
+                  <td>{player.legsRounds.length}</td>
                   <td>{roundNumber(player.average, 2)}</td>
                   <td>{roundNumber(player.opponentAverage, 2)}</td>
                 </tr>
@@ -56,10 +56,10 @@ const LegsReport = ({ game, onNewGame }: LegsReportProps) => {
               </tr>
             </thead>
             <tbody>
-              {game.rounds.map((round, idx) => (
+              {game.legsRounds.map((round, idx) => (
                 <tr key={`round-${idx}`}>
                   <td>{idx + 1}</td>
-                  <td>{round.player.name}</td>
+                  <td>{round.legsPlayer.name}</td>
                   <td>{round.score}</td>
                   <td>
                     {round.wasStrike && <span>{LEGS_STRIKE}</span>}

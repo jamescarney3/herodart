@@ -1,9 +1,17 @@
+import { useNavigate } from 'react-router';
+
 import useLegsGame from '~/hooks/use-legs-game';
 import { Setup, Scoreboard, Report } from '~/components/legs';
 import { ContextMenu } from '~/components/shared';
 
 const Game = () => {
   const { game, newGame, clearGame } = useLegsGame();
+  const navigate = useNavigate();
+
+  const quitGame = () => {
+    clearGame();
+    navigate('/');
+  };
 
   const getGamePhase = () => {
     if (!game) return null;
@@ -14,7 +22,7 @@ const Game = () => {
 
   return (
     <>
-      <ContextMenu options={[{ label: 'Quit Game', onClick: clearGame }]} />
+      <ContextMenu options={[{ label: 'Quit Game', onClick: quitGame }]} />
       {getGamePhase()}
     </>
   );

@@ -70,9 +70,9 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
               if (!editingRound && node) node?.scrollIntoView?.({ behavior: 'smooth' });
             }}
           >
-            {game.rounds.toReversed().map((round) => (
+            {game.shanghaiRounds.toReversed().map((round) => (
               <ShanghaiRoundItem
-                key={`${round.player.name}-${round.wedge}`}
+                key={`${round.shanghaiPlayer.name}-${round.wedge}`}
                 round={round}
                 editingRound={editingRound}
                 onClick={editRound}

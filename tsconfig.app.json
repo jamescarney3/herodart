@@ -20,7 +20,8 @@
 
     /* Alias */
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "test/*": ["./test/*"]
     },
 
     /* Linting */
@@ -29,5 +30,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }

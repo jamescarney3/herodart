@@ -27,7 +27,7 @@ export enum TURN_ORDER {
 
 @register('shanghai-rules')
 export default class ShanghaiRules extends Model {
-  @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: ShanghaiGame;
+  @belongsTo declare shanghaiGame: ShanghaiGame;
 
   @key declare id: string;
   @prop scoring: SCORING = SCORING.MARKS;
@@ -62,7 +62,7 @@ export default class ShanghaiRules extends Model {
     const splashCalculators = {
       [TURN_ORDER.BY_SHOT]: () => splash,
       [TURN_ORDER.RANDOM]: Math.random,
-      [TURN_ORDER.ENTRY]: () => 0 - this.game.players.indexOf(player),
+      [TURN_ORDER.ENTRY]: () => 0 - this.shanghaiGame.shanghaiPlayers.indexOf(player),
     };
 
     return splashCalculators[this.turnOrder];

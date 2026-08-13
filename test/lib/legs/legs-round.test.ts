@@ -19,7 +19,7 @@ describe('LegsRound class', () => {
         LegsRound.create({ score: 120 }),
       ];
       rounds.forEach((round) => {
-        vi.spyOn(round, 'game', 'get').mockReturnValue({ rounds });
+        vi.spyOn(round, 'legsGame', 'get').mockReturnValue({ legsRounds: rounds } as LegsRound['legsGame']);
       });
 
       expect(rounds[0].wasStrike).toBe(false); // no previous
@@ -30,8 +30,8 @@ describe('LegsRound class', () => {
 
   describe('#wasEliminationRound', () => {
     it("returns true when round score is player's third strike", () => {
-      const playerA = { name: 'wile e coyote' };
-      const playerB = { name: 'road runner' };
+      const playerA = { name: 'wile e coyote' } as LegsRound['legsPlayer'];
+      const playerB = { name: 'road runner' } as LegsRound['legsPlayer'];
 
       const rounds = [
         LegsRound.create({ score: 100 }),
@@ -44,11 +44,11 @@ describe('LegsRound class', () => {
       ];
 
       rounds.forEach((round, idx) => {
-        vi.spyOn(round, 'player', 'get').mockReturnValue(idx % 2 ? playerA : playerB);
+        vi.spyOn(round, 'legsPlayer', 'get').mockReturnValue(idx % 2 ? playerA : playerB);
       });
 
       rounds.forEach((round) => {
-        vi.spyOn(round, 'game', 'get').mockReturnValue({ rounds });
+        vi.spyOn(round, 'legsGame', 'get').mockReturnValue({ legsRounds: rounds } as LegsRound['legsGame']);
       });
 
       // rounds[6] should be elimination round for playerA
