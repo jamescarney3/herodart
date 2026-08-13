@@ -48,7 +48,7 @@ describe('usePwaInstallation custom hook', () => {
   });
 
   it('passes through callback to call BeforeInstallPromptEvent method', () => {
-    const beforeInstallPromptEvent = new Event('beforeinstallprompt');
+    const beforeInstallPromptEvent = new Event('beforeinstallprompt') as Event & { prompt: () => void };
     beforeInstallPromptEvent.prompt = vi.fn();
     window.dispatchEvent(beforeInstallPromptEvent);
 

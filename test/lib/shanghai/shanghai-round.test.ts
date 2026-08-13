@@ -1,14 +1,14 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { sum } from 'mathjs';
 
 import ShanghaiRound from '~/lib/shanghai/shanghai-round';
 
 describe('ShanghaiRound class', () => {
   const baseRound = ShanghaiRound.create({ darts: [] });
-  const rules = { calculateRoundScore: ({ darts }) => sum(darts) };
-  const game = { rules, getWedgeByRound: () => 6 };
+  const rules = { calculateRoundScore: ({ darts }: { darts: number[] }) => sum(darts) };
+  const game = { shanghaiRules: rules, getWedgeByRound: () => 6 };
 
-  vi.spyOn(baseRound, 'game', 'get').mockReturnValue(game);
+  vi.spyOn(baseRound, 'shanghaiGame', 'get').mockReturnValue(game as unknown as ShanghaiRound['shanghaiGame']);
 
   afterEach(() => {
     vi.clearAllMocks();

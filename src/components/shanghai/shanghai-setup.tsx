@@ -3,6 +3,7 @@ import { evaluate } from 'mathjs';
 
 import type ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import { Keypad } from '~/components/shared';
+import { Container } from '~/components/layout';
 
 interface ShanghaiSetupProps {
   game: ShanghaiGame;
@@ -60,17 +61,10 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
     RANDOM: createPlayer,
     ENTRY: createPlayer,
     BY_SHOT: () => setSplashing(true),
-  }[game.rules.turnOrder];
-
-  // const handleConfirmSplash = {
-  //   BY_SHOT: createPlayer,
-  //   /* these dont happen because random and entry turn orders don't get to splash phase */
-  //   RANDOM: () => {},
-  //   ENTRY: () => {},
-  // }[game.rules.turnOrder];
+  }[game.shanghaiRules.turnOrder];
 
   return (
-    <div className="h-screen flex flex-col p-2 gap-2">
+    <Container>
       <section className="h-48 shrink-0 flex flex-col gap-2">
         <h1 className="text-center text-6xl mb-auto">Shanghai Setup</h1>
         {splashing && <p className="test-center">splash (2 darts) for turn order:</p>}
@@ -134,7 +128,7 @@ const ShanghaiSetup = ({ game }: ShanghaiSetupProps) => {
           />
         )}
       </section>
-    </div>
+    </Container>
   );
 };
 

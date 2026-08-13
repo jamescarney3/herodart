@@ -1,26 +1,38 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { cleanup, render, fireEvent, waitFor } from '@testing-library/react';
 
-import ShanghaiGame from '~/lib/shanghai/shanghai-game';
 import ShanghaiScoreboard from '~/components/shanghai/shanghai-scoreboard';
+import ShanghaiGame from '~/lib/shanghai/shanghai-game';
+import ShanghaiRound from '~/lib/shanghai/shanghai-round';
 
+vi.mock('~/lib/shanghai/shanghai-round');
 vi.mock('~/lib/shanghai/shanghai-game', () => {
-  const MockShanghaiGame = vi.fn();
-
-  MockShanghaiGame.create = vi.fn().mockImplementation(() => ({
-    id: 'test-game',
-    currentPlayer: { name: 'amos' },
-    currentWedge: null,
-    staticPlayerOrder: [{ name: 'amos' }, { name: 'holden' }],
-    rounds: [{ player: { name: 'holden' }, darts: [1, 0, 1], wedge: 1 }],
-    scoreRound: vi.fn(),
-  }));
+  class MockShanghaiGame {
+    static create(): ShanghaiGame {
+      return {
+        id: 'test-game',
+        currentPlayer: { name: 'amos' },
+        currentWedge: null,
+        staticPlayerOrder: [{ name: 'amos' }, { name: 'holden' }],
+        shanghaiRounds: [{ shanghaiPlayer: { name: 'holden' }, darts: [1, 0, 1], wedge: 1 }],
+        scoreRound: vi.fn(),
+      } as unknown as ShanghaiGame;
+    }
+  }
 
   return { default: MockShanghaiGame };
 });
 
 vi.mock('~/components/shanghai/shanghai-marks', () => {
-  const DummyMarks = ({ darts, editing, onSelect }) => (
+  const DummyMarks = ({
+    darts,
+    editing,
+    onSelect,
+  }: {
+    darts: number[];
+    editing: boolean;
+    onSelect: (n: number) => void;
+  }) => (
     <div data-testid="marks">
       <div data-testid="editing-mark">{editing}</div>
       {darts.map((score, idx) => (
@@ -34,9 +46,17 @@ vi.mock('~/components/shanghai/shanghai-marks', () => {
 });
 
 vi.mock('~/components/shanghai/shanghai-round-item', () => {
-  const DummyRoundItem = ({ round, editingRound, onClick }) => {
+  const DummyRoundItem = ({
+    round,
+    editingRound,
+    onClick,
+  }: {
+    round: ShanghaiRound;
+    editingRound?: ShanghaiRound;
+    onClick: (r: unknown) => void;
+  }) => {
     return (
-      <button data-testid={`${round.player.name}-round`} onClick={() => onClick(round)}>
+      <button data-testid={`${round.shanghaiPlayer.name}-round`} onClick={() => onClick(round)}>
         {editingRound === round && 'editing'}
       </button>
     );
@@ -51,7 +71,7 @@ describe('ShanghaiScoreboard component', () => {
   window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
   beforeEach(() => {
-    game = ShanghaiGame.create();
+    game = ShanghaiGame.create() as ShanghaiGame;
   });
 
   afterEach(() => {
@@ -72,20 +92,20 @@ describe('ShanghaiScoreboard component', () => {
     fireEvent.click(getByText(3));
 
     waitFor(() => {
-      expect(getByTestId('dart-1').innerHtml).toBe(1);
-      expect(getByTestId('dart-2').innerHtml).toBe(2);
-      expect(getByTestId('dart-3').innerHtml).toBe(3);
+      expect(getByTestId('dart-1').innerHTML).toBe('1');
+      expect(getByTestId('dart-2').innerHTML).toBe('2');
+      expect(getByTestId('dart-3').innerHTML).toBe('3');
     });
   });
 
   it('selects a dart score to edit', () => {
     const { getByTestId, getByText } = render(<ShanghaiScoreboard game={game} />);
-    expect(getByTestId('editing-mark').innerHtml).not.toBeDefined();
+    expect(getByTestId('editing-mark').innerHTML).toBe('');
 
     waitFor(() => {
       fireEvent.click(getByTestId('dart-1'));
       fireEvent.click(getByTestId('dart-2'));
-      expect(getByTestId('editing-mark').innerHtml).not.toBeDefined();
+      expect(getByTestId('editing-mark').innerHTML).not.toBeDefined();
 
       fireEvent.click(getByText(1));
       fireEvent.click(getByText(2));
@@ -99,12 +119,12 @@ describe('ShanghaiScoreboard component', () => {
   it('disables round submission unless all three darts are marked', () => {
     const { getByText } = render(<ShanghaiScoreboard game={game} />);
 
-    expect(getByText('enter').disabled).toBeTruthy();
+    expect((getByText('enter') as HTMLButtonElement).disabled).toBeTruthy();
     fireEvent.click(getByText(1));
     fireEvent.click(getByText(2));
     fireEvent.click(getByText(3));
 
-    waitFor(async () => expect(getByText('enter').disabled).toBeFalsey());
+    waitFor(async () => expect((getByText('enter') as HTMLButtonElement).disabled).toBeFalsy());
   });
 
   it('scores a round of shanghai', () => {
@@ -123,14 +143,14 @@ describe('ShanghaiScoreboard component', () => {
 
   it('selects a round of shanghai to edit and updates it', () => {
     const { getByTestId, getByText } = render(<ShanghaiScoreboard game={game} />);
-    expect(getByTestId('holden-round').innerHtml).not.toBeDefined();
+    expect(getByTestId('holden-round').innerHTML).toBe('');
 
     fireEvent.click(getByTestId('holden-round'));
-    waitFor(async () => expect(getByTestId('holden-round').innerHtml).toBeDefined('editing'));
+    waitFor(async () => expect(getByTestId('holden-round').innerHTML).toBeDefined());
 
     fireEvent.click(getByTestId('dart-1'));
     fireEvent.click(getByText(3));
     fireEvent.click(getByText('enter'));
-    waitFor(async () => expect(getByTestId('holden-round').innerHtml).not.toBeDefined());
+    waitFor(async () => expect(getByTestId('holden-round').innerHTML).not.toBeDefined());
   });
 });

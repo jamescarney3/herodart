@@ -9,8 +9,8 @@ export type ShanghaiDarts = [number, number, number];
 export default class ShanghaiRound extends Model {
   @prop declare darts: ShanghaiDarts;
 
-  @belongsTo('shanghai-games', { foreignKey: 'gameId' }) declare game: ShanghaiGame;
-  @belongsTo('shanghai-players', { foreignKey: 'playerName' }) declare player: ShanghaiPlayer;
+  @belongsTo declare shanghaiGame: ShanghaiGame;
+  @belongsTo declare shanghaiPlayer: ShanghaiPlayer;
 
   get marks(): number {
     const { darts } = this;
@@ -22,7 +22,7 @@ export default class ShanghaiRound extends Model {
   }
 
   get wedge(): number {
-    return this.game.getWedgeByRound(this);
+    return this.shanghaiGame.getWedgeByRound(this);
   }
 
   get isShanghai(): boolean {
@@ -31,6 +31,6 @@ export default class ShanghaiRound extends Model {
 
   // potentially better if this can be a has-one-through kind of relation
   private get rules(): ShanghaiRules {
-    return this.game.rules;
+    return this.shanghaiGame.shanghaiRules;
   }
 }

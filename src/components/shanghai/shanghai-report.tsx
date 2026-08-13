@@ -1,5 +1,6 @@
-import type { ShanghaiGame, ShanghaiPlayer } from '~/lib/shanghai';
+import type { ShanghaiGame } from '~/lib/shanghai';
 import { roundNumber } from '~/lib/utils';
+import { Container } from '~/components/layout';
 
 interface ShanghaiReportProps {
   game: ShanghaiGame;
@@ -11,14 +12,14 @@ enum WINNER_HEADING {
   MULTIPLE = 'Winners (tie):',
 }
 
-const formatWinnersHeader = (winners: ShanghaiPlayer[]) => {
+const formatWinnersHeader = (winners: ShanghaiGame['winners']) => {
   if (winners.length === 1) return WINNER_HEADING.SINGLE;
   return WINNER_HEADING.MULTIPLE;
 };
 
 const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
   return (
-    <div className="h-screen flex flex-col gap-2 p-2">
+    <Container>
       <section>
         {game.winners && (
           <>
@@ -36,7 +37,7 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
                   <tr key={`player-${player.name}`}>
                     <td>{player.name}</td>
                     <td>{player.totalScore}</td>
-                    <td>{player.mpr}</td>
+                    <td>{typeof player.mpr === 'number' && roundNumber(player.mpr, 2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -51,15 +52,17 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
           <thead>
             <tr className="[&>th]:text-left">
               <th />
+              <th>Total</th>
               <th>MPR</th>
             </tr>
           </thead>
           <tbody>
-            {game.players
+            {game.shanghaiPlayers
               .sort((a, b) => b.splash - a.splash)
               .map((player) => (
                 <tr key={`player-${player.name}`}>
                   <td>{player.name}</td>
+                  <td>{player.totalScore}</td>
                   <td>{roundNumber(player.mpr, 2)}</td>
                 </tr>
               ))}
@@ -80,10 +83,10 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
               </tr>
             </thead>
             <tbody>
-              {game.rounds.map((round, idx) => (
+              {game.shanghaiRounds.map((round, idx) => (
                 <tr key={`round-${idx}`}>
                   <td>{round.wedge}</td>
-                  <td>{round.player.name}</td>
+                  <td>{round.shanghaiPlayer.name}</td>
                   <td>{round.score}</td>
                   {game.shanghaiScored && <td>{round.isShanghai && <span>Shanghai!</span>}</td>}
                 </tr>
@@ -98,7 +101,7 @@ const ShanghaiReport = ({ game, onNewGame }: ShanghaiReportProps) => {
           new game
         </button>
       </section>
-    </div>
+    </Container>
   );
 };
 

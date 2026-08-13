@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ShanghaiMarks, ShanghaiKeypad, ShanghaiPlayerCard, ShanghaiRoundItem } from '~/components/shanghai';
 import type { ShanghaiGame, ShanghaiRound } from '~/lib/shanghai';
+import { Container } from '~/components/layout';
 
 interface ShanghaiScoreboardProps {
   game: ShanghaiGame;
@@ -51,7 +52,7 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
   };
 
   return (
-    <div className="h-screen flex flex-col gap-2 p-2">
+    <Container>
       <section>
         <h1 className="text-center text-6xl">{game.currentPlayer!.name}</h1>
         <div className="text-center text-6xl">to shoot: {game.currentWedge}</div>
@@ -69,9 +70,9 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
               if (!editingRound && node) node?.scrollIntoView?.({ behavior: 'smooth' });
             }}
           >
-            {game.rounds.toReversed().map((round) => (
+            {game.shanghaiRounds.toReversed().map((round) => (
               <ShanghaiRoundItem
-                key={`${round.player.name}-${round.wedge}`}
+                key={`${round.shanghaiPlayer.name}-${round.wedge}`}
                 round={round}
                 editingRound={editingRound}
                 onClick={editRound}
@@ -95,7 +96,7 @@ const ShanghaiScoreboard = ({ game }: ShanghaiScoreboardProps) => {
           enter
         </button>
       </section>
-    </div>
+    </Container>
   );
 };
 

@@ -9,7 +9,7 @@ describe('ShanghaiMarks component', () => {
   });
 
   it('renders without crashing', () => {
-    const { container } = render(<ShanghaiKeypad />);
+    const { container } = render(<ShanghaiKeypad onClickNumber={() => {}} />);
     expect(container).toBeDefined();
   });
 

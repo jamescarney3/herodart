@@ -1,16 +1,22 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
-import { useShanghaiGame, useToggle } from '~/hooks';
-import { GameMenuModal, MenuButton } from '~/components/shared';
+import { useShanghaiGame } from '~/hooks';
+import { ContextMenu } from '~/components/shared';
 import { ShanghaiSetup, ShanghaiScoreboard, ShanghaiReport, ShanghaiRules } from '~/components/shanghai';
 
 const ShanghaiGame = () => {
-  const { game, newGame } = useShanghaiGame();
-  const [menuOpen, toggleMenuOpen] = useToggle(false);
+  const { game, newGame, clearGame } = useShanghaiGame();
   const [rulesConfirmed, setRulesConfirmed] = useState(false);
+  const navigate = useNavigate();
 
   const confirmRules = () => {
     setRulesConfirmed(true);
+  };
+
+  const quitGame = () => {
+    clearGame();
+    navigate('/');
   };
 
   const renderGameContent = () => {
@@ -22,11 +28,10 @@ const ShanghaiGame = () => {
   };
 
   return (
-    <div>
-      <MenuButton onClick={toggleMenuOpen} />
-      <GameMenuModal open={menuOpen} onClose={toggleMenuOpen} />
+    <>
+      <ContextMenu options={[{ label: 'Quit Game', onClick: quitGame }]} />
       {renderGameContent()}
-    </div>
+    </>
   );
 };
 

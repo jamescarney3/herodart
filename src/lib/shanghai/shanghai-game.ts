@@ -9,13 +9,13 @@ export default class ShanghaiGame extends Model {
   @key declare id: string;
   @prop declare started: boolean;
 
-  @hasMany('shanghai-players', { foreignKey: 'gameId' }) declare players: Collection<ShanghaiPlayer>;
-  @hasMany('shanghai-rounds', { foreignKey: 'gameId' }) declare rounds: Collection<ShanghaiRound>;
-  @hasOne('shanghai-rules', { foreignKey: 'gameId' }) declare rules: ShanghaiRules;
+  @hasMany declare shanghaiPlayers: Collection<ShanghaiPlayer>;
+  @hasMany declare shanghaiRounds: Collection<ShanghaiRound>;
+  @hasOne declare shanghaiRules: ShanghaiRules;
 
   createPlayer(attributes: { name: string; splash?: number }): ShanghaiPlayer {
-    const player = ShanghaiPlayer.create({ ...attributes, game: this }) as ShanghaiPlayer;
-    player.splash = this.rules.generatePlayerOrderCalculator(player, attributes.splash)();
+    const player = ShanghaiPlayer.create({ ...attributes, shanghaiGame: this }) as ShanghaiPlayer;
+    player.splash = this.shanghaiRules.generatePlayerOrderCalculator(player, attributes.splash)();
     return player;
   }
 
@@ -24,30 +24,26 @@ export default class ShanghaiGame extends Model {
   }
 
   scoreRound(player: ShanghaiPlayer, darts: ShanghaiDarts): void {
-    ShanghaiRound.create({ player, darts, game: this });
-  }
-
-  playerExistsWithName(name: string): boolean {
-    return this.players.map((p) => p.name).includes(name);
+    ShanghaiRound.create({ shanghaiPlayer: player, darts, shanghaiGame: this });
   }
 
   getWedgeByRound(round: ShanghaiRound): number {
-    const { rounds } = this;
-    const playerRounds = rounds.where({ player: round.player });
+    const { shanghaiRounds } = this;
+    const playerRounds = shanghaiRounds.where({ shanghaiPlayer: round.shanghaiPlayer });
     return playerRounds.indexOf(round) + 1;
   }
 
   get canStart(): boolean {
-    return this.players.length >= 2;
+    return this.shanghaiPlayers.length >= 2 && !!this.shanghaiRules;
   }
 
   // ACTIVE PHASE
 
   get playerOrder(): Collection<ShanghaiPlayer> {
-    const { players, rounds } = this;
-    const order = players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+    const { shanghaiPlayers, shanghaiRounds } = this;
+    const order = shanghaiPlayers.sort((playerA, playerB) => playerB.splash - playerA.splash);
 
-    const lastPlayer = rounds?.last?.player;
+    const lastPlayer = shanghaiRounds?.last?.shanghaiPlayer;
     if (!lastPlayer) return order as Collection<ShanghaiPlayer>;
 
     const lastPlayerIdx = order.findIndex((player) => player === lastPlayer);
@@ -59,61 +55,65 @@ export default class ShanghaiGame extends Model {
   }
 
   get staticPlayerOrder(): Collection<ShanghaiPlayer> {
-    const { players } = this;
-    return players.sort((playerA, playerB) => playerB.splash - playerA.splash);
+    const { shanghaiPlayers } = this;
+    return shanghaiPlayers.sort((playerA, playerB) => playerB.splash - playerA.splash);
   }
 
   get currentPlayer(): ShanghaiPlayer | void {
-    const { staticPlayerOrder, rounds } = this;
-    const lastPlayer = rounds?.last?.player;
+    const { staticPlayerOrder, shanghaiRounds } = this;
+    const lastPlayer = shanghaiRounds?.last?.shanghaiPlayer;
     const lastPlayerIdx = staticPlayerOrder.findIndex((player) => player === lastPlayer);
     const wrappedOrder = staticPlayerOrder.slice(lastPlayerIdx).concat(staticPlayerOrder.slice(0, lastPlayerIdx));
-    return wrappedOrder.slice(1).where({ eliminated: false }).first;
+    return wrappedOrder.where({ eliminated: false }).at(1);
   }
 
   get currentWedge(): number {
     const { currentPlayer } = this;
-    return currentPlayer!.rounds.length + 1;
+    return currentPlayer!.shanghaiRounds.length + 1;
   }
 
   // END PHASE
 
   get bestTotalScore(): number | undefined {
-    const { players } = this;
-    return players
+    const { shanghaiPlayers } = this;
+    return shanghaiPlayers
       .map((player: ShanghaiPlayer) => player.totalScore)
       .sort((a, b) => a - b)!
       .at(-1);
   }
 
   get shanghaiScored(): boolean {
-    const { rounds } = this;
-    return rounds.some((round) => round.isShanghai);
+    const { shanghaiRounds } = this;
+    return shanghaiRounds.some((round) => round.isShanghai);
   }
 
   get finished(): boolean {
-    const { started, players, shanghaiScored, allRoundsShot } = this;
-    const singlePlayerRemaining = players.where({ eliminated: false }).length === 1;
+    const { started, playersRemaining, shanghaiScored, allRoundsShot } = this;
+    const singlePlayerRemaining = playersRemaining.length < 2;
     return started && (shanghaiScored || allRoundsShot || singlePlayerRemaining);
   }
 
   get playersRemaining(): ShanghaiPlayer[] {
-    const { players } = this;
-    return players.where({ eliminated: false });
+    const { shanghaiPlayers } = this;
+    return shanghaiPlayers.where({ eliminated: false });
   }
 
   get allRoundsShot(): boolean {
     const { playersRemaining } = this;
-    const { endWedge } = this.rules;
-    return playersRemaining.every((player) => player.rounds.length === endWedge);
+    const { endWedge } = this.shanghaiRules;
+    return playersRemaining.every((player) => player.shanghaiRounds.length === endWedge);
   }
 
   get winners(): ShanghaiPlayer[] {
-    const { players, rounds, shanghaiScored, finished, bestTotalScore } = this;
+    const { shanghaiPlayers, shanghaiRounds, shanghaiScored, finished, bestTotalScore, playersRemaining } = this;
 
     if (!finished) return [];
-    if (shanghaiScored) return [rounds.findBy((round: ShanghaiRound) => round.isShanghai)!.player];
-    return players.reduce((winners, player) => {
+    if (shanghaiScored)
+      return [shanghaiRounds.findBy((round: ShanghaiRound) => round.isShanghai)!.shanghaiPlayer as ShanghaiPlayer];
+    if (playersRemaining.length === 1) {
+      return playersRemaining;
+    }
+    return shanghaiPlayers.reduce((winners: ShanghaiPlayer[], player) => {
       if (player.totalScore === bestTotalScore) {
         return [...winners, player];
       } else {

@@ -3,7 +3,6 @@ import './vite-env.d.ts';
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import babel from 'vite-plugin-babel';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // import sassTailwindFunctions from 'sass-tailwind-functions/modern';
@@ -12,15 +11,6 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     react({ tsDecorators: true }),
-    babel({
-      babelConfig: {
-        babelrc: false,
-        configFile: false,
-        plugins: [['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }]],
-      },
-      include: 'src/**/*.ts?(x)',
-      exclude: 'node_modules/**',
-    }),
     VitePWA({
       devOptions: { enabled: true },
       registerType: 'autoUpdate',

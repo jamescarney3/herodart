@@ -5,8 +5,8 @@ import { Observer } from '@jamescarney3/microrm';
 import LegsGame from '~/lib/legs/legs-game';
 
 const cleanupLegsGame = (game: LegsGame): void => {
-  game.rounds.forEach((round) => round.delete());
-  game.players.forEach((player) => player.delete());
+  game.legsRounds.forEach((round) => round.delete());
+  game.legsPlayers.forEach((player) => player.delete());
   game.delete();
 };
 
@@ -32,7 +32,14 @@ const useLegsGame = () => {
     forceUpdate(() => new Object());
   };
 
-  return { game: gameRef.current, newGame };
+  const clearGame = () => {
+    // current game ref is always set in effect hook
+    cleanupLegsGame(gameRef.current!);
+    gameRef.current = null;
+    forceUpdate(() => new Object());
+  };
+
+  return { game: gameRef.current, newGame, clearGame };
 };
 
 export default useLegsGame;

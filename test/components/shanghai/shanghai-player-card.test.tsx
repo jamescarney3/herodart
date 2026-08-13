@@ -13,7 +13,7 @@ describe('ShanghaiPlayerCard component', () => {
   });
 
   it('renders without crashing', () => {
-    const { container } = render(<ShanghaiPlayerCard player={{}} />);
+    const { container } = render(<ShanghaiPlayerCard player={{ name: 'frodo', totalScore: 10 }} />);
     expect(container).toBeDefined();
   });
 

@@ -1,10 +1,11 @@
 import { Link } from 'react-router';
 
+import { Container } from '~/components/layout';
 import { KofiLink } from '~/components/shared';
 
 const MainMenu = () => {
   return (
-    <div className="h-screen flex flex-col p-2 gap-2">
+    <Container>
       <h1 className="text-center text-6xl">Herodart</h1>
       <p>Scoring app for local play:</p>
       <nav className="flex flex-col gap-2">
@@ -16,7 +17,7 @@ const MainMenu = () => {
         </Link>
       </nav>
       <KofiLink className="m-auto mt-2 h-[2em]" />
-    </div>
+    </Container>
   );
 };
 
