@@ -3,8 +3,6 @@ import { describe, it, expect } from 'vitest';
 import LegsGame from '~/lib/legs/legs-game';
 import type LegsPlayer from '~/lib/legs/legs-player';
 
-// import LegsRound from '~/lib/legs-round';
-
 describe('legs', () => {
   /* factories */
   const createBaseLegsGame = (): { game: LegsGame } => {
