@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router';
 
-import { MainMenu, LegsGame, ShanghaiGame } from '~/pages';
+import { MainMenu, LegsGame, ShanghaiGame, RouletteGamePage } from '~/pages';
 import { InstallModal } from '~/components/shared';
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
         <Route index={true} path="*" element={<MainMenu />} />
         <Route path="legs" element={<LegsGame />} />
         <Route path="shanghai" element={<ShanghaiGame />} />
+        <Route path="roulette" element={<RouletteGamePage />} />
       </Routes>
     </BrowserRouter>
   );

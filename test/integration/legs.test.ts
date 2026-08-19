@@ -3,8 +3,6 @@ import { describe, it, expect } from 'vitest';
 import LegsGame from '~/lib/legs/legs-game';
 import type LegsPlayer from '~/lib/legs/legs-player';
 
-// import LegsRound from '~/lib/legs-round';
-
 describe('legs', () => {
   /* factories */
   const createBaseLegsGame = (): { game: LegsGame } => {
@@ -154,6 +152,6 @@ describe('legs', () => {
       expect(larry.average).toBe(26);
       expect(moe.average).toBe(50.5);
     });
-    it.todo('calculates player opponent averages');
+    it('calculates player opponent averages');
   });
 });

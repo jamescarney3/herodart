@@ -15,6 +15,9 @@ const MainMenu = () => {
         <Link className="btn text-xl text-center" to="/shanghai">
           Shanghai
         </Link>
+        <Link className="btn text-xl text-center" to="/roulette">
+          Roulette (beta)
+        </Link>
       </nav>
       <KofiLink className="m-auto mt-2 h-[2em]" />
     </Container>

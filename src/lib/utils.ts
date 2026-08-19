@@ -25,6 +25,8 @@ export const LEGS_ACTIVE_INDICATOR = '⭐';
 
 export const SHANGHAI_ACTIVE_INDICATOR = '⭐';
 
+export const ROULETTE_ACTIVE_INDICATOR = '⭐';
+
 export const runningInStandalone = (): boolean => {
   // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator for notes on
   // Navigator.standalone property: "Available on Apple's iOS Safari only." at time of writing
