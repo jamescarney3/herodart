@@ -152,6 +152,6 @@ describe('legs', () => {
       expect(larry.average).toBe(26);
       expect(moe.average).toBe(50.5);
     });
-    it.todo('calculates player opponent averages');
+    it('calculates player opponent averages');
   });
 });

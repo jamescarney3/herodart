@@ -146,4 +146,28 @@ describe('roulette', () => {
       expect(game.winner).toBe(malcolm);
     });
   });
+
+  describe('calculating stats', () => {
+    it('determines high checkout rounds', () => {
+      const { game, malcolm, reese, francis } = createThreePlayerGame();
+      for (let i = 1; i <= 3; i++) {
+        game.scoreRound(malcolm, game.currentTurn!.checkout);
+        game.scoreRound(reese, game.currentTurn!.checkout);
+        game.scoreRound(francis, 0);
+      }
+      expect(game.highCheckoutRounds).toHaveLength(2);
+    });
+
+    it('determines checkout rounds for a given player', () => {
+      const { game, malcolm, reese, francis } = createThreePlayerGame();
+      for (let i = 1; i <= 3; i++) {
+        game.scoreRound(malcolm, game.currentTurn!.checkout);
+        game.scoreRound(reese, game.currentTurn!.checkout);
+        game.scoreRound(francis, 0);
+      }
+      expect(malcolm.checkouts).toHaveLength(3);
+      expect(reese.checkouts).toHaveLength(3);
+      expect(francis.checkouts).toHaveLength(0);
+    });
+  });
 });
