@@ -10,6 +10,10 @@ class RouletteRound extends Model {
   // @prop declare darts: number;
   @belongsTo declare rouletteTurn: RouletteTurn;
   @belongsTo declare roulettePlayer: RoulettePlayer;
+
+  get checkout() {
+    return this.rouletteTurn.checkout === this.score;
+  }
 }
 
 export default RouletteRound;

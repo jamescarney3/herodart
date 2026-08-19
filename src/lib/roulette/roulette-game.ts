@@ -48,7 +48,7 @@ class RouletteGame extends Model {
   }
 
   scoreRound(player: RoulettePlayer, score: number): RouletteRound {
-    const { currentTurn, gameTied } = this;
+    const { currentTurn } = this;
     const round = RouletteRound.create({
       rouletteGame: this,
       rouletteTurn: currentTurn,
@@ -56,7 +56,7 @@ class RouletteGame extends Model {
       score,
     });
 
-    if (currentTurn?.finished && (!this.targetReached || gameTied)) this.createTurn();
+    if (currentTurn?.finished && (!this.targetReached || this.gameTied)) this.createTurn();
     return round;
   }
 
@@ -87,8 +87,6 @@ class RouletteGame extends Model {
   }
 
   get currentPlayer(): RoulettePlayer | void {
-    // if (!this.currentTurn) return;
-
     const playersToShoot = this.playerOrder.filter((player) => {
       const playerRounds = player.rouletteRounds;
       return playerRounds.every((round) => round.rouletteTurn !== this.currentTurn);
@@ -119,16 +117,32 @@ class RouletteGame extends Model {
       .sort((scoreA, scoreB) => scoreA - scoreB)
       .at(-1);
 
-    const remainingPlayersStatisticallyEliminated = this.currentTurnRemainingPlayers.every(
-      (player) => player.totalScore + 1 < highScore!,
+    const scoreTied = this.roulettePlayers.where({ totalScore: highScore }).length > 1;
+
+    const remainingPlayersStatisticallyEliminated = !this.currentTurnRemainingPlayers.some(
+      (player) => player.totalScore + 1 >= highScore!,
     );
 
-    return this.targetReached && (lastTurnFinished || remainingPlayersStatisticallyEliminated);
+    return this.targetReached && !scoreTied && (lastTurnFinished || remainingPlayersStatisticallyEliminated);
   }
 
   get winner(): RoulettePlayer | void {
     if (!this.finished) return;
     return this.roulettePlayers.sort((playerA, playerB) => playerA.totalScore - playerB.totalScore).at(-1);
+  }
+
+  get highCheckoutRounds(): RouletteRound[] {
+    const checkoutRounds = this.rouletteTurns.reduce((current: RouletteRound[], turn) => {
+      const checkouts = turn.rouletteRounds.where({ checkout: true });
+      return [...current, ...checkouts];
+    }, []);
+
+    const highCheckout = checkoutRounds
+      .map((round) => round.score)
+      .sort((a, b) => a - b)
+      .at(-1);
+
+    return checkoutRounds.filter((round) => round.score === highCheckout);
   }
 }
 
