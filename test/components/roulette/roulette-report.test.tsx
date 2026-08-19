@@ -4,7 +4,7 @@ import { render, within, fireEvent } from '@testing-library/react';
 import RouletteReport from '~/components/roulette/roulette-report';
 import type RouletteGame from '~/lib/roulette/roulette-game';
 
-describe.todo('RouletteReport component', () => {
+describe('RouletteReport component', () => {
   const baseRouletteGame = {
     winner: {},
     highCheckoutRounds: [],

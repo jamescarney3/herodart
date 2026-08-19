@@ -7,7 +7,7 @@ import type { RouletteGame, RoulettePlayer } from '~/lib/roulette';
 
 vi.mock('~/lib/roulette');
 
-describe.todo('RoulettePlayerCard component', () => {
+describe('RoulettePlayerCard component', () => {
   it('renders without crashing', () => {
     const game = {} as RouletteGame;
     const player = {} as RoulettePlayer;

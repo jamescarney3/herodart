@@ -4,7 +4,7 @@ import { render, within, fireEvent } from '@testing-library/react';
 import RouletteScoreboard from '~/components/roulette/roulette-scoreboard';
 import type RouletteGame from '~/lib/roulette/roulette-game';
 
-describe.todo('RouletteScoreboard component', () => {
+describe('RouletteScoreboard component', () => {
   const baseRouletteGame = {
     playerOrder: [],
   } as unknown as RouletteGame;
